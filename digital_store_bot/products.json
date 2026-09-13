@@ -1,0 +1,47 @@
+{
+  "gemini_18m": {
+    "name": "💎 Google Gemini AI Pro (18 Meses / 1.5 Ano)",
+    "category": "ia",
+    "duration": "18 Meses",
+    "description": "🔥 *O plano mais completo e econômico do mercado:*\n\n✅ *18 Meses de acesso contínuo* na sua própria conta Gmail\n✅ *5 TB de armazenamento* no Google Drive, Fotos e Gmail\n✅ Modelos Gemini Advanced Pro liberados\n✅ Acesso liberado ao **Google Antigravity** (IDE de agentes autônomos)\n✅ *100% Privado e Individual* (sem compartilhamento, sem senha)\n✅ Ativação oficial imediata via link da Google\n\n🛡️ *Garantia:* Entrega automática e suporte direto.",
+    "price_brl": 35.00,
+    "price_usd": 6.50,
+    "instructions": "Para ativar o Gemini Pro 18 Meses:\n1. Certifique-se de estar logado no seu Gmail pessoal no navegador.\n2. Abra o link oficial de resgate da Google:\n{item}\n3. Confirme a ativação e aproveite 18 meses com 5TB liberados!"
+  },
+  "capcut_pro_30d": {
+    "name": "🎬 CapCut Pro (30 Dias)",
+    "category": "criacao",
+    "duration": "30 Dias",
+    "description": "🔥 *O editor indispensável para TikTok, Reels e Shorts:*\n\n✅ *Todos os recursos Pro desbloqueados*\n✅ Legendas automáticas com animações virais\n✅ Removedor de fundo de vídeo inteligente com 1 clique\n✅ Exportação em 4K 60fps sem marca d'água\n✅ Efeitos, transições, filtros e músicas VIP liberados\n✅ Funciona no Celular (Android/iOS) e no Computador (PC/Mac)\n\n🛡️ *Garantia:* Acesso imediato e funcionamento garantido.",
+    "price_brl": 39.00,
+    "price_usd": 7.50,
+    "instructions": "Seu acesso ao CapCut Pro (30 Dias):\n{item}\nBasta fazer login e aproveitar todos os recursos Pro liberados!"
+  },
+  "canva_pro_12m": {
+    "name": "🎨 Canva Pro (12 Meses / 1 Ano)",
+    "category": "criacao",
+    "duration": "12 Meses",
+    "description": "🎨 *Todos os recursos premium do Canva liberados por 1 ano:*\n\n✅ *No seu próprio e-mail:* continue usando sua conta normal\n✅ *Seus designs são 100% privados:* ninguém tem acesso aos seus projetos\n✅ Removedor de fundo de imagem ilimitado\n✅ Banco com mais de 100 milhões de fotos, vídeos e fontes premium\n✅ Magic Studio (IA gerativa completa do Canva) habilitada\n\n🛡️ *Ativação:* Convite oficial de equipe enviado na hora.",
+    "price_brl": 29.00,
+    "price_usd": 5.50,
+    "instructions": "Para ativar o Canva Pro no seu e-mail:\n1. Clique no convite oficial da equipe Canva:\n{item}\n2. Faça login com seu e-mail habitual.\n3. Todos os recursos Pro ficam liberados por 12 meses!"
+  },
+  "telegram_premium_3m": {
+    "name": "⭐ Telegram Premium (3 Meses Oficial)",
+    "category": "telegram",
+    "duration": "3 Meses",
+    "description": "⚡ *Eleve sua experiência no Telegram com o selo Premium:*\n\n✅ *Estrela azul oficial* ao lado do seu nome\n✅ Transcrição instantânea de mensagens de voz em texto\n✅ Downloads de arquivos na velocidade máxima\n✅ Limites dobrados: participe de até 1.000 canais e fixe 10 chats\n✅ Envio de arquivos gigantes de até 4 GB cada\n✅ Sem anúncios em canais públicos e reações/emojis exclusivos\n\n🛡️ *100% Seguro:* Ativação via Gift oficial do Telegram (sem login/senha).",
+    "price_brl": 119.00,
+    "price_usd": 22.00,
+    "instructions": "Seu Gift Card oficial Telegram Premium (3 Meses):\n{item}\nBasta abrir o link no Telegram e clicar em 'Resgatar' para ativar o selo imediatamente!"
+  },
+  "discord_nitro_3m": {
+    "name": "🎮 Discord Nitro (3 Meses + 2 Boosts)",
+    "category": "gaming",
+    "duration": "3 Meses",
+    "description": "🚀 *Turbine seu perfil e seus servidores no Discord:*\n\n✅ *2 Server Boosts mensais inclusos* (+30% de desconto em boosts extras)\n✅ Emojis e figurinhas personalizadas globais em qualquer servidor\n✅ Streaming de tela em 4K 60fps com áudio em alta definição\n✅ Upload de arquivos pesados de até 500 MB\n✅ Banner de perfil animado, avatar com GIF e tags personalizadas\n\n🛡️ *Entrega:* Link oficial de resgate promocional.",
+    "price_brl": 39.00,
+    "price_usd": 7.50,
+    "instructions": "Seu link oficial promocional Discord Nitro (3 Meses):\n{item}\nAbra no navegador logado no seu Discord para ativar na hora!"
+  }
+}

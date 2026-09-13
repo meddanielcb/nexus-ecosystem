@@ -1,0 +1,25 @@
+{
+  "path": "/api/webhooks/pixget",
+  "headers": {
+    "Host": "unique-searches-rochester-find.trycloudflare.com",
+    "Content-Length": "204",
+    "Accept-Encoding": "gzip",
+    "Cdn-Loop": "cloudflare; loops=1; subreqs=1",
+    "Cf-Connecting-Ip": "34.96.60.186",
+    "Cf-Ew-Via": "15",
+    "Cf-Ipcountry": "US",
+    "Cf-Ray": "a39bd5d9efdfeaef-GRU",
+    "Cf-Visitor": "{\"scheme\":\"https\"}",
+    "Cf-Warp-Tag-Id": "f19201cb-caa3-4660-8c60-378b3b0cc5d6",
+    "Cf-Worker": "trycloudflare.com",
+    "Connection": "keep-alive",
+    "Content-Type": "application/json",
+    "X-Forwarded-For": "34.96.60.186",
+    "X-Forwarded-Proto": "https",
+    "X-Pixget-Delivery": "test:8e62bcaf-f733-4e7b-969b-47515d808b10",
+    "X-Pixget-Event": "payment.test",
+    "X-Pixget-Signature": "sha256=31e3a34cd363a58ef5b5e4e0fba2a312f7f8dfb868c81676976830c3fa082223",
+    "X-Pixget-Timestamp": "2026-09-12T03:30:45.079Z"
+  },
+  "body": "{\"id\":\"test:8e62bcaf-f733-4e7b-969b-47515d808b10\",\"data\":{\"amount\":\"0.00\",\"paidAt\":null,\"status\":\"test\",\"paymentId\":\"test\",\"externalId\":null},\"event\":\"payment.test\",\"timestamp\":\"2026-09-12T03:30:45.079Z\"}"
+}

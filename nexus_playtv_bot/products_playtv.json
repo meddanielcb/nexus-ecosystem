@@ -1,0 +1,66 @@
+{
+  "pack_3_games": {
+    "name": "⚽ Pass Avulso - Pack 3 Jogos (4h cada)",
+    "duration": "3 Ativações de 4 Horas",
+    "screens": 1,
+    "price_brl": 14.90,
+    "price_usd": 2.90,
+    "description": "⚡ *Pack 3 Acessos de Jogo / Evento (4 Horas cada):*\n\n✅ *3 Ativações Individuais de 4 Horas* (use quando quiser em até 30 dias)\n✅ Ideal para clássicos, finais e UFC sem pagar mensalidade\n✅ Libera +25.000 Canais Ao Vivo + Filmes e Séries em 4K\n✅ Tecnologia P2P Anti-Travamento (sem delay no gol)\n✅ Ativação na Smart TV via código ou foto da tela\n\n🛡️ *Garantia:* Saldo acumulado na sua conta no bot para usar sob demanda."
+  },
+  "monthly_1screen": {
+    "name": "📺 Nexus PlayTV - Mensal (1 Tela)",
+    "duration": "30 Dias",
+    "screens": 1,
+    "price_brl": 34.90,
+    "price_usd": 6.50,
+    "description": "⚡ *Acesso Completo Nexus PlayTV por 30 Dias:*\n\n✅ +25.000 Canais Ao Vivo (Futebol, Premiere, Combate, HBO, Telecine)\n✅ +120.000 Filmes e Séries (Atualizações Diárias de lançamentos)\n✅ Qualidade SD, HD, Full HD e 4K HDR\n✅ Tecnologia P2P Anti-Travamento (Anti-Traffic Shaping)\n✅ Compatível com Smart TV, TV Box, Fire Stick, Celular e PC\n\n🛡️ *Garantia:* Liberação imediata e suporte 24/7."
+  },
+  "monthly_2screens": {
+    "name": "👑 Nexus PlayTV - Mensal Família (2 Telas)",
+    "duration": "30 Dias",
+    "screens": 2,
+    "price_brl": 49.90,
+    "price_usd": 9.50,
+    "description": "⚡ *Acesso Completo Mensal com 2 Telas Simultâneas:*\n\n✅ *2 Telas Simultâneas* (Sala + Quarto sem conflito)\n✅ +25.000 Canais Ao Vivo + 120.000 Filmes e Séries em 4K\n✅ Tecnologia P2P Anti-Travamento\n\n🛡️ *Garantia:* Liberação imediata e suporte VIP."
+  },
+  "quarterly_1screen": {
+    "name": "🔥 Nexus PlayTV - Trimestral (1 Tela)",
+    "duration": "90 Dias",
+    "screens": 1,
+    "price_brl": 89.90,
+    "price_usd": 16.50,
+    "description": "⚡ *3 Meses de Acesso Completo com Desconto:*\n\n✅ Economia garantida (Equivalente a R$ 29,96/mês)\n✅ Todos os canais de Esportes e Lançamentos liberados\n✅ Servidor P2P de Alta Estabilidade\n\n🛡️ *Garantia:* Liberação imediata."
+  },
+  "quarterly_2screens": {
+    "name": "👑 Nexus PlayTV - Trimestral Família (2 Telas)",
+    "duration": "90 Dias",
+    "screens": 2,
+    "price_brl": 129.80,
+    "price_usd": 24.00,
+    "description": "⚡ *3 Meses com 2 Telas Simultâneas para Toda a Casa:*\n\n✅ *2 Telas Simultâneas* independentes\n✅ Economia máxima trimestral\n✅ Liberação automática para Sala e Quarto\n\n🛡️ *Garantia:* Liberação imediata."
+  },
+  "semiannual_1screen": {
+    "name": "⭐ Nexus PlayTV - Semestral (1 Tela)",
+    "duration": "180 Dias",
+    "screens": 1,
+    "price_brl": 149.90,
+    "price_usd": 27.00,
+    "description": "⚡ *6 Meses de Entretenimento Sem Limites:*\n\n✅ Super economia (Equivalente a R$ 24,98/mês)\n✅ Ideal para acompanhar todas as temporadas esportivas\n✅ Prioridade de conexão em servidores CDN dedicados\n\n🛡️ *Garantia:* Liberação imediata."
+  },
+  "semiannual_2screens": {
+    "name": "👑 Nexus PlayTV - Semestral Família (2 Telas)",
+    "duration": "180 Dias",
+    "screens": 2,
+    "price_brl": 219.80,
+    "price_usd": 39.90,
+    "description": "⚡ *6 Meses com 2 Telas Simultâneas:*\n\n✅ *2 Telas Simultâneas* por um semestre completo\n✅ Menos de R$ 37/mês para 2 aparelhos independentes\n✅ Servidor prioritário sem quedas\n\n🛡️ *Garantia:* Liberação imediata."
+  },
+  "annual_family_2screens": {
+    "name": "👑 Nexus PlayTV - Anual Família VIP (2 Telas)",
+    "duration": "365 Dias",
+    "screens": 2,
+    "price_brl": 249.90,
+    "price_usd": 45.00,
+    "description": "⚡ *1 Ano Inteiro de Acesso para Toda a Casa:*\n\n✅ *2 Telas Simultâneas* (TV da sala e quarto)\n✅ Economia máxima (Menos de R$ 21,00/mês)\n✅ Filmes, Séries e Esportes sem interrupções o ano todo\n\n🛡️ *Garantia:* Suporte VIP prioritário e liberação na hora."
+  }
+}

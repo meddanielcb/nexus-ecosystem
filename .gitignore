@@ -1,0 +1,25 @@
+# Environment & Secrets
+.env
+*.env
+config_keys.json
+*session*.json
+.github_token
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+
+# Databases & Runtime
+*.db
+*.sqlite3
+data/
+logs/
+backups/
+
+# OS / Editor
+.DS_Store
+.idea/
+.vscode/
