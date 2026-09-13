@@ -25,7 +25,7 @@ CAPTURE = r'''(() => {
  });
 })();'''
 ROOT = Path('/var/lib/nexus-supplier-browser')
-STATE = ROOT/'solver-attempt.json'
+STATE = ROOT/'solver-attempt-context-02.json'
 
 def save(state):
     temporary=ROOT/'solver-attempt.tmp'
@@ -75,7 +75,14 @@ async def main(authorized):
                 await asyncio.sleep(5)
                 result=await solver('getTaskResult',{'taskId':state['task_id']})
                 if result.get('status')=='ready':
-                    challenge=result.get('solution',{}).get('token');break
+                    solution=result.get('solution',{})
+                    challenge=solution.get('token')
+                    user_agent=solution.get('userAgent')
+                    if user_agent:
+                        cdp=await page.context.new_cdp_session(page)
+                        await cdp.send('Network.setUserAgentOverride',{'userAgent':user_agent})
+                        await cdp.detach()
+                    break
             if not challenge:
                 print(json.dumps({'result':'solver_pending','resume_same_task':True}),flush=True);return
         state['stage']='login_attempted';save(state)
@@ -85,7 +92,16 @@ async def main(authorized):
         response=await pending.value
         state['sign_in_status']=response.status;save(state)
         print(json.dumps({'sign_in_status':response.status}),flush=True)
-        if response.status!=200:return
+        if response.status!=200:
+            import re
+            raw=await response.text()
+            for value in (username,password,key,challenge):
+                if value: raw=raw.replace(value,'[REDACTED]')
+            raw=re.sub(r'[A-Za-z0-9_+/=.-]{30,}','[REDACTED]',raw)
+            state['rejection']={'content_type':response.headers.get('content-type'),'cf_mitigated':response.headers.get('cf-mitigated'),'message':raw[:500]}
+            save(state)
+            print(json.dumps(state['rejection']),flush=True)
+            return
         payload=await response.json()
         token=payload.get('token')
         if not isinstance(token,str) or not token:raise RuntimeError('Missing token')
