@@ -8,10 +8,10 @@ from datetime import datetime, timedelta
 logger = logging.getLogger("playtv_services")
 
 # Gateways herdados da infraestrutura existente
-CRYPTO_BOT_TOKEN = os.getenv("CRYPTO_BOT_TOKEN", "337775:AAqPZ5T1Tf43R4Q1k3Vj5n6m7l8k9j0h")
+CRYPTO_BOT_TOKEN = os.getenv("CRYPTO_BOT_TOKEN", "")
 PIXGET_API_KEY = os.getenv("PIXGET_API_KEY", "")
 PIXGET_BASE_URL = os.getenv("PIXGET_BASE_URL", "https://pixget.app")
-BLOCKBEE_API_KEY = os.getenv("BLOCKBEE_API_KEY", "uO7U34j1hJzDk8bK3X9wL2mP4vQ6rT8s")
+BLOCKBEE_API_KEY = os.getenv("BLOCKBEE_API_KEY", "")
 
 def get_pixget_headers():
     api_key = PIXGET_API_KEY

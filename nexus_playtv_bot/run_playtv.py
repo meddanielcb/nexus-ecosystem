@@ -36,7 +36,7 @@ from ibo_injector import activate_smart_tv_ibo
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("nexus_playtv")
 
-BOT_TOKEN = "8979028734:AAFvHUW2ML8XmUnRXtY8f5j6l-pOeKxwj5s"
+BOT_TOKEN = os.getenv("PLAYTV_BOT_TOKEN", "")
 
 with open("/opt/data/nexus_playtv_bot/products_playtv.json") as f:
     PRODUCTS = json.load(f)

@@ -31,7 +31,7 @@ PROCESSED_DELIVERIES = set()
 DELIVERY_LOCK = threading.Lock()
 
 PLAYTV_DB_PATH = "/opt/data/nexus_playtv_bot/data/playtv.db"
-PLAYTV_BOT_TOKEN = "8979028734:AAFvHUW2ML8XmUnRXtY8f5j6l-pOeKxwj5s"
+PLAYTV_BOT_TOKEN = os.getenv("PLAYTV_BOT_TOKEN", "")
 
 def deliver_order_async(order_id: str):
     """Executa a entrega do produto e salva no banco de dados de forma idempotente"""
@@ -60,7 +60,7 @@ def deliver_order_async(order_id: str):
     conn.commit()
     conn.close()
     
-    bot_token = os.getenv("STORE_BOT_TOKEN") or "8861845885:AAFlofn8dVAcpzn9ewj6Wjss6TcacZ5d1ko"
+    bot_token = os.getenv("STORE_BOT_TOKEN", "")
     if bot_token and user_id:
         p = PRODUCTS.get(product_id, {})
         instructions = p.get("instructions", "Seu acesso: {item}").format(item=delivered_item)
@@ -342,7 +342,7 @@ class WebhookHandler(BaseHTTPRequestHandler):
                     PROCESSED_DELIVERIES.add(delivery_id)
 
             # Validação oficial HMAC-SHA256 com suporte a 'sha256=...'
-            secret = os.getenv("PIXGET_WEBHOOK_SECRET", "3b28f474f5092bd536f342490078f8f69f3a026a5bc9d0c6448f04049bb8635c")
+            secret = os.getenv("PIXGET_WEBHOOK_SECRET", "")
             received_sig = self.headers.get("X-Pixget-Signature", "")
             
             computed_hash = hmac.new(secret.encode('utf-8'), raw_body, hashlib.sha256).hexdigest()
@@ -470,7 +470,7 @@ class WebhookHandler(BaseHTTPRequestHandler):
                     conn_vol.close()
                     
                     if total_vol >= 800.0:
-                        bot_tok = os.getenv("STORE_BOT_TOKEN") or "8861845885:AAFlofn8dVAcpzn9ewj6Wjss6TcacZ5d1ko"
+                        bot_tok = os.getenv("STORE_BOT_TOKEN", "")
                         admin_chat = "671901048"
                         alerta_msg = (
                             f"⚠️ *ALERTA DE LIMITE BLOCKBEE (SEM KYC)*\n\n"

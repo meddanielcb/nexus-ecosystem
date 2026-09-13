@@ -6,10 +6,11 @@ Envia notificações diretamente para o Telegram pessoal do Daniel via @Alerta_n
 import urllib.request
 import json
 import logging
+import os
 
 logger = logging.getLogger("playtv_notifier")
 
-ALERT_BOT_TOKEN = "8682294887:AAHkfnCtJhZ0oDZhD5PvogOfj8U9VNj0aH0"
+ALERT_BOT_TOKEN = os.getenv("ALERT_BOT_TOKEN", "")
 ADMIN_CHAT_ID = "671901048"
 
 def send_alert(message_markdown: str):

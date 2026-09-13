@@ -544,7 +544,7 @@ def main():
         sys.exit(0)
 
     init_db()
-    token = os.getenv("STORE_BOT_TOKEN") or "8861845885:AAFlofn8dVAcpzn9ewj6Wjss6TcacZ5d1ko"
+    token = os.getenv("STORE_BOT_TOKEN", "")
     app = ApplicationBuilder().token(token).build()
 
     app.add_handler(CommandHandler("start", start))
