@@ -1,0 +1,25 @@
+[Unit]
+Description=NEXUS dedicated supplier browser (host only)
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+UMask=0077
+StateDirectory=nexus-supplier-browser
+StateDirectoryMode=0700
+ExecStart=/usr/bin/xvfb-run -a --server-args="-screen 0 1280x900x24 -nolisten tcp" /usr/bin/google-chrome --user-data-dir=/var/lib/nexus-supplier-browser/profile --remote-debugging-address=127.0.0.1 --remote-debugging-port=9222 --no-first-run --no-default-browser-check --restore-last-session https://controle.vip/login
+Restart=always
+RestartSec=15
+TimeoutStopSec=30
+KillMode=control-group
+MemoryMax=2G
+StandardOutput=null
+StandardError=null
+
+[Install]
+WantedBy=multi-user.target
