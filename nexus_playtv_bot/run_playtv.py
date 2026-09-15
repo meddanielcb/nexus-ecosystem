@@ -78,7 +78,7 @@ def get_main_keyboard():
         ],
         [
             InlineKeyboardButton("🎁 Indique & Ganhe (Programa VIP)", callback_data="referral_program"),
-            InlineKeyboardButton("📦 Minha Assinatura / Acesso", callback_data="my_access")
+            InlineKeyboardButton("📦 Minha Conta / Acessos", callback_data="my_access")
         ],
         [
             InlineKeyboardButton("❓ Dúvidas & Suporte", callback_data="support_faq")
@@ -693,21 +693,22 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         if not orders and remaining_passes == 0:
             text = (
-                "📦 *Você ainda não possui assinaturas ativas!*\n\n"
+                "📦 *Central da Sua Conta & Carteira*\n\n"
+                "Você ainda não possui assinaturas nem passes ativos no momento.\n\n"
                 "Adquira um dos nossos planos ou gere um teste grátis de 4 horas para conhecer a qualidade dos canais."
             )
             keyboard.append([InlineKeyboardButton("⚡ Gerar Teste Grátis (4h)", callback_data="free_trial")])
             keyboard.append([InlineKeyboardButton("📺 Ver Planos", callback_data="view_plans")])
         else:
-            text = "📦 *Suas Assinaturas e Acessos:*\n\n"
+            text = "💼 *Central da Sua Conta & Carteira:*\n\n"
             
             if remaining_passes > 0:
                 text += (
-                    f"⚽ *Passes de Futebol / Lutas (Pack 3 Jogos)*\n"
-                    f"🎟️ *Saldo Disponível:* {remaining_passes} acessos de 4 horas\n"
-                    f"💡 *Como usar:* Quando for começar a partida que deseja assistir, clique no botão abaixo para liberar o acesso de 4h na hora!\n\n"
+                    f"⚽ *Passes Avulsos de Jogo / Futebol / Lutas*\n"
+                    f"🎟️ *Saldo Disponível na sua Carteira:* `{remaining_passes} acessos` (4 horas cada)\n"
+                    f"💡 *Como usar:* Quando começar a partida ou evento que deseja assistir, clique no botão abaixo para liberar suas 4 horas na hora!\n\n"
                 )
-                keyboard.append([InlineKeyboardButton("⚽ ATIVAR 1 ACESSO DE JOGO (4 HORAS)", callback_data="redeem_game_pass")])
+                keyboard.append([InlineKeyboardButton("⚽ ATIVAR 1 ACESSO DE JOGO AGORA (4H)", callback_data="redeem_game_pass")])
 
             if orders:
                 text += "📋 *Histórico de Assinaturas:*\n"
