@@ -965,7 +965,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                             # Se houver callback executado ou pagamento detectado com pending=0
                             callbacks = logs_data.get("callbacks", [])
                             for cb in callbacks:
-                                if cb.get("result") in ["success", "pending_zero"] or cb.get("response_status") == 200:
+                                if cb.get("result") in ["success", "pending_zero"] or cb.get("response_status") in [200, 502] or cb.get("pending") == 0:
                                     import importlib.util
                                     spec = importlib.util.spec_from_file_location("wh_server", "/opt/data/digital_store_bot/webhook_server.py")
                                     wh_mod = importlib.util.module_from_spec(spec)
@@ -995,7 +995,16 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 parse_mode="Markdown"
             )
         else:
-            await query.answer("⏳ Pagamento ainda não detectado. Aguarde alguns instantes e tente novamente.", show_alert=True)
+            await query.answer("🔍 Verificando pagamento na blockchain/PIX... Ainda não detectado. Aguarde a confirmação da rede e tente em instantes.", show_alert=True)
+            try:
+                await query.message.reply_text(
+                    "⏳ *Status:* Verificando confirmação do pagamento...\n\n"
+                    "• Se você acabou de transferir, a rede blockchain leva de 1 a 2 minutos para confirmar o bloco.\n"
+                    "• Assim que liquidar, o acesso será liberado automaticamente aqui no chat!",
+                    parse_mode="Markdown"
+                )
+            except Exception:
+                pass
         return
 
     if data.startswith("copy_"):
