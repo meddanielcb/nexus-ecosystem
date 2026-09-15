@@ -63,7 +63,7 @@ def extract_tv_codes_from_image(image_path: str) -> dict:
     }
 
     try:
-        resp = requests.post(url, json=payload, timeout=15)
+        resp = requests.post(url, json=payload, timeout=30)
         if resp.status_code != 200:
             return {"success": False, "error": f"Erro API Gemini: {resp.status_code} - {resp.text}"}
 
