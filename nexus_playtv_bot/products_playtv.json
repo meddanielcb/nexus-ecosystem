@@ -2,65 +2,105 @@
   "pack_3_games": {
     "name": "⚽ Pass Avulso - Pack 3 Jogos (4h cada)",
     "duration": "3 Ativações de 4 Horas",
-    "screens": 1,
+    "connections": 1,
     "price_brl": 14.90,
     "price_usd": 2.90,
-    "description": "⚡ *Pack 3 Acessos de Jogo / Evento (4 Horas cada):*\n\n✅ *3 Ativações Individuais de 4 Horas* (use quando quiser em até 30 dias)\n✅ Ideal para clássicos, finais e UFC sem pagar mensalidade\n✅ Libera +25.000 Canais Ao Vivo + Filmes e Séries em 4K\n✅ Tecnologia P2P Anti-Travamento (sem delay no gol)\n✅ Ativação na Smart TV via código ou foto da tela\n\n🛡️ *Garantia:* Saldo acumulado na sua conta no bot para usar sob demanda."
+    "description": "⚡ *Pack 3 Acessos de Jogo / Evento (4 Horas cada):*\n\n✅ *3 Ativações Individuais de 4 Horas* (use quando quiser em até 30 dias)\n✅ Ideal para clássicos, finais e UFC sem pagar mensalidade\n✅ Libera +25.000 Canais Ao Vivo + Filmes e Séries em 4K\n✅ Tecnologia StreamCore™ Ultra-P2P & Engine Go™ Anti-Delay\n✅ Ativação na Smart TV via código ou foto da tela\n\n🛡️ *Garantia:* Saldo acumulado na sua conta no bot para usar sob demanda."
   },
-  "monthly_1screen": {
-    "name": "📺 Nexus PlayTV - Mensal (1 Tela)",
+  "iptv_mensal_1": {
+    "name": "📺 Assinatura Mensal (1 Tela)",
     "duration": "30 Dias",
-    "screens": 1,
-    "price_brl": 34.90,
-    "price_usd": 6.50,
-    "description": "⚡ *Acesso Completo Nexus PlayTV por 30 Dias:*\n\n✅ +25.000 Canais Ao Vivo (Futebol, Premiere, Combate, HBO, Telecine)\n✅ +120.000 Filmes e Séries (Atualizações Diárias de lançamentos)\n✅ Qualidade SD, HD, Full HD e 4K HDR\n✅ Tecnologia P2P Anti-Travamento (Anti-Traffic Shaping)\n✅ Compatível com Smart TV, TV Box, Fire Stick, Celular e PC\n\n🛡️ *Garantia:* Liberação imediata e suporte 24/7."
+    "connections": 1,
+    "price_brl": 31.90,
+    "price_usd": 6.20,
+    "description": "🔥 *Nexus PlayTV VIP — Plano Mensal (1 Tela):*\n\n✅ 30 Dias de Acesso Completo e Ilimitado\n✅ 1 Conexão Simultânea (Sua Smart TV ou Celular)\n✅ +25.000 Canais Ao Vivo (Futebol, Combate, Premiere 4K, Documentários)\n✅ Tecnologia StreamCore™ Ultra-P2P (Anti-Travamento)\n✅ Engine Go™ Anti-Delay (Assista sem atraso no gol)\n✅ Catálogo Completo de Filmes e Séries (VOD 4K)\n✅ Suporte VIP e Ativação Instantânea 24/7"
   },
-  "monthly_2screens": {
-    "name": "👑 Nexus PlayTV - Mensal Família (2 Telas)",
+  "iptv_mensal_2": {
+    "name": "📺+📺 Assinatura Mensal (2 Telas)",
     "duration": "30 Dias",
-    "screens": 2,
-    "price_brl": 49.90,
-    "price_usd": 9.50,
-    "description": "⚡ *Acesso Completo Mensal com 2 Telas Simultâneas:*\n\n✅ *2 Telas Simultâneas* (Sala + Quarto sem conflito)\n✅ +25.000 Canais Ao Vivo + 120.000 Filmes e Séries em 4K\n✅ Tecnologia P2P Anti-Travamento\n\n🛡️ *Garantia:* Liberação imediata e suporte VIP."
+    "connections": 2,
+    "price_brl": 42.80,
+    "price_usd": 8.30,
+    "description": "🔥 *Nexus PlayTV VIP — Plano Mensal Família (2 Telas):*\n\n✅ 30 Dias de Acesso Completo e Ilimitado\n✅ 2 Conexões Simultâneas (Sala + Quarto)\n✅ +25.000 Canais Ao Vivo + VOD 4K Completo\n✅ Tecnologia StreamCore™ Ultra-P2P & Engine Go™ Anti-Delay\n✅ Ativação Inteligente para Smart TVs e Dispositivos Móveis\n✅ Entrega Atômica Imediata via PIX"
   },
-  "quarterly_1screen": {
-    "name": "🔥 Nexus PlayTV - Trimestral (1 Tela)",
+  "iptv_mensal_3": {
+    "name": "📺+📺+📱 Assinatura Mensal (3 Telas)",
+    "duration": "30 Dias",
+    "connections": 3,
+    "price_brl": 53.70,
+    "price_usd": 10.40,
+    "description": "🔥 *Nexus PlayTV VIP — Plano Mensal Residência (3 Telas):*\n\n✅ 30 Dias de Acesso Completo e Ilimitado\n✅ 3 Conexões Simultâneas (Sala + Quarto + Celular)\n✅ Toda a família conectada sem conflito de acesso\n✅ Qualidade Máxima 4K HDR e Tecnologia StreamCore™ Ultra-P2P\n✅ Suporte Prioritário e Entrega Instantânea"
+  },
+  "iptv_trimestral_1": {
+    "name": "🔥 Assinatura Trimestral (1 Tela)",
     "duration": "90 Dias",
-    "screens": 1,
-    "price_brl": 89.90,
-    "price_usd": 16.50,
-    "description": "⚡ *3 Meses de Acesso Completo com Desconto:*\n\n✅ Economia garantida (Equivalente a R$ 29,96/mês)\n✅ Todos os canais de Esportes e Lançamentos liberados\n✅ Servidor P2P de Alta Estabilidade\n\n🛡️ *Garantia:* Liberação imediata."
+    "connections": 1,
+    "price_brl": 79.90,
+    "price_usd": 15.50,
+    "description": "⭐ *Nexus PlayTV VIP — Plano Trimestral (1 Tela):*\n\n✅ 90 Dias de Acesso Contínuo (Apenas R$ 26,63/mês)\n✅ Economia direta em relação ao plano mensal\n✅ 1 Conexão Simultânea\n✅ Grade Completa com +25.000 Canais + Filmes e Séries 4K\n✅ Tecnologia StreamCore™ Ultra-P2P & Engine Go™ Anti-Delay\n✅ Ativação Imediata via PIX"
   },
-  "quarterly_2screens": {
-    "name": "👑 Nexus PlayTV - Trimestral Família (2 Telas)",
+  "iptv_trimestral_2": {
+    "name": "🔥+📺 Assinatura Trimestral (2 Telas)",
     "duration": "90 Dias",
-    "screens": 2,
-    "price_brl": 129.80,
-    "price_usd": 24.00,
-    "description": "⚡ *3 Meses com 2 Telas Simultâneas para Toda a Casa:*\n\n✅ *2 Telas Simultâneas* independentes\n✅ Economia máxima trimestral\n✅ Liberação automática para Sala e Quarto\n\n🛡️ *Garantia:* Liberação imediata."
+    "connections": 2,
+    "price_brl": 109.90,
+    "price_usd": 21.30,
+    "description": "⭐ *Nexus PlayTV VIP — Plano Trimestral Família (2 Telas):*\n\n✅ 90 Dias de Acesso Contínuo para 2 Dispositivos Simultâneos\n✅ Apenas R$ 10,00/mês pela segunda tela\n✅ +25.000 Canais Ao Vivo + Filmes e Séries 4K\n✅ Tecnologia StreamCore™ Ultra-P2P sem delay\n✅ Ativação Imediata via PIX"
   },
-  "semiannual_1screen": {
-    "name": "⭐ Nexus PlayTV - Semestral (1 Tela)",
+  "iptv_trimestral_3": {
+    "name": "🔥+📱 Assinatura Trimestral (3 Telas)",
+    "duration": "90 Dias",
+    "connections": 3,
+    "price_brl": 139.90,
+    "price_usd": 27.10,
+    "description": "⭐ *Nexus PlayTV VIP — Plano Trimestral Residência (3 Telas):*\n\n✅ 90 Dias de Acesso para 3 Dispositivos Simultâneos\n✅ Cobertura total para Sala, Quarto e Dispositivo Móvel\n✅ Grade Completa 4K com Tecnologia StreamCore™ Ultra-P2P\n✅ Ativação Instantânea via PIX"
+  },
+  "iptv_semestral_1": {
+    "name": "⭐ Assinatura Semestral (1 Tela)",
     "duration": "180 Dias",
-    "screens": 1,
+    "connections": 1,
     "price_brl": 149.90,
-    "price_usd": 27.00,
-    "description": "⚡ *6 Meses de Entretenimento Sem Limites:*\n\n✅ Super economia (Equivalente a R$ 24,98/mês)\n✅ Ideal para acompanhar todas as temporadas esportivas\n✅ Prioridade de conexão em servidores CDN dedicados\n\n🛡️ *Garantia:* Liberação imediata."
+    "price_usd": 29.00,
+    "description": "🏆 *Nexus PlayTV VIP — Plano Semestral (1 Tela):*\n\n✅ 180 Dias de Acesso (Equivale a R$ 24,98/mês)\n✅ Temporada Completa de Futebol, F1 e Lutas Garantida\n✅ 1 Conexão Simultânea com Estabilidade Máxima\n✅ StreamCore™ Ultra-P2P & Engine Go™ Anti-Delay\n✅ Entrega Atômica via PIX"
   },
-  "semiannual_2screens": {
-    "name": "👑 Nexus PlayTV - Semestral Família (2 Telas)",
+  "iptv_semestral_2": {
+    "name": "⭐+📺 Assinatura Semestral (2 Telas)",
     "duration": "180 Dias",
-    "screens": 2,
-    "price_brl": 219.80,
-    "price_usd": 39.90,
-    "description": "⚡ *6 Meses com 2 Telas Simultâneas:*\n\n✅ *2 Telas Simultâneas* por um semestre completo\n✅ Menos de R$ 37/mês para 2 aparelhos independentes\n✅ Servidor prioritário sem quedas\n\n🛡️ *Garantia:* Liberação imediata."
+    "connections": 2,
+    "price_brl": 204.90,
+    "price_usd": 39.70,
+    "description": "🏆 *Nexus PlayTV VIP — Plano Semestral Família (2 Telas):*\n\n✅ 180 Dias de Acesso para 2 Telas Simultâneas\n✅ Conforto absoluto para o casal sem disputas de canal\n✅ Toda a grade esportiva, infantil e filmes em 4K HDR\n✅ Ativação Instantânea"
   },
-  "annual_family_2screens": {
-    "name": "👑 Nexus PlayTV - Anual Família VIP (2 Telas)",
+  "iptv_semestral_3": {
+    "name": "⭐+📱 Assinatura Semestral (3 Telas)",
+    "duration": "180 Dias",
+    "connections": 3,
+    "price_brl": 259.90,
+    "price_usd": 50.40,
+    "description": "🏆 *Nexus PlayTV VIP — Plano Semestral Residência (3 Telas):*\n\n✅ 180 Dias de Acesso para 3 Conexões Simultâneas\n✅ Máxima liberdade para toda a residência por 6 meses\n✅ Tecnologia StreamCore™ Ultra-P2P com banda adaptativa\n✅ Entrega Imediata"
+  },
+  "iptv_anual_1": {
+    "name": "👑 Assinatura Anual Individual (1 Tela)",
     "duration": "365 Dias",
-    "screens": 2,
+    "connections": 1,
     "price_brl": 249.90,
-    "price_usd": 45.00,
-    "description": "⚡ *1 Ano Inteiro de Acesso para Toda a Casa:*\n\n✅ *2 Telas Simultâneas* (TV da sala e quarto)\n✅ Economia máxima (Menos de R$ 21,00/mês)\n✅ Filmes, Séries e Esportes sem interrupções o ano todo\n\n🛡️ *Garantia:* Suporte VIP prioritário e liberação na hora."
+    "price_usd": 48.50,
+    "description": "👑 *Nexus PlayTV VIP — Plano Anual Individual (1 Tela):*\n\n✅ 1 Ano Inteiro de Streaming Premium (Apenas R$ 20,82/mês)\n✅ 1 Conexão Simultânea\n✅ Nunca mais se preocupe com renovação mensal ou faturas caras de TV a cabo\n✅ Tecnologia StreamCore™ Ultra-P2P & Engine Go™ Anti-Delay\n✅ Suporte Dedicado Prioritário"
+  },
+  "iptv_anual_2": {
+    "name": "👑 Assinatura Anual Família VIP (2 Telas)",
+    "duration": "365 Dias",
+    "connections": 2,
+    "price_brl": 329.90,
+    "price_usd": 63.90,
+    "description": "👑 *Nexus PlayTV VIP — Plano Anual Família VIP (2 Telas - Mais Vendido):*\n\n✅ 1 Ano Inteiro para 2 Dispositivos Simultâneos (R$ 27,49/mês total!)\n✅ Apenas R$ 6,66/mês pela segunda tela no ano\n✅ O melhor custo-benefício de entretenimento para o seu lar\n✅ Acesso Irrestrito a +25.000 Canais, Filmes, Séries e Esportes em 4K\n✅ Ativação Imediata via PIX"
+  },
+  "iptv_anual_3": {
+    "name": "👑 Assinatura Anual Residência Completa (3 Telas)",
+    "duration": "365 Dias",
+    "connections": 3,
+    "price_brl": 399.90,
+    "price_usd": 77.50,
+    "description": "👑 *Nexus PlayTV VIP — Plano Anual Residência Completa (3 Telas):*\n\n✅ 1 Ano Inteiro para 3 Conexões Simultâneas (Sala + Quarto + Mobile)\n✅ Acesso irrestrito e ilimitado para toda a família por 365 dias\n✅ Suporte VIP Concierge e Entrega Atômica Instantânea\n✅ Máxima Economia e Zero Dor de Cabeça"
   }
 }

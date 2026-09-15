@@ -257,6 +257,19 @@ def deliver_playtv_order_async(order_id: str):
         return
 
     days_map = {
+        "iptv_mensal_1": 30,
+        "iptv_mensal_2": 30,
+        "iptv_mensal_3": 30,
+        "iptv_trimestral_1": 90,
+        "iptv_trimestral_2": 90,
+        "iptv_trimestral_3": 90,
+        "iptv_semestral_1": 180,
+        "iptv_semestral_2": 180,
+        "iptv_semestral_3": 180,
+        "iptv_anual_1": 365,
+        "iptv_anual_2": 365,
+        "iptv_anual_3": 365,
+        # Legados para compatibilidade
         "monthly_1screen": 30,
         "monthly_2screens": 30,
         "quarterly_1screen": 90,
@@ -265,7 +278,18 @@ def deliver_playtv_order_async(order_id: str):
         "semiannual_2screens": 180,
         "annual_family_2screens": 365
     }
+    conns_map = {
+        "iptv_mensal_1": 1, "iptv_mensal_2": 2, "iptv_mensal_3": 3,
+        "iptv_trimestral_1": 1, "iptv_trimestral_2": 2, "iptv_trimestral_3": 3,
+        "iptv_semestral_1": 1, "iptv_semestral_2": 2, "iptv_semestral_3": 3,
+        "iptv_anual_1": 1, "iptv_anual_2": 2, "iptv_anual_3": 3,
+        "monthly_1screen": 1, "monthly_2screens": 2,
+        "quarterly_1screen": 1, "quarterly_2screens": 2,
+        "semiannual_1screen": 1, "semiannual_2screens": 2,
+        "annual_family_2screens": 2
+    }
     days = days_map.get(product_id, 30)
+    conns = conns_map.get(product_id, 1)
     access = generate_iptv_access(duration_days=days)
     cred_str = f"Usuário: {access['username']} | Senha: {access['password']} | Servidor: {access['server_url']}"
 

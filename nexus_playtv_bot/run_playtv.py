@@ -71,7 +71,7 @@ AWAITING_TV_CODES = {} # user_id -> {'order_id': order_id, 'm3u_url': url}
 
 def get_main_keyboard():
     return [
-        [InlineKeyboardButton("📺 Planos & Assinaturas", callback_data="view_plans")],
+        [InlineKeyboardButton("📺 Planos & Assinaturas (com Telas Extras)", callback_data="view_plans")],
         [InlineKeyboardButton("⚡ Gerar Teste Grátis (4 Horas)", callback_data="free_trial")],
         [
             InlineKeyboardButton("📱 Como Instalar (Apps)", callback_data="how_to_install"),
@@ -103,12 +103,13 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = (
         f"⚡ *Olá, {user.first_name}! Bem-vindo ao Nexus PlayTV.*\n\n"
-        "Sua central definitiva de entretenimento, esportes ao vivo e streaming em alta definição.\n\n"
-        "🛡️ *Diferenciais Exclusivos:*\n"
-        "• *+25.000 Canais Ao Vivo:* Futebol (Premiere, Libertadores), Combate, Filmes, Infantis e Internacionais.\n"
-        "• *+120.000 Filmes e Séries:* Todos os streamings em um só lugar (atualizações diárias).\n"
-        "• *Tecnologia P2P Anti-Travamento:* Servidores com CDN híbrida imune a bloqueios de operadoras.\n"
-        "• *Qualidade Máxima:* Transmissões em SD, HD, Full HD e 4K HDR.\n\n"
+        "Sua central definitiva de entretenimento, esportes ao vivo e streaming de elite.\n\n"
+        "🛡️ *Tecnologia e Diferenciais Exclusivos:*\n"
+        "• *StreamCore™ Ultra-P2P:* Distribuição distribuída em malha imune ao *traffic shaping* e bloqueios de operadoras.\n"
+        "• *Engine Go™ Anti-Delay:* Transmissão esportiva em tempo real sem delay no gol (assista antes do vizinho gritar).\n"
+        "• *Compressão H.265 Smart-Bitrate:* Qualidade 4K HDR cristalina mesmo em conexões modestas a partir de 15 Mbps.\n"
+        "• *Entrega Atômica 24/7:* Liberação criptografada em microssegundos no PIX sem intervenção humana.\n"
+        "• *+25.000 Canais + 120.000 Filmes & Séries:* Todos os streamings e canais premium unificados.\n\n"
         "👇 *Escolha uma opção abaixo para começar:*"
     )
     
@@ -159,19 +160,89 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if data == "view_plans":
         text = (
             "📺 *Planos & Assinaturas Nexus PlayTV*\n\n"
-            "Sem contratos, sem fidelidade e com liberação automática 24/7.\n"
-            "Todos os planos incluem todos os canais + filmes + séries em 4K.\n\n"
-            "Selecione o plano desejado:"
+            "Tecnologia *StreamCore™ Ultra-P2P* e *Engine Go™ Anti-Delay*.\n"
+            "Sem contratos, sem fidelidade e com *Entrega Atômica 24/7*.\n"
+            "Todos os planos liberam +25.000 canais + filmes + séries em 4K HDR.\n\n"
+            "👇 *Selecione o plano ideal para você:*"
         )
         keyboard = [
             [InlineKeyboardButton("⚽ Pass 3 Jogos (4h cada) - R$ 14,90", callback_data="prod_pack_3_games")],
-            [InlineKeyboardButton("📺 Mensal (1 Tela) - R$ 34,90", callback_data="prod_monthly_1screen")],
-            [InlineKeyboardButton("🔥 Trimestral (1 Tela) - R$ 89,90", callback_data="prod_quarterly_1screen")],
-            [InlineKeyboardButton("⭐ Semestral (1 Tela) - R$ 149,90", callback_data="prod_semiannual_1screen")],
-            [InlineKeyboardButton("👑 Anual Família VIP (2 Telas) - R$ 249,90", callback_data="prod_annual_family_2screens")],
+            [InlineKeyboardButton("📺 Mensal (30 Dias) - a partir de R$ 31,90", callback_data="tier_monthly")],
+            [InlineKeyboardButton("🔥 Trimestral (90 Dias) - a partir de R$ 79,90", callback_data="tier_quarterly")],
+            [InlineKeyboardButton("⭐ Semestral (180 Dias) - a partir de R$ 149,90", callback_data="tier_semiannual")],
+            [InlineKeyboardButton("👑 Anual VIP (365 Dias) - a partir de R$ 249,90", callback_data="tier_annual")],
             [InlineKeyboardButton("⬅️ Voltar ao Menu", callback_data="main_menu")]
         ]
         await safe_edit(text, reply_markup=InlineKeyboardMarkup(keyboard))
+        return
+
+    # Seletor de Telas por Categoria de Plano
+    if data == "tier_monthly":
+        text = (
+            "📺 *Nexus PlayTV — Plano Mensal (30 Dias)*\n\n"
+            "Escolha quantas telas simultâneas você deseja na sua casa:\n"
+            "• *1 Tela:* Para a sua TV principal ou Celular\n"
+            "• *2 Telas:* Sala + Quarto (Apenas +R$ 10,90)\n"
+            "• *3 Telas:* Toda a família conectada sem bloqueio"
+        )
+        kb = [
+            [InlineKeyboardButton("📺 1 Tela - R$ 31,90", callback_data="prod_iptv_mensal_1")],
+            [InlineKeyboardButton("📺+📺 2 Telas (Sala + Quarto) - R$ 42,80", callback_data="prod_iptv_mensal_2")],
+            [InlineKeyboardButton("📺+📺+📱 3 Telas (Residência) - R$ 53,70", callback_data="prod_iptv_mensal_3")],
+            [InlineKeyboardButton("⬅️ Voltar aos Planos", callback_data="view_plans")]
+        ]
+        await safe_edit(text, reply_markup=InlineKeyboardMarkup(kb))
+        return
+
+    if data == "tier_quarterly":
+        text = (
+            "🔥 *Nexus PlayTV — Plano Trimestral (90 Dias)*\n\n"
+            "Economize garantindo 3 meses de acesso ininterrupto:\n"
+            "• *1 Tela:* R$ 79,90 (Equivale a R$ 26,63/mês)\n"
+            "• *2 Telas:* R$ 109,90 (Apenas +R$ 10,00/mês da 2ª tela)\n"
+            "• *3 Telas:* R$ 139,90 (Cobertura completa)"
+        )
+        kb = [
+            [InlineKeyboardButton("🔥 1 Tela - R$ 79,90", callback_data="prod_iptv_trimestral_1")],
+            [InlineKeyboardButton("🔥+📺 2 Telas (Família) - R$ 109,90", callback_data="prod_iptv_trimestral_2")],
+            [InlineKeyboardButton("🔥+📱 3 Telas (Residência) - R$ 139,90", callback_data="prod_iptv_trimestral_3")],
+            [InlineKeyboardButton("⬅️ Voltar aos Planos", callback_data="view_plans")]
+        ]
+        await safe_edit(text, reply_markup=InlineKeyboardMarkup(kb))
+        return
+
+    if data == "tier_semiannual":
+        text = (
+            "⭐ *Nexus PlayTV — Plano Semestral (180 Dias)*\n\n"
+            "Temporada completa de Futebol, F1 e Lutas garantida (R$ 24,98/mês):\n"
+            "• *1 Tela:* R$ 149,90\n"
+            "• *2 Telas:* R$ 204,90 (Sala + Quarto)\n"
+            "• *3 Telas:* R$ 259,90 (Família Completa)"
+        )
+        kb = [
+            [InlineKeyboardButton("⭐ 1 Tela - R$ 149,90", callback_data="prod_iptv_semestral_1")],
+            [InlineKeyboardButton("⭐+📺 2 Telas (Família) - R$ 204,90", callback_data="prod_iptv_semestral_2")],
+            [InlineKeyboardButton("⭐+📱 3 Telas (Residência) - R$ 259,90", callback_data="prod_iptv_semestral_3")],
+            [InlineKeyboardButton("⬅️ Voltar aos Planos", callback_data="view_plans")]
+        ]
+        await safe_edit(text, reply_markup=InlineKeyboardMarkup(kb))
+        return
+
+    if data == "tier_annual":
+        text = (
+            "👑 *Nexus PlayTV — Plano Anual VIP (365 Dias)*\n\n"
+            "1 Ano inteiro de entretenimento sem faturas caras de TV:\n"
+            "• *1 Tela:* R$ 249,90 (Apenas R$ 20,82/mês)\n"
+            "• *2 Telas (Mais Vendido):* R$ 329,90 (Apenas R$ 6,66/mês pela 2ª tela!)\n"
+            "• *3 Telas:* R$ 399,90 (Residência Completa)"
+        )
+        kb = [
+            [InlineKeyboardButton("👑 1 Tela - R$ 249,90", callback_data="prod_iptv_anual_1")],
+            [InlineKeyboardButton("👑 2 Telas VIP (Mais Vendido) - R$ 329,90", callback_data="prod_iptv_anual_2")],
+            [InlineKeyboardButton("👑 3 Telas VIP (Residência) - R$ 399,90", callback_data="prod_iptv_anual_3")],
+            [InlineKeyboardButton("⬅️ Voltar aos Planos", callback_data="view_plans")]
+        ]
+        await safe_edit(text, reply_markup=InlineKeyboardMarkup(kb))
         return
 
     if data == "redeem_game_pass":
@@ -270,7 +341,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 "Gostou da qualidade e quer acesso ilimitado com todos os canais e filmes em 4K? Assine agora mesmo!"
             )
             keyboard = [
-                [InlineKeyboardButton("📺 Assinar Agora (a partir de R$ 34,90)", callback_data="view_plans")],
+                [InlineKeyboardButton("📺 Assinar Agora (a partir de R$ 31,90)", callback_data="view_plans")],
                 [InlineKeyboardButton("⬅️ Voltar ao Menu", callback_data="main_menu")]
             ]
             await safe_edit(text, reply_markup=InlineKeyboardMarkup(keyboard))
@@ -655,48 +726,6 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await query.message.reply_text("Plano indisponível.")
             return
 
-        # Modal de Upsell inteligente para planos de 1 tela
-        UPGRADE_MAP = {
-            "monthly_1screen": {
-                "upgrade_pid": "monthly_2screens",
-                "upgrade_price": "49,90",
-                "diff": "15,00",
-                "period": "mês"
-            },
-            "quarterly_1screen": {
-                "upgrade_pid": "quarterly_2screens",
-                "upgrade_price": "129,80",
-                "diff": "39,90",
-                "period": "trimestre"
-            },
-            "semiannual_1screen": {
-                "upgrade_pid": "semiannual_2screens",
-                "upgrade_price": "219,80",
-                "diff": "69,90",
-                "period": "semestre"
-            }
-        }
-
-        if pid in UPGRADE_MAP:
-            up = UPGRADE_MAP[pid]
-            upsell_text = (
-                f"📺 *{p['name']}*\n\n"
-                "⚠️ *ATENÇÃO: Este plano permite apenas 1 TV ligada por vez.*\n"
-                "Se alguém ligar a TV do quarto enquanto você assiste na sala, o sinal vai pausar.\n\n"
-                "🔥 *OFERTA VIP DE CHECKOUT (OPCIONAL):*\n"
-                f"Adicione uma **2ª Tela Oficial Simultânea** para sua casa (Sala + Quarto ou Celular) por apenas **+R$ {up['diff']}**!\n\n"
-                f"• De ~R$ 69,80~ por apenas **R$ {up['upgrade_price']}** por {up['period']}.\n\n"
-                "👇 Deseja aproveitar e liberar 2 telas agora?"
-            )
-            upsell_kb = [
-                [InlineKeyboardButton(f"👑 SIM! Quero 2 Telas (R$ {up['upgrade_price']})", callback_data=f"prod_direct_{up['upgrade_pid']}")],
-                [InlineKeyboardButton(f"➡️ Não, continuar com 1 Tela (R$ {p['price_brl']:.2f})", callback_data=f"prod_direct_{pid}")],
-                [InlineKeyboardButton("⬅️ Voltar aos Planos", callback_data="view_plans")]
-            ]
-            await safe_edit(upsell_text, reply_markup=InlineKeyboardMarkup(upsell_kb))
-            return
-
-        # Para planos sem upsell (ex: pack_3_games, planos que já são 2 telas), vai direto para o checkout:
         text = (
             f"*{p['name']}*\n\n"
             f"{p['description']}\n\n"
@@ -966,14 +995,21 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msg_text = update.message.text.strip()
 
     if msg_text == "📺 Planos":
-        await update.message.reply_text("Escolha o plano:", reply_markup=InlineKeyboardMarkup([
-            [InlineKeyboardButton("⚽ Pass 3 Jogos (4h cada) - R$ 14,90", callback_data="prod_pack_3_games")],
-            [InlineKeyboardButton("📺 Mensal (1 Tela) - R$ 34,90", callback_data="prod_monthly_1screen")],
-            [InlineKeyboardButton("🔥 Trimestral (1 Tela) - R$ 89,90", callback_data="prod_quarterly_1screen")],
-            [InlineKeyboardButton("⭐ Semestral (1 Tela) - R$ 149,90", callback_data="prod_semiannual_1screen")],
-            [InlineKeyboardButton("👑 Anual Família VIP (2 Telas) - R$ 249,90", callback_data="prod_annual_family_2screens")],
-            [InlineKeyboardButton("⬅️ Menu", callback_data="main_menu")]
-        ]))
+        await update.message.reply_text(
+            "📺 *Planos & Assinaturas Nexus PlayTV*\n\n"
+            "Tecnologia *StreamCore™ Ultra-P2P* e *Engine Go™ Anti-Delay*.\n"
+            "Sem contratos, sem fidelidade e com *Entrega Atômica 24/7*.\n\n"
+            "👇 *Selecione o plano desejado:*",
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton("⚽ Pass 3 Jogos (4h cada) - R$ 14,90", callback_data="prod_pack_3_games")],
+                [InlineKeyboardButton("📺 Mensal (30 Dias) - a partir de R$ 31,90", callback_data="tier_monthly")],
+                [InlineKeyboardButton("🔥 Trimestral (90 Dias) - a partir de R$ 79,90", callback_data="tier_quarterly")],
+                [InlineKeyboardButton("⭐ Semestral (180 Dias) - a partir de R$ 149,90", callback_data="tier_semiannual")],
+                [InlineKeyboardButton("👑 Anual VIP (365 Dias) - a partir de R$ 249,90", callback_data="tier_annual")],
+                [InlineKeyboardButton("⬅️ Menu", callback_data="main_menu")]
+            ]),
+            parse_mode="Markdown"
+        )
         return
     elif msg_text == "⚡ Teste Grátis (4h)":
         update.callback_query = None
@@ -1132,13 +1168,13 @@ async def push_trial_reminders(context: ContextTypes.DEFAULT_TYPE):
                     text_alert = (
                         "⚠️ *SEU TESTE GRÁTIS EXPIRA EM MENOS DE 30 MINUTOS!*\n\n"
                         "Não deixe o sinal cortar no meio da programação!\n\n"
-                        "💡 *Assine agora mesmo para continuar assistindo sem interrupções:*\n"
-                        "• 📺 *Plano Mensal (30 dias):* apenas R$ 34,90\n"
-                        "• 🔥 *Trimestral (com desconto):* apenas R$ 89,90\n\n"
+                        "💡 *Assine agora com Entrega Atômica e assista sem interrupções:*\n"
+                        "• 📺 *Plano Mensal:* a partir de R$ 31,90\n"
+                        "• 🔥 *Trimestral (Economia VIP):* a partir de R$ 79,90\n\n"
                         "⚡ Liberação imediata no PIX ou Cripto:"
                     )
                     kb = [
-                        [InlineKeyboardButton("📺 Assinar Plano Mensal (R$ 34,90)", callback_data="prod_monthly_1screen")],
+                        [InlineKeyboardButton("📺 Assinar Plano Mensal (R$ 31,90)", callback_data="prod_iptv_mensal_1")],
                         [InlineKeyboardButton("🔥 Ver Todos os Planos", callback_data="view_plans")]
                     ]
                     try:
@@ -1164,14 +1200,14 @@ async def push_trial_reminders(context: ContextTypes.DEFAULT_TYPE):
                 if now >= exp_dt:
                     text_expired = (
                         "🔒 *SEU SINAL DE TESTE FOI ENCERRADO!*\n\n"
-                        "Gostou da estabilidade e qualidade 4K dos nossos canais?\n\n"
+                        "Gostou da tecnologia StreamCore™ e da qualidade 4K dos nossos canais?\n\n"
                         "Ative agora sua assinatura definitiva em menos de 1 minuto sem contratos nem fidelidade:\n\n"
-                        "• 📺 *Plano Mensal (30 dias):* R$ 34,90\n"
-                        "• 🔥 *Trimestral (com desconto):* R$ 89,90\n"
-                        "• 👑 *Anual Família (2 Telas):* R$ 249,90"
+                        "• 📺 *Plano Mensal (1 Tela):* R$ 31,90\n"
+                        "• 🔥 *Trimestral (1 Tela):* R$ 79,90\n"
+                        "• 👑 *Anual Família VIP (2 Telas):* R$ 329,90"
                     )
                     kb = [
-                        [InlineKeyboardButton("📺 Assinar Plano Mensal (R$ 34,90)", callback_data="prod_monthly_1screen")],
+                        [InlineKeyboardButton("📺 Assinar Plano Mensal (R$ 31,90)", callback_data="prod_iptv_mensal_1")],
                         [InlineKeyboardButton("⭐ Ver Todos os Planos", callback_data="view_plans")]
                     ]
                     try:
