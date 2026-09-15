@@ -78,8 +78,11 @@ def get_main_keyboard():
             InlineKeyboardButton("🚀 Ativar Smart TV", callback_data="auto_activate_tv")
         ],
         [
-            InlineKeyboardButton("❓ Dúvidas & Suporte", callback_data="support_faq"),
+            InlineKeyboardButton("🎁 Indique & Ganhe (Programa VIP)", callback_data="referral_program"),
             InlineKeyboardButton("📦 Minha Assinatura / Acesso", callback_data="my_access")
+        ],
+        [
+            InlineKeyboardButton("❓ Dúvidas & Suporte", callback_data="support_faq")
         ]
     ]
 
@@ -94,10 +97,22 @@ def get_reply_keyboard():
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
+    args = context.args if context and context.args else []
+    
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("INSERT OR REPLACE INTO users (user_id, username, first_name) VALUES (?, ?, ?)",
               (user.id, user.username or "", user.first_name or ""))
+    
+    # Se entrou via link de indicação (ex: /start ref_123456)
+    if args and len(args) > 0 and args[0].startswith("ref_"):
+        referrer_id = args[0].replace("ref_", "").strip()
+        try:
+            c.execute("CREATE TABLE IF NOT EXISTS referrals (id INTEGER PRIMARY KEY AUTOINCREMENT, referrer_id INTEGER, referred_user_id INTEGER UNIQUE, status TEXT DEFAULT 'pending', created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)")
+            c.execute("INSERT OR IGNORE INTO referrals (referrer_id, referred_user_id) VALUES (?, ?)", (int(referrer_id), user.id))
+        except Exception as ref_e:
+            logger.error(f"Erro ao salvar referral: {ref_e}")
+
     conn.commit()
     conn.close()
 
@@ -105,11 +120,11 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"⚡ *Olá, {user.first_name}! Bem-vindo ao Nexus PlayTV.*\n\n"
         "Sua central definitiva de entretenimento, esportes ao vivo e streaming de elite.\n\n"
         "🛡️ *Tecnologia e Diferenciais Exclusivos:*\n"
-        "• *StreamCore™ Ultra-P2P:* Distribuição distribuída em malha imune ao *traffic shaping* e bloqueios de operadoras.\n"
-        "• *Engine Go™ Anti-Delay:* Transmissão esportiva em tempo real sem delay no gol (assista antes do vizinho gritar).\n"
-        "• *Compressão H.265 Smart-Bitrate:* Qualidade 4K HDR cristalina mesmo em conexões modestas a partir de 15 Mbps.\n"
-        "• *Entrega Atômica 24/7:* Liberação criptografada em microssegundos no PIX sem intervenção humana.\n"
-        "• *+25.000 Canais + 120.000 Filmes & Séries:* Todos os streamings e canais premium unificados.\n\n"
+        "• *StreamCore™ Ultra-P2P:* Arquitetura de rede em malha (mesh) imune ao *traffic shaping* e bloqueios de operadoras.\n"
+        "• *Engine Go™ Anti-Delay:* Transmissão esportiva em tempo real (assista aos clássicos e lutas antes do vizinho gritar o gol).\n"
+        "• *Estabilidade Anti-Queda & Baixo Consumo:* Transmissão fluida em 4K HDR mesmo em conexões modestas a partir de 15 Mbps (zero travamentos).\n"
+        "• *Entrega Atômica 24/7:* Liberação instantânea no PIX ou Cripto (USDT) sem intervenção humana.\n"
+        "• *+25.000 Canais + 120.000 Filmes & Séries:* Todos os streamings, esportes e canais premium unificados.\n\n"
         "👇 *Escolha uma opção abaixo para começar:*"
     )
     
@@ -180,13 +195,12 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if data == "tier_monthly":
         text = (
             "📺 *Nexus PlayTV — Plano Mensal (30 Dias)*\n\n"
-            "Escolha quantas telas simultâneas você deseja na sua casa:\n"
-            "• *1 Tela:* Para a sua TV principal ou Celular\n"
-            "• *2 Telas:* Sala + Quarto (Apenas +R$ 10,90)\n"
-            "• *3 Telas:* Toda a família conectada sem bloqueio"
+            "💡 *O substituto definitivo da TV a cabo tradicional.*\n"
+            "Assista a todos os canais fechados, pay-per-view e streamings sem fidelidade nem multas.\n\n"
+            "👇 *Selecione a quantidade de telas simultâneas:*"
         )
         kb = [
-            [InlineKeyboardButton("📺 1 Tela - R$ 31,90", callback_data="prod_iptv_mensal_1")],
+            [InlineKeyboardButton("📺 1 Tela (Principal) - R$ 31,90", callback_data="prod_iptv_mensal_1")],
             [InlineKeyboardButton("📺+📺 2 Telas (Sala + Quarto) - R$ 42,80", callback_data="prod_iptv_mensal_2")],
             [InlineKeyboardButton("📺+📺+📱 3 Telas (Residência) - R$ 53,70", callback_data="prod_iptv_mensal_3")],
             [InlineKeyboardButton("⬅️ Voltar aos Planos", callback_data="view_plans")]
@@ -197,10 +211,9 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if data == "tier_quarterly":
         text = (
             "🔥 *Nexus PlayTV — Plano Trimestral (90 Dias)*\n\n"
-            "Economize garantindo 3 meses de acesso ininterrupto:\n"
-            "• *1 Tela:* R$ 79,90 (Equivale a R$ 26,63/mês)\n"
-            "• *2 Telas:* R$ 109,90 (Apenas +R$ 10,00/mês da 2ª tela)\n"
-            "• *3 Telas:* R$ 139,90 (Cobertura completa)"
+            "⭐ *A Escolha Mais Inteligente:* Economize R$ 15,80 garantindo 3 meses de acesso ininterrupto por apenas **R$ 26,63/mês**!\n"
+            "Garante a temporada do futebol e grandes finais sem reajuste.\n\n"
+            "👇 *Selecione a quantidade de telas:*"
         )
         kb = [
             [InlineKeyboardButton("🔥 1 Tela - R$ 79,90", callback_data="prod_iptv_trimestral_1")],
@@ -214,10 +227,9 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if data == "tier_semiannual":
         text = (
             "⭐ *Nexus PlayTV — Plano Semestral (180 Dias)*\n\n"
-            "Temporada completa de Futebol, F1 e Lutas garantida (R$ 24,98/mês):\n"
-            "• *1 Tela:* R$ 149,90\n"
-            "• *2 Telas:* R$ 204,90 (Sala + Quarto)\n"
-            "• *3 Telas:* R$ 259,90 (Família Completa)"
+            "🏆 *Temporada Completa Garantida:* 6 meses inteiros de sinal ultra-estável por apenas **R$ 24,98/mês**.\n"
+            "Ideal para quem quer tranquilidade total o ano quase todo sem boletos mensais.\n\n"
+            "👇 *Selecione a quantidade de telas:*"
         )
         kb = [
             [InlineKeyboardButton("⭐ 1 Tela - R$ 149,90", callback_data="prod_iptv_semestral_1")],
@@ -231,16 +243,35 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if data == "tier_annual":
         text = (
             "👑 *Nexus PlayTV — Plano Anual VIP (365 Dias)*\n\n"
-            "1 Ano inteiro de entretenimento sem faturas caras de TV:\n"
-            "• *1 Tela:* R$ 249,90 (Apenas R$ 20,82/mês)\n"
-            "• *2 Telas (Mais Vendido):* R$ 329,90 (Apenas R$ 6,66/mês pela 2ª tela!)\n"
-            "• *3 Telas:* R$ 399,90 (Residência Completa)"
+            "💎 *Máxima Categoria & Menor Custo:* 1 ano de entretenimento premium por apenas **R$ 20,82/mês**!\n"
+            "Zero preocupação com renovações. Suporte concierge prioritário 24/7.\n\n"
+            "👇 *Selecione o plano anual:*"
         )
         kb = [
             [InlineKeyboardButton("👑 1 Tela - R$ 249,90", callback_data="prod_iptv_anual_1")],
             [InlineKeyboardButton("👑 2 Telas VIP (Mais Vendido) - R$ 329,90", callback_data="prod_iptv_anual_2")],
             [InlineKeyboardButton("👑 3 Telas VIP (Residência) - R$ 399,90", callback_data="prod_iptv_anual_3")],
             [InlineKeyboardButton("⬅️ Voltar aos Planos", callback_data="view_plans")]
+        ]
+        await safe_edit(text, reply_markup=InlineKeyboardMarkup(kb))
+        return
+
+    if data == "referral_program":
+        ref_link = f"https://t.me/Nexus_playtvbot?start=ref_{user.id}"
+        text = (
+            "🎁 *Programa de Indicação VIP — Nexus PlayTV*\n\n"
+            "Compartilhe a melhor experiência de streaming com seus amigos e seja recompensado!\n\n"
+            "🔥 *Como Funciona:*\n"
+            "1. Envie seu link exclusivo abaixo para um amigo ou grupo.\n"
+            "2. Quando ele assinar qualquer plano no Nexus PlayTV...\n"
+            "3. Você ganha **1 MÊS INTEIRO DE ACESSO GRÁTIS** adicionado à sua assinatura!\n\n"
+            f"🔗 *Seu Link Exclusivo de Indicação:*\n`{ref_link}`\n\n"
+            "💡 *Dica:* Não há limites! Se 3 amigos assinarem pelo seu link, você ganha 3 meses inteiramente grátis."
+        )
+        share_url = f"https://t.me/share/url?url={ref_link}&text=Assista%20todos%20os%20canais%2C%20futebol%20e%20filmes%20em%204K%20sem%20travar%20com%20o%20Nexus%20PlayTV!"
+        kb = [
+            [InlineKeyboardButton("📤 Compartilhar com Amigos no Telegram", url=share_url)],
+            [InlineKeyboardButton("⬅️ Voltar ao Menu", callback_data="main_menu")]
         ]
         await safe_edit(text, reply_markup=InlineKeyboardMarkup(kb))
         return
