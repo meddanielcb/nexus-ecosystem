@@ -7,7 +7,24 @@ import sqlite3
 import io
 import time
 import qrcode
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+
+# Fuso horário oficial do ecossistema: BRT (UTC-3)
+TZ_BRT = timezone(timedelta(hours=-3))
+
+def to_brt_str(dt_str, fmt="%d/%m/%Y às %H:%M"):
+    """Converte string UTC (do SQLite) para horário de Brasília (BRT) formatado"""
+    if not dt_str:
+        return "N/A"
+    try:
+        # Se contiver 'T', padronizar
+        clean_str = dt_str.replace("T", " ")
+        if "." in clean_str:
+            clean_str = clean_str.split(".")[0]
+        dt = datetime.strptime(clean_str, "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
+        return dt.astimezone(TZ_BRT).strftime(fmt)
+    except Exception:
+        return dt_str
 from telegram import (
     Update,
     InlineKeyboardButton,
@@ -773,6 +790,15 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # 4. Mapa de saldo restante por pacote (antecipa a query antes de fechar a conexao)
         c.execute("SELECT order_id, remaining_passes FROM game_passes WHERE user_id = ?", (user.id,))
         pass_map = {row[0]: row[1] for row in c.fetchall()}
+
+        # 5. Buscar últimos resgates de passes de jogo
+        c.execute("""
+            SELECT username, redeemed_at, expires_at, password, 'http://atmt.space', m3u_url 
+            FROM pass_redemptions 
+            WHERE user_id = ? 
+            ORDER BY id DESC LIMIT 3
+        """, (user.id,))
+        redemptions = c.fetchall()
         conn.close()
 
         keyboard = []
@@ -809,7 +835,9 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 for o in orders:
                     oid, pid, cred, date, m3u, exp = o[0], o[1], o[2], o[3], o[4], o[5]
                     pname = PRODUCTS.get(pid, {}).get("name", pid)
-                    text += f"• *{pname}*\n  📅 Compra: {date}\n"
+                    date_brt = to_brt_str(date)
+                    exp_brt = to_brt_str(exp)
+                    text += f"• *{pname}*\n  📅 Compra: {date_brt}\n"
                     if pid == "pack_3_games":
                         # Buscar saldo atual desse pacote (ja carregado antes do close)
                         rem = pass_map.get(oid, 0)
@@ -817,8 +845,23 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     elif cred:
                         text += f"  🔑 Credenciais: `{cred}`\n"
                     if exp:
-                        text += f"  ⏳ Validade: {exp}\n"
+                        text += f"  ⏳ Validade do Pacote: {exp_brt}\n"
                     text += "\n"
+
+            if redemptions:
+                text += "⚡ *Últimas Ativações de Jogos (4h cada):*\n"
+                for r in redemptions:
+                    u_pass, r_at, exp_at, pw_pass, srv_pass, m3u_pass = r[0], r[1], r[2], r[3], r[4], r[5]
+                    r_at_brt = to_brt_str(r_at)
+                    exp_at_brt = to_brt_str(exp_at)
+                    srv_clean = srv_pass or "http://atmt.space"
+                    text += (
+                        f"• *Ativado em:* `{r_at_brt}`\n"
+                        f"  👤 *Usuário:* `{u_pass}`\n"
+                        f"  🔑 *Senha:* `{pw_pass}`\n"
+                        f"  🌐 *Servidor:* `{srv_clean}`\n"
+                        f"  ⏳ *Válido até:* `{exp_at_brt}`\n\n"
+                    )
 
             keyboard.append([InlineKeyboardButton("📱 Ativar na Smart TV", callback_data="auto_activate_tv")])
 
