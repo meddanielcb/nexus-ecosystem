@@ -71,7 +71,7 @@ AWAITING_TV_CODES = {} # user_id -> {'order_id': order_id, 'm3u_url': url}
 
 def get_main_keyboard():
     return [
-        [InlineKeyboardButton("📺 Planos & Assinaturas (com Telas Extras)", callback_data="view_plans")],
+        [InlineKeyboardButton("📺 Planos & Assinaturas", callback_data="view_plans")],
         [InlineKeyboardButton("⚡ Gerar Teste Grátis (4 Horas)", callback_data="free_trial")],
         [
             InlineKeyboardButton("📱 Como Instalar (Apps)", callback_data="how_to_install"),
@@ -123,6 +123,7 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "• *StreamCore™ Ultra-P2P:* Arquitetura de rede em malha (mesh) imune ao *traffic shaping* e bloqueios de operadoras.\n"
         "• *Engine Go™ Anti-Delay:* Transmissão esportiva em tempo real (assista aos clássicos e lutas antes do vizinho gritar o gol).\n"
         "• *Estabilidade Anti-Queda & Baixo Consumo:* Transmissão fluida em 4K HDR mesmo em conexões modestas a partir de 15 Mbps (zero travamentos).\n"
+        "• *Ativação Smart TV por Foto:* Envie uma foto da tela da sua TV e nossa IA ativa seu aplicativo em segundos, sem digitação chata.\n"
         "• *Entrega Atômica 24/7:* Liberação instantânea no PIX ou Cripto (USDT) sem intervenção humana.\n"
         "• *+25.000 Canais + 120.000 Filmes & Séries:* Todos os streamings, esportes e canais premium unificados.\n\n"
         "👇 *Escolha uma opção abaixo para começar:*"
@@ -169,6 +170,19 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"⚡ *Nexus PlayTV - Menu Principal*\n\n"
             "Escolha o que deseja acessar:"
         )
+        banner_path = "/opt/data/nexus_playtv_bot/assets/nexus_playtv_banner.png"
+        if os.path.exists(banner_path):
+            try:
+                with open(banner_path, "rb") as photo_file:
+                    await query.message.reply_photo(
+                        photo=photo_file,
+                        caption=text,
+                        reply_markup=InlineKeyboardMarkup(get_main_keyboard()),
+                        parse_mode="Markdown"
+                    )
+                    return
+            except Exception:
+                pass
         await safe_edit(text, reply_markup=InlineKeyboardMarkup(get_main_keyboard()))
         return
 
