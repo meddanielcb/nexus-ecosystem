@@ -271,9 +271,12 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"🔗 *Seu Link Exclusivo de Indicação:*\n`{ref_link}`\n\n"
             "💡 *Dica:* Não há limites! Se 3 amigos assinarem pelo seu link, você ganha 3 meses inteiramente grátis."
         )
-        share_url = f"https://t.me/share/url?url={ref_link}&text=Assista%20todos%20os%20canais%2C%20futebol%20e%20filmes%20em%204K%20sem%20travar%20com%20o%20Nexus%20PlayTV!"
+        share_tg = f"https://t.me/share/url?url={ref_link}&text=Assista%20todos%20os%20canais%2C%20futebol%20e%20filmes%20em%204K%20sem%20travar%20com%20o%20Nexus%20PlayTV!"
+        share_wa = f"https://api.whatsapp.com/send?text=Assista%20todos%20os%20canais%2C%20futebol%20ao%20vivo%20e%20filmes%20em%204K%20sem%20travar%3A%20{ref_link}"
         kb = [
-            [InlineKeyboardButton("📤 Compartilhar com Amigos no Telegram", url=share_url)],
+            [InlineKeyboardButton("📋 Copiar Link de Indicação", callback_data=f"copy_ref_{user.id}")],
+            [InlineKeyboardButton("🟢 Enviar no WhatsApp", url=share_wa)],
+            [InlineKeyboardButton("✈️ Enviar no Telegram", url=share_tg)],
             [InlineKeyboardButton("⬅️ Voltar ao Menu", callback_data="main_menu")]
         ]
         await safe_edit(text, reply_markup=InlineKeyboardMarkup(kb))
@@ -1025,6 +1028,16 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parts = data.split("_")
         action = parts[1]
         order_id = "_".join(parts[2:])
+
+        if action == "ref":
+            uid = order_id
+            link = f"https://t.me/Nexus_playtvbot?start=ref_{uid}"
+            await query.answer("Link copiado!", show_alert=False)
+            await query.message.reply_text(
+                f"📋 *Seu link de indicação:* (toque para copiar)\n\n`{link}`",
+                parse_mode="Markdown"
+            )
+            return
 
         conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
