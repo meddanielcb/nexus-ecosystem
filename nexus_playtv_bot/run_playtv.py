@@ -891,7 +891,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text = (
                 f"💎 *Pagamento Cripto — Nexus PlayTV*\n\n"
                 f"📺 *Plano:* {p['name']}\n"
-                f"💵 *Total:* `${total_usd:.2f} USD*\n"
+                f"💵 *Total:* `{total_usd:.2f} USD`\n"
                 f"🪙 *Moeda/Rede:* `{coin_label}`\n\n"
                 f"👇 *Envie exatamente a quantidade abaixo:*\n"
                 f"```\n{display_qty}\n```\n\n"
