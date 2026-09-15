@@ -1060,8 +1060,9 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 f"```\n{display_qty}\n```\n\n"
                 f"📍 *Endereço da Carteira para Depósito:*\n"
                 f"`{address}`\n\n"
-                f"⚡ *Aprovação Automática:* O servidor identifica a transação na blockchain e entrega suas credenciais na hora sem necessidade de enviar comprovante.\n"
-                f"⏳ *Validade da fatura:* 15 minutos."
+                f"⚡ *Aprovação Automática:* O servidor identifica sua transação diretamente na blockchain sem precisar enviar comprovante.\n"
+                f"⏱️ *Tempo Médio de Confirmação:* 2 a 5 minutos (aguarda validação de blocos pela rede).\n"
+                f"⏳ *Validade da fatura:* 30 minutos."
             )
 
             keyboard = [
@@ -1076,8 +1077,20 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             qr_img.save(qr_bytes, format="PNG")
             qr_bytes.seek(0)
 
+            # Excluir mensagem de texto anterior para evitar duplicidade e enviar a foto com o QR Code
             try:
-                await query.message.reply_photo(photo=qr_bytes, caption=text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
+                await query.message.delete()
+            except Exception:
+                pass
+
+            try:
+                await context.bot.send_photo(
+                    chat_id=query.message.chat_id,
+                    photo=qr_bytes,
+                    caption=text,
+                    reply_markup=InlineKeyboardMarkup(keyboard),
+                    parse_mode="Markdown"
+                )
                 return
             except Exception as e_qr:
                 logger.error(f"Erro ao enviar QR code cripto: {e_qr}")
@@ -1177,17 +1190,18 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 parse_mode="Markdown"
             )
         else:
-            await query.answer("🔍 Verificando pagamento na blockchain/PIX... Ainda não detectado. Aguarde a confirmação da rede e tente em instantes.", show_alert=True)
+            await query.answer("🔍 Checando transação na blockchain... Ainda aguardando blocos da rede.", show_alert=True)
             try:
                 await query.message.reply_text(
-                    "⏳ *Status:* Verificando confirmação do pagamento...\n\n"
-                    "• Se você acabou de transferir, a rede blockchain leva de 1 a 2 minutos para confirmar o bloco.\n"
-                    "• Assim que liquidar, o acesso será liberado automaticamente aqui no chat!",
+                    "⏳ *Status do Pagamento Cripto:*\n\n"
+                    "• A sua transferência já foi enviada ou está em processo de mineração.\n"
+                    "• *Tempo Médio:* Leva de 2 a 5 minutos para os nós da rede (Base/BSC/Polygon) confirmarem e liquidarem.\n"
+                    "• *Fique tranquilo:* O robô está monitorando a cada 60 segundos. Assim que os blocos confirmarem, seu acesso e credenciais serão entregues automaticamente aqui!",
                     parse_mode="Markdown"
                 )
             except Exception:
                 pass
-        return
+            return
 
     if data.startswith("copy_"):
         parts = data.split("_")

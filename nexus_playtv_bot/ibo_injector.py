@@ -127,6 +127,11 @@ def activate_smart_tv_ibo(mac_address: str, device_key: str, playlist_name: str,
         save_res = requests.post("https://iboplayer.com/frontend/device/savePlaylist", json=playlist_body, headers=auth_headers, timeout=15)
         save_data = save_res.json()
         
+        # Validar resposta do IBO: {"status": "error"} vs {"status": "success"}
+        if save_data.get("status") == "error" or not save_data.get("status"):
+            msg = save_data.get("message") or "O IBO Player recusou salvar a lista M3U. Verifique se o Device ID/Key pertencem ao app oficial IBO Player."
+            return {"success": False, "message": msg, "details": save_data}
+
         return {
             "success": True,
             "message": "Playlist ativada com sucesso na Smart TV!",

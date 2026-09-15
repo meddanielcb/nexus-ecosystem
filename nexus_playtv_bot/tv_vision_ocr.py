@@ -34,13 +34,13 @@ def extract_tv_codes_from_image(image_path: str) -> dict:
         img_b64 = base64.b64encode(f.read()).decode("utf-8")
 
     prompt = (
-        "Analise esta foto da tela de uma Smart TV rodando um aplicativo de IPTV (como IBO Player, BOB Player, XCIPTV, etc).\n"
-        "Localize e extraia com exatidão máxima:\n"
-        "1. O Device ID / MAC Address (formato geralmente com 12 caracteres hexadecimais, ex: a1:b2:c3:d4:e5:f6 ou similar)\n"
-        "2. A Device Key / Senha / Código de ativação (geralmente de 4 a 8 dígitos numéricos ou alfanuméricos)\n\n"
-        "Responda ESTRITAMENTE em formato JSON puro, sem markdown e sem explicações:\n"
-        "{\"mac\": \"aa:bb:cc:dd:ee:ff\", \"key\": \"123456\"}\n"
-        "Se algum não for encontrado, coloque null no campo."
+        "Analise cuidadosamente esta foto da tela de um aplicativo de IPTV (IBO Player / Smart TV / Monitor).\n"
+        "Existe uma caixa de diálogo ou mensagem de ativação contendo:\n"
+        "1. Device ID (ou Endereço MAC): uma sequência hexadecimal de 12 caracteres (ex: 1C:57:DC:3C:67:31).\n"
+        "2. Device Key: um código numérico de 6 a 8 dígitos (ex: 256294).\n\n"
+        "ATENÇÃO MÁXIMA AOS CARACTERES: Não confunda '3' com '9', nem 'B' com '8', nem '0' com 'O'.\n"
+        "Retorne ESTRITAMENTE um objeto JSON puro:\n"
+        "{\"mac\": \"1C:57:DC:3C:67:31\", \"key\": \"256294\"}"
     )
 
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={key}"
