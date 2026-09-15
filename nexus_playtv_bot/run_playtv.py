@@ -29,6 +29,8 @@ from telegram import (
     Update,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
+    ReplyKeyboardMarkup,
+    KeyboardButton,
     ReplyKeyboardRemove
 )
 from telegram.ext import (
@@ -87,26 +89,23 @@ AWAITING_TV_CODES = {} # user_id -> {'order_id': order_id, 'm3u_url': url}
 
 def get_main_keyboard():
     return [
-        [InlineKeyboardButton("📺 Planos", callback_data="view_plans"), InlineKeyboardButton("⚡ Teste Grátis (4h)", callback_data="free_trial")],
+        [InlineKeyboardButton("📺 Planos", callback_data="view_plans"), InlineKeyboardButton("📦 Minha Conta", callback_data="my_access")],
         [
             InlineKeyboardButton("📱 Instalação", callback_data="how_to_install"),
             InlineKeyboardButton("🚀 Ativar TV", callback_data="auto_activate_tv")
         ],
         [
             InlineKeyboardButton("🎁 Indicação", callback_data="referral_program"),
-            InlineKeyboardButton("📦 Minha Conta", callback_data="my_access")
-        ],
-        [
             InlineKeyboardButton("❓ Suporte", callback_data="support_faq")
         ]
     ]
 
+# Menu persistente inferior (barra de digitação): Planos, Instalação, Minha Conta, Menu Inicial
 def get_persistent_reply_keyboard():
-    """Menu fixo na barra de digitação: objetivo, sem poluição e sem o botão de teste."""
     return ReplyKeyboardMarkup(
         [
             [KeyboardButton("📺 Planos"), KeyboardButton("📱 Instalação")],
-            [KeyboardButton("📦 Minha Conta"), KeyboardButton("❓ Suporte")]
+            [KeyboardButton("📦 Minha Conta"), KeyboardButton("🏠 Menu Inicial")]
         ],
         resize_keyboard=True
     )
@@ -168,12 +167,6 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=InlineKeyboardMarkup(get_main_keyboard()),
             parse_mode="Markdown"
         )
-    
-    # Enviar/Atualizar menu inferior fixo sem poluição
-    try:
-        await update.message.reply_text("👇 Utilize o menu rápido abaixo:", reply_markup=persistent_kb)
-    except Exception:
-        pass
 
 async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -1077,17 +1070,36 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 [InlineKeyboardButton("⬅️ Cancelar e Voltar", callback_data="main_menu")]
             ]
 
-            if qr_url:
-                try:
-                    await query.message.reply_photo(photo=qr_url, caption=text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
-                    return
-                except Exception:
-                    pass
+            # Gerar QR Code localmente com alta nitidez para pagamento cripto
+            qr_bytes = io.BytesIO()
+            qr_img = qrcode.make(address)
+            qr_img.save(qr_bytes, format="PNG")
+            qr_bytes.seek(0)
+
+            try:
+                await query.message.reply_photo(photo=qr_bytes, caption=text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
+                return
+            except Exception as e_qr:
+                logger.error(f"Erro ao enviar QR code cripto: {e_qr}")
 
             await safe_edit(text, reply_markup=InlineKeyboardMarkup(keyboard))
         except Exception as e:
             logger.error(f"Erro BlockBee: {e}")
             await safe_edit(f"❌ Erro ao gerar pagamento cripto: {e}", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("⬅️ Voltar", callback_data="main_menu")]]))
+        return
+
+    if data.startswith("copy_addr_"):
+        order_id = data.replace("copy_addr_", "")
+        conn = db_connect()
+        c = conn.cursor()
+        c.execute("SELECT payment_id FROM orders WHERE order_id = ?", (order_id,))
+        row = c.fetchone()
+        conn.close()
+        if row and row[0]:
+            await query.answer("Endereço enviado abaixo para cópia!", show_alert=False)
+            await query.message.reply_text(f"`{row[0]}`", parse_mode="Markdown")
+        else:
+            await query.answer("Endereço não encontrado.", show_alert=True)
         return
 
     if data.startswith("check_order_"):
@@ -1283,6 +1295,9 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
         dummy_update = Update(update.update_id, callback_query=DummyQuery(update.message, user))
         await callback_handler(dummy_update, context)
+        return
+    elif msg_text in ("🏠 Menu Inicial", "🏠 Menu"):
+        await start_command(update, context)
         return
     elif msg_text in ("❓ Suporte", "❓ Dúvidas & Suporte"):
         await update.message.reply_text("Precisa de ajuda com o PlayTV?", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Ver Dúvidas Frequentes", callback_data="support_faq")]]))
