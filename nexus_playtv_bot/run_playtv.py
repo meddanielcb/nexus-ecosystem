@@ -309,6 +309,13 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # Debitar 1 passe
         new_remaining = remaining - 1
         c.execute("UPDATE game_passes SET remaining_passes = ? WHERE id = ?", (new_remaining, pass_id))
+
+        # Atualizar texto de saldo no pedido correspondente
+        c.execute("""
+        UPDATE orders
+        SET delivered_credentials = ?
+        WHERE order_id = (SELECT order_id FROM game_passes WHERE id = ?)
+        """, (f"Pack 3 Jogos (Restantes: {new_remaining})", pass_id))
         
         # Gerar o acesso de 4 horas
         cred = generate_iptv_access(is_trial=True) # 4 horas ilimitadas
@@ -711,15 +718,21 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 keyboard.append([InlineKeyboardButton("⚽ ATIVAR 1 ACESSO DE JOGO AGORA (4H)", callback_data="redeem_game_pass")])
 
             if orders:
-                text += "📋 *Histórico de Assinaturas:*\n"
+                text += "📋 *Histórico de Compras & Assinaturas:*\n"
                 for o in orders:
                     oid, pid, cred, date, m3u, exp = o[0], o[1], o[2], o[3], o[4], o[5]
                     pname = PRODUCTS.get(pid, {}).get("name", pid)
-                    text += f"• *{pname}*\n  📅 Ativação: {date}\n"
+                    text += f"• *{pname}*\n  📅 Compra: {date}\n"
+                    if pid == "pack_3_games":
+                        # Buscar saldo atual desse pacote
+                        c.execute("SELECT remaining_passes FROM game_passes WHERE order_id = ?", (oid,))
+                        gp_row = c.fetchone()
+                        rem = gp_row[0] if gp_row else 0
+                        text += f"  🎟️ Saldo deste pacote: `{rem} de 3 passes`\n"
+                    elif cred:
+                        text += f"  🔑 Credenciais: `{cred}`\n"
                     if exp:
                         text += f"  ⏳ Validade: {exp}\n"
-                    if cred:
-                        text += f"  🔑 Credenciais: `{cred}`\n"
                     text += "\n"
 
             keyboard.append([InlineKeyboardButton("📱 Ativar na Smart TV", callback_data="auto_activate_tv")])
