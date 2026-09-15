@@ -125,6 +125,10 @@ def generate_interactive_html(output_path, username, password, server_url, m3u_u
     </div>
     <div class="app-pill">
       <span>Magic PLAY · Lazer Play · EPIC PLAY · Fun Play (Samsung / LG)</span>
+      <span class="app-code">CÓDIGO NA TELA</span>
+    </div>
+    <div class="app-pill">
+      <span>MASTERX (código próprio deste app)</span>
       <span class="app-code">{PARTNER_APPS_CODE}</span>
     </div>
     <div style="font-size: 12px; color: #8B949E; margin-top: 12px; line-height: 1.7;">

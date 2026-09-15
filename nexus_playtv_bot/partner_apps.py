@@ -22,8 +22,18 @@ SERVER_DNS_PRIMARY = "http://atmt.space"
 SERVER_DNS_ALT = "http://atmt.store"
 SERVER_DNS_ALL = (SERVER_DNS_PRIMARY, SERVER_DNS_ALT)
 
-# Codigo que habilita os aplicativos parceiros dentro do app MasterX
-PARTNER_APPS_CODE = "00042"
+# Codigo Parceiro: campo POR APLICATIVO, cadastrado pelo revendedor em
+# painelmaster.app/partner-apps (name, slug, api_type, api_base, partner_code,
+# requires_mac, requires_key, requires_credentials).
+# NAO existe codigo universal. "00042" e o codigo do app MASTERX (oficial Nexus)
+# e tambem o valor de exemplo do formulario do painel.
+PARTNER_APPS_CODE = "00042"          # codigo do app MASTERX (oficial)
+PARTNER_APPS_CODE_IS_UNIVERSAL = False
+
+PARTNER_CODE_HINT = (
+    "Se o aplicativo pedir o *Código Parceiro*, use o código que aparece "
+    "na própria tela dele ou peça ao nosso suporte."
+)
 
 # ---------------------------------------------------------------------------
 # Aplicativos parceiros oficiais (aparecem dentro do app MasterX apos o codigo)

@@ -187,7 +187,7 @@ def generate_playtv_vip_dossier(pdf_path: str, username: str, password: str, ser
             Paragraph("<b>Magic PLAY</b><br/>Lazer Play · EPIC PLAY<br/>FunPlays · IBO Player", body_style),
             Paragraph(
                 "1. Abra a loja da TV Samsung e instale um dos apps parceiros.<br/>"
-                f"2. Se o app pedir o <b>Código de Aplicativos Parceiros</b>, digite <b>{PARTNER_APPS_CODE}</b>.<br/>"
+                "2. Se o app pedir o <b>Código Parceiro</b>, use o código que aparece na própria tela.<br/>"
                 "3. Ou mande uma foto da tela no bot que ativamos a lista automaticamente!",
                 body_style
             )
@@ -197,7 +197,7 @@ def generate_playtv_vip_dossier(pdf_path: str, username: str, password: str, ser
             Paragraph("<b>Magic PLAY</b><br/>Lazer Play · Super Play<br/>FunPlays · IBO Player", body_style),
             Paragraph(
                 "1. Abra a LG Content Store e baixe um dos apps parceiros.<br/>"
-                f"2. Se o app pedir o <b>Código de Aplicativos Parceiros</b>, digite <b>{PARTNER_APPS_CODE}</b>.<br/>"
+                "2. Se o app pedir o <b>Código Parceiro</b>, use o código que aparece na própria tela.<br/>"
                 "3. Servidor: <b>atmt.space</b> — depois use Usuário e Senha do cartão acima.",
                 body_style
             )
@@ -208,7 +208,7 @@ def generate_playtv_vip_dossier(pdf_path: str, username: str, password: str, ser
             Paragraph(
                 "1. Na Play Store instale o <b>MASTERX</b>. Alternativa via <b>Downloader</b>:<br/>"
                 f"   código <b>{MASTERX_DOWNLOADER_CODE}</b> ({MASTERX_APK_URL}).<br/>"
-                f"2. Se pedir o <b>Código de Aplicativos Parceiros</b>, digite <b>{PARTNER_APPS_CODE}</b>.<br/>"
+                f"2. Se pedir o <b>Código Parceiro</b>, digite <b>{PARTNER_APPS_CODE}</b> (código do app MASTERX).<br/>"
                 "3. Use o Servidor, Usuário e Senha do cartão acima. A lista carrega em 5 segundos.",
                 body_style
             )

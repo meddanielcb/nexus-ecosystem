@@ -156,7 +156,7 @@ def create_vip_onboarding_card(
     apps = [
         ("MASTERX (Android TV / Box / Fire)", f"CÓDIGO: {MASTERX_DOWNLOADER_CODE}", "#00E5FF"),
         ("Vizzion Play / XCIPTV", "PLAY STORE", "#E024C3"),
-        ("Magic PLAY / Lazer Play (Samsung / LG)", f"ATIVAR: {CODE_PARTNER}  ·  via Foto", "#2EA043")
+        ("Magic PLAY / Lazer Play (Samsung / LG)", "CÓDIGO NA TELA DO APP", "#2EA043")
     ]
 
     for app_name, code_txt, tag_color in apps:

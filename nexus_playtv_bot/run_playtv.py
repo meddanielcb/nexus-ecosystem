@@ -55,6 +55,7 @@ from ibo_injector import activate_smart_tv_ibo
 from partner_apps import (
     PARTNER_APPS,
     PARTNER_APPS_CODE,
+    PARTNER_CODE_HINT,
     PLAYSTORE_APPS,
     MASTERX_DOWNLOADER_CODE,
     MASTERX_APK_URL,
@@ -631,7 +632,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 "1️⃣ Abra a loja de aplicativos da sua Samsung;\n"
                 f"2️⃣ Baixe um destes parceiros: *{PARTNER_APPS[0]}*, *{PARTNER_APPS[3]}* ou *EPIC PLAY*;\n"
                 "3️⃣ Abra o aplicativo. Ele abre já pedindo para ativar;\n"
-                f"4️⃣ Se ele pedir o *Código de Aplicativos Parceiros*, digite: `{PARTNER_APPS_CODE}`\n\n"
+                f"4️⃣ {PARTNER_CODE_HINT}\n\n"
                 "🤖 *Ou deixe o robô configurar pra você:* clique no botão abaixo e envie uma foto da tela do aplicativo."
             ),
             "lg": (
@@ -640,7 +641,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 "1️⃣ Abra a LG Content Store;\n"
                 f"2️⃣ Baixe um destes parceiros: *{PARTNER_APPS[0]}*, *{PARTNER_APPS[3]}* ou *Super Play*;\n"
                 "3️⃣ Abra o aplicativo;\n"
-                f"4️⃣ Se pedir o *Código de Aplicativos Parceiros*, digite: `{PARTNER_APPS_CODE}`\n\n"
+                f"4️⃣ {PARTNER_CODE_HINT}\n\n"
                 "🤖 *Ou deixe o robô configurar pra você:* clique no botão abaixo e envie uma foto da tela do aplicativo."
             ),
             "android": (
@@ -648,8 +649,8 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 "1️⃣ Abra o aplicativo *Downloader* na sua TV;\n"
                 f"2️⃣ Na barra de endereço digite o código: *`{MASTERX_DOWNLOADER_CODE}`*\n"
                 f"   (ou o endereço completo: `{MASTERX_APK_URL}`)\n"
-                "3️⃣ Instale o aplicativo *MASTERX* e abra;\n"
-                f"4️⃣ Se pedir o *Código de Aplicativos Parceiros*, digite: `{PARTNER_APPS_CODE}`\n\n"
+                f"3️⃣ Instale o aplicativo *MASTERX* e abra;\n"
+                f"4️⃣ Se pedir o *Código Parceiro*, digite: `{PARTNER_APPS_CODE}` (código do app MASTERX)\n\n"
                 "🤖 *Ativação automática:* abra o app na TV e clique no botão abaixo para o robô gravar a lista via foto!"
             ),
             "androidtv": (
@@ -658,7 +659,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 "2️⃣ Alternativa via *Downloader* (APK oficial):\n"
                 f"   • Código: *`{MASTERX_DOWNLOADER_CODE}`*  →  `{MASTERX_APK_URL}`\n"
                 "3️⃣ Abra o aplicativo e conecte com o seu Usuário e Senha Nexus;\n"
-                f"4️⃣ Se pedir o *Código de Aplicativos Parceiros*, digite: `{PARTNER_APPS_CODE}`\n\n"
+                f"4️⃣ Se pedir o *Código Parceiro*, digite: `{PARTNER_APPS_CODE}` (código do app MASTERX)\n\n"
                 "🤖 *Ativação automática:* abra o app na TV e clique no botão abaixo para o robô gravar a lista via foto!"
             ),
             "roku": (
