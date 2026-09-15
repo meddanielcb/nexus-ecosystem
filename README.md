@@ -115,20 +115,38 @@ curl -s http://127.0.0.1:8099/vip/TESTE_INEXISTENTE
 
 Qualquer agente ou desenvolvedor que assumir o projeto deve seguir esta priorização estratégica:
 
-### 1. Landing Page de Vendas Web (Canal de Venda Direta)
+### 1. Sistema Viral de Indicação & Afiliados (MGM - Member Get Member)
+- **A Alavanca Viral (Custo R$ 2,00 por Mês):**
+  - Nosso custo de crédito no MasterX é de apenas **R$ 2,00** por mês.
+  - **Oferta de Indicação:** *"Indique um amigo: quando ele assinar qualquer plano, você ganha 1 MÊS INTEIRO GRÁTIS adicionado automaticamente à sua assinatura!"*
+  - **Por que isso é explosivo:** Para o cliente, o valor percebido é de R$ 29,90 a R$ 35,00. Para nós, o CAC (Custo de Aquisição de Cliente) é de irrisórios **R$ 2,00**, gerando viralização orgânica sem gastar 1 centavo em tráfego pago.
+  - **Para Micro-Influenciadores:** Links comissionados com tracking (`t.me/Nexus_playtvbot?start=ref_CODIGO`), comissão fixa ou participação recorrente via PIX.
+
+### 2. Nova Grade de Preços & Telas Progressivas (Alta Margem)
+- **Mensal (1 Tela):** R$ 29,90 (Custo R$ 2,00 / Margem: R$ 27,90)
+- **Upsell Tela Extra:** +R$ 9,90 por tela adicional (Sala, Quarto, Celular)
+- **Trimestral (1 Tela):** R$ 74,90 (R$ 24,96/mês)
+- **Semestral (1 Tela):** R$ 139,90 (R$ 23,31/mês)
+- **Anual Família VIP (2 Telas):** R$ 229,90 (R$ 19,15/mês)
+- **Narrativa Comercial Premium:** *StreamCore™ Ultra-P2P*, *Engine Go™ Anti-Delay*, *Compressão H.265 Smart-Bitrate* e *Entrega Atômica 24/7*.
+
+### 3. Landing Page de Vendas Web (Canal de Venda Direta)
 - **Objetivo:** Criar um canal de vendas para tráfego pago (Meta Ads / Google Ads) sem exigir que o cliente tenha o app do Telegram instalado.
 - **Estrutura:** Single Page ultrarrápida, dark mode (paleta Preto `#0a0b0e` + Ciano `#00f2fe`), servida pelo Caddy.
 - **Checkout:** Formulário simples (Nome, WhatsApp, CPF) que chama a API da PixGet na VPS e exibe o QR Code Pix na tela. Após confirmação, desbloqueia o WebPlayer e as credenciais.
 
-### 2. WhatsApp Próprio Autônomo (Evolution API na VPS)
+### 4. Domínio Próprio Direto na Hostinger
+- Apontamento simples de DNS direto na Hostinger (sem Cloudflare):
+  - Tipo `A` | `@` e `*` -> `93.127.210.111`
+- Caddy gerando SSL (HTTPS) automático.
+
+### 5. WhatsApp Próprio Autônomo (Evolution API na VPS)
 - **Objetivo:** Terceiro canal de vendas nativo no WhatsApp.
 - **Implementação:** Subir um container leve da **Evolution API** via Docker na VPS (`93.127.210.111`).
 - **Automação:** Conectar o número de atendimento via QR Code e criar o bot em Python consumindo os mesmos serviços de `services.py` e `tv_vision_ocr.py` (venda via Pix e ativação de Smart TV por foto recebida no WhatsApp).
 
-### 3. Modelo B2B: Revenda de Painel / Créditos MasterX
+### 6. Modelo B2B: Revenda de Painel / Créditos MasterX
 - **Objetivo:** Monetização em atacado.
 - **Implementação:** Criar planos de revenda no bot (ex: 10 créditos por R$ 150, 25 créditos por R$ 300).
 - **Automação MasterX:** Usar os endpoints `/api.php?action=reseller&sub=create` e `/api.php?action=reseller&sub=credits` para criar sub-revendedores automaticamente assim que o pagamento PIX for confirmado.
 
-### 4. Integração de E-mail Transacional (Fallback de Entrega)
-- **Objetivo:** Enviar o dossiê VIP em PDF gerado dinamicamente para o e-mail do cliente (via Resend ou SMTP) garantindo que ele não perca o acesso caso feche o Telegram ou o navegador.
