@@ -209,15 +209,11 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         cred = generate_iptv_access(is_trial=True) # 4 horas ilimitadas
         redemption_id = f"PASS_{user.id}_{int(time.time())}"
         
+        # Inserir apenas no pass_redemptions com expiração
         c.execute("""
         INSERT INTO pass_redemptions (user_id, pass_id, username, password, m3u_url, expires_at)
         VALUES (?, ?, ?, ?, ?, ?)
         """, (user.id, pass_id, cred["username"], cred["password"], cred["m3u_url"], cred["expires_at"]))
-        
-        c.execute("""
-        INSERT OR REPLACE INTO orders (order_id, user_id, username, product_id, status, delivered_credentials, m3u_url, expires_at)
-        VALUES (?, ?, ?, 'Pass Jogo (4h)', 'paid', ?, ?, ?)
-        """, (redemption_id, user.id, user.username or "", f"Usuário: {cred['username']} | Senha: {cred['password']} | Servidor: {cred['server_url']}", cred["m3u_url"], cred["expires_at"]))
 
         conn.commit()
         conn.close()
@@ -1187,11 +1183,16 @@ async def push_trial_reminders(context: ContextTypes.DEFAULT_TYPE):
             except Exception as pe:
                 logger.error(f"Erro parse date expired: {pe}")
 
-        # 3. Alertas de Vencimento de Assinaturas Pagas (3 dias, 1 dia, corte)
+        # 3. Alertas de Vencimento de Assinaturas Mensais/Periódicas (3 dias, 1 dia, corte)
+        # Ignora passes avulsos de horas (Pass Jogo / pack_3_games), que têm ciclo em minutos/horas, não em dias!
         c.execute("""
             SELECT order_id, user_id, product_id, expires_at, reminded_3d, reminded_1d, reminded_expired
             FROM orders
-            WHERE status = 'paid' AND expires_at IS NOT NULL AND reminded_expired = 0
+            WHERE status = 'paid' 
+              AND expires_at IS NOT NULL 
+              AND reminded_expired = 0
+              AND product_id NOT LIKE '%Pass%' 
+              AND product_id NOT LIKE '%pack_3_games%'
         """)
         paid_orders = c.fetchall()
 
@@ -1256,6 +1257,7 @@ async def push_trial_reminders(context: ContextTypes.DEFAULT_TYPE):
             except Exception as pe:
                 logger.error(f"Erro parse date order reminder: {pe}")
 
+        # Marcar passes antigos resgatados para não poluir a tabela de ordens
         conn.close()
     except Exception as ge:
         logger.error(f"Erro geral push_trial_reminders: {ge}")
