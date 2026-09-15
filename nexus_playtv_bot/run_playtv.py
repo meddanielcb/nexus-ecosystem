@@ -361,24 +361,25 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except Exception as e_alert:
             logger.error(f"Erro ao disparar alerta de resgate: {e_alert}")
 
+        # 3. Gerar URL do WebPlayer MasterX
+        web_player_url = f"http://painelmaster.app/portal/?user={cred['username']}&pass={cred['password']}"
+
         text = (
             "🎉 *SEU ACESSO DE JOGO (4 HORAS) FOI ATIVADO!*\n\n"
             f"⚽ *Saldo restante de passes:* {new_remaining} de 3\n"
-            f"⏳ *Válido até:* {cred['expires_at']} (4 horas de duração)\n\n"
+            f"⏳ *Válido até:* {to_brt_str(cred['expires_at'])} (4 horas)\n\n"
             f"📋 *DADOS DE ACESSO:*\n"
             f"• Servidor: `{cred['server_url']}`\n"
             f"• Usuário: `{cred['username']}`\n"
             f"• Senha: `{cred['password']}`\n\n"
             f"🔗 *Lista M3U:*\n`{cred['m3u_url']}`\n\n"
-            f"📺 *Código Apps Parceiros:* `00042`\n"
-            f"📥 *Código Downloader FireTV:* `3054398`\n\n"
-            "Todos os canais Premiere, TNT Sports, Libertadores e ESPN em 4K já estão liberados.\n\n"
-            "📱 *Como assistir:*\n"
-            "• Use os dados acima no seu aplicativo favorito (XCIPTV, Smarters, etc);\n"
-            "• Ou vá em *Passo a Passo Smart TV* para ativar sua TV Samsung/LG sem digitar nada!"
+            "✨ *COMO ASSISTIR AGORA:*\n"
+            "1️⃣ *No Computador/Celular:* Clique no botão **Assistir no Navegador** abaixo para abrir sem digitar senha!\n"
+            "2️⃣ *Na Smart TV:* Clique em **Ativar na Smart TV** e mande a foto do app IBO Player!"
         )
         keyboard = [
-            [InlineKeyboardButton("📱 Ativar na Smart TV", callback_data="auto_activate_tv")],
+            [InlineKeyboardButton("▶️ Assistir no Navegador (WebPlayer)", url=web_player_url)],
+            [InlineKeyboardButton("🚀 Ativar na Smart TV", callback_data="auto_activate_tv")],
             [InlineKeyboardButton("⬅️ Menu Principal", callback_data="main_menu")]
         ]
         await safe_edit(text, reply_markup=InlineKeyboardMarkup(keyboard))
@@ -656,9 +657,9 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ),
             "mobile": (
                 "📲 *Instalação no Celular / Tablet (Android ou iPhone):*\n\n"
-                "1️⃣ *Android:* Baixe o app direto em **`abrela.me/ftvpro`** (FiveTV) ou pesquise por **IBO Player** na Google Play Store.\n"
-                "2️⃣ *iPhone/iPad:* Baixe o **Smarters Player Lite** ou **Stream Player - ISP** na App Store e use os dados do seu Cartão VIP!\n"
-                "3️⃣ *WebPlayer:* Se preferir, assista direto pelo navegador sem instalar nada."
+                "1️⃣ *Android:* Baixe o app oficial em **`abrela.me/ftvpro`** (FiveTV) ou instale o **IBO Player** na Play Store.\n"
+                "2️⃣ *iPhone / iPad:* Baixe o **Smarters Player Lite** na App Store e use os dados do seu acesso (Servidor: `http://atmt.space`).\n"
+                "3️⃣ *No Navegador:* Acesse direto pelo WebPlayer em **http://painelmaster.app/portal** com seu usuário e senha."
             ),
             "apple": (
                 "🍏 *Instalação no iPhone, iPad ou Apple TV:*\n\n"
@@ -666,12 +667,15 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 "2. Baixe o **Smarters Player Lite** ou **Stream Player - ISP**;\n"
                 "3. Selecione login com API Xtream Codes:\n"
                 "   • Servidor: `http://atmt.space`\n"
-                "   • Use o Usuário e Senha do seu Cartão VIP!"
+                "   • Use o Usuário e Senha da sua conta/passe ativo!"
             ),
             "pc": (
                 "💻 *Instalação no Computador (Windows / Mac):*\n\n"
-                "1️⃣ *Navegador (Zero Instalação):* Abra o WebPlayer em 1 clique direto no seu Cartão VIP;\n"
-                "2️⃣ *App Windows:* Baixe o app oficial pelo código Downloader: **`9351066`** (Smarters 32bits) ou instale o Purple IPTV."
+                "1️⃣ *No Navegador (Zero Instalação):*\n"
+                "• Acesse o WebPlayer oficial: **http://painelmaster.app/portal**\n"
+                "• Faça login com o Usuário e Senha da sua conta/passe ativo!\n\n"
+                "2️⃣ *App para Windows:*\n"
+                "• Baixe o aplicativo oficial pelo código Downloader: **`9351066`** (Smarters) ou use o Purple IPTV."
             )
         }
         text = instructions.get(device, "Instruções disponíveis no suporte.")
