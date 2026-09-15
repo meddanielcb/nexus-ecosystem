@@ -23,29 +23,31 @@ def get_pixget_headers():
                     if line.startswith("PIXGET_API_KEY="):
                         api_key = line.split("=", 1)[1].strip().strip('"').strip("'")
     return {
-        "X-Api-Key": api_key,
+        "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json"
     }
 
 def create_pixget_charge(amount_brl: float, order_id: str, description: str, cpf: str = "00000000000") -> dict:
     url = f"{PIXGET_BASE_URL.rstrip('/')}/api/v1/checkout"
+    cleaned_cpf = "".join(c for c in str(cpf) if c.isdigit())
     payload = {
-        "amount": round(amount_brl, 2),
-        "external_id": order_id,
-        "payer_document": cpf.replace(".", "").replace("-", "").strip() or "00000000000",
-        "description": description[:100]
+        "amount": round(float(amount_brl), 2),
+        "externalId": order_id,
+        "customerCpf": cleaned_cpf,
+        "description": description[:200]
     }
     res = requests.post(url, json=payload, headers=get_pixget_headers(), timeout=10)
     data = res.json()
-    if res.status_code in (200, 201) and data.get("success"):
-        cdata = data.get("data", {})
+    if res.status_code == 200 and "data" in data:
+        cdata = data["data"]
         return {
-            "qr_code": cdata.get("qr_code"),
-            "qr_code_url": cdata.get("qr_code_url"),
+            "qr_code": cdata.get("qrCode"),
+            "qr_code_url": cdata.get("qrCodeUrl"),
             "payment_id": cdata.get("id")
         }
     else:
-        raise Exception(f"Pixget Error: {data.get('message', res.text)}")
+        err_msg = data.get("error") or data.get("message") or res.text
+        raise Exception(f"Pixget Error: {err_msg}")
 
 def create_cryptobot_invoice(amount_usd: float, order_id: str, description: str) -> dict:
     url = "https://pay.crypt.bot/api/createInvoice"
@@ -115,28 +117,32 @@ def create_blockbee_payment(coin: str, order_id: str) -> dict:
     else:
         raise Exception(f"BlockBee Error: {res.get('error')}")
 
-def generate_iptv_access(duration_days: int = 30, is_trial: bool = False, username: str = None, password: str = None) -> dict:
+def generate_iptv_access(duration_days: int = 30, is_trial: bool = False, username: str = None, password: str = None, phone: str = None) -> dict:
     """
-    Gera as credenciais oficiais de acesso IPTV P2Braz (Xtream Codes / M3U).
-    Servidor oficial: http://man77.work
+    Gera as credenciais oficiais de acesso IPTV MasterX / StreamCore via API REST nativa.
+    Servidor oficial: http://atmt.space
     """
-    if username and password:
-        iptv_user = username
-        iptv_pass = password
-    else:
+    try:
+        from masterx_api import create_masterx_line
+        return create_masterx_line(is_trial=is_trial, duration_days=duration_days, phone=phone)
+    except Exception as e:
+        import logging
+        logging.error(f"Erro ao emitir linha via MasterX API: {e}")
+        # Fallback de segurança temporário caso a API oscile
         suffix = uuid.uuid4().hex[:6].lower()
         prefix = "trial" if is_trial else "nexus"
-        iptv_user = f"{prefix}_{suffix}"
-        iptv_pass = uuid.uuid4().hex[:8]
-
-    server_dns = "http://man77.work"
-    m3u_link = f"http://man77.work/get.php?username={iptv_user}&password={iptv_pass}&type=m3u_plus&output=ts"
-    
-    return {
-        "username": iptv_user,
-        "password": iptv_pass,
-        "server_url": server_dns,
-        "m3u_url": m3u_link,
-        "duration": f"{duration_days} Dias" if not is_trial else "4 Horas",
-        "expires_at": (datetime.now() + (timedelta(hours=4) if is_trial else timedelta(days=duration_days))).strftime("%d/%m/%Y às %H:%M")
-    }
+        iptv_user = username or f"{prefix}_{suffix}"
+        iptv_pass = password or uuid.uuid4().hex[:8]
+        server_dns = "http://atmt.space"
+        m3u_link = f"{server_dns}/get.php?username={iptv_user}&password={iptv_pass}&type=m3u_plus&output=ts"
+        return {
+            "username": iptv_user,
+            "password": iptv_pass,
+            "server_url": server_dns,
+            "m3u_url": m3u_link,
+            "duration": f"{duration_days} Dias" if not is_trial else "6 Horas",
+            "expires_at": (datetime.now() + (timedelta(hours=6) if is_trial else timedelta(days=duration_days))).strftime("%Y-%m-%d %H:%M:%S"),
+            "partner_code": "00042",
+            "downloader_code": "3054398",
+            "web_player": "http://painelmaster.app/portal"
+        }

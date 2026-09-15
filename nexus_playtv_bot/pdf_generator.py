@@ -150,7 +150,7 @@ def generate_playtv_vip_dossier(pdf_path: str, username: str, password: str, ser
         [
             Paragraph(
                 "Não quer instalar nada agora? Você pode assistir <b>imediatamente</b> no Google Chrome, Safari ou Edge:<br/>"
-                "1. Acesse o WebPlayer Oficial: <b><code>http://player.nexusplay.tv</code></b> (ou abra no celular)<br/>"
+                "1. Acesse o WebPlayer Oficial: <b><code>http://painelmaster.app/portal</code></b><br/>"
                 "2. Digite o Usuário e Senha do seu cartão acima.<br/>"
                 "3. Pronto! Grade completa de futebol ao vivo, filmes e séries rodando em 5 segundos.",
                 body_style
@@ -257,9 +257,9 @@ if __name__ == "__main__":
     generate_playtv_vip_dossier(
         pdf_path=test_pdf,
         username="nexus_vip_7894",
-        password="[REDACTED]",
-        server_url="http://cdn.nexusplay.tv:8080",
-        m3u_url="http://cdn.nexusplay.tv:8080/get.php?username=nexus_vip_7894&password=play_pass_2026&type=m3u_plus",
+        password="play_pass_2026",
+        server_url="http://atmt.space",
+        m3u_url="http://atmt.space/get.php?username=nexus_vip_7894&password=play_pass_2026&type=m3u_plus&output=ts",
         plan_name="Pass Final de Semana 48h (Full HD / 4K)",
-        valid_until="14/09/2026 às 21:00 (Horário de Brasília)"
+        valid_until="15/09/2026 às 21:00 (Horário de Brasília)"
     )

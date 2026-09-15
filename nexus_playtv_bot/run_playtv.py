@@ -1,9 +1,11 @@
 import os
+import sys
 import json
 import logging
 import uuid
 import sqlite3
 import io
+import time
 import qrcode
 from datetime import datetime, timedelta
 from telegram import (
@@ -36,6 +38,29 @@ from ibo_injector import activate_smart_tv_ibo
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("nexus_playtv")
 
+def parse_iso_or_br(exp_str):
+    """Parser tolerante de datas: aceita ISO 8601 (YYYY-MM-DD HH:MM:SS) e o formato
+    BR legado (DD/MM/YYYY às HH:MM) que circulava nos registros antigos."""
+    if not exp_str:
+        return None
+    s = str(exp_str).strip()
+    for fmt in (
+        "%Y-%m-%d %H:%M:%S",
+        "%Y-%m-%dT%H:%M:%S",
+        "%Y-%m-%d %H:%M",
+        "%d/%m/%Y às %H:%M",
+        "%d/%m/%Y %H:%M",
+        "%d/%m/%Y",
+    ):
+        try:
+            return datetime.strptime(s, fmt)
+        except ValueError:
+            continue
+    try:
+        return datetime.fromisoformat(s)
+    except Exception:
+        raise ValueError(f"Formato de data não reconhecido: {exp_str!r}")
+
 BOT_TOKEN = "8979028734:AAFvHUW2ML8XmUnRXtY8f5j6l-pOeKxwj5s"
 
 with open("/opt/data/nexus_playtv_bot/products_playtv.json") as f:
@@ -50,9 +75,12 @@ def get_main_keyboard():
         [InlineKeyboardButton("⚡ Gerar Teste Grátis (4 Horas)", callback_data="free_trial")],
         [
             InlineKeyboardButton("📱 Como Instalar (Apps)", callback_data="how_to_install"),
-            InlineKeyboardButton("❓ Dúvidas & Suporte", callback_data="support_faq")
+            InlineKeyboardButton("🚀 Ativar Smart TV", callback_data="auto_activate_tv")
         ],
-        [InlineKeyboardButton("📦 Minha Assinatura / Acesso", callback_data="my_access")]
+        [
+            InlineKeyboardButton("❓ Dúvidas & Suporte", callback_data="support_faq"),
+            InlineKeyboardButton("📦 Minha Assinatura / Acesso", callback_data="my_access")
+        ]
     ]
 
 def get_reply_keyboard():
@@ -194,21 +222,35 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         conn.commit()
         conn.close()
 
-        vip_page_url = f"https://nexus.pixget.io/vip/{redemption_id}"
-        web_player_url = f"https://player.nexusplay.tv/?user={cred['username']}&pass={cred['password']}"
+        # Disparar notificação no @Alerta_nexusbot do Daniel
+        try:
+            alert_playtv_sale(
+                plan_name="Resgate de Passe de Jogo (4h)",
+                amount_str="Débito de Saldo (1/3)",
+                method="PASSE RESGATADO",
+                customer_info=f"@{user.username or 'SemUser'} (ID {user.id})",
+                order_id=redemption_id
+            )
+        except Exception as e_alert:
+            logger.error(f"Erro ao disparar alerta de resgate: {e_alert}")
 
         text = (
             "🎉 *SEU ACESSO DE JOGO (4 HORAS) FOI ATIVADO!*\n\n"
             f"⚽ *Saldo restante de passes:* {new_remaining} de 3\n"
-            f"⏳ *Válido até:* {cred['expires_at']}\n\n"
+            f"⏳ *Válido até:* {cred['expires_at']} (4 horas de duração)\n\n"
+            f"📋 *DADOS DE ACESSO:*\n"
+            f"• Servidor: `{cred['server_url']}`\n"
+            f"• Usuário: `{cred['username']}`\n"
+            f"• Senha: `{cred['password']}`\n\n"
+            f"🔗 *Lista M3U:*\n`{cred['m3u_url']}`\n\n"
+            f"📺 *Código Apps Parceiros:* `00042`\n"
+            f"📥 *Código Downloader FireTV:* `3054398`\n\n"
             "Todos os canais Premiere, TNT Sports, Libertadores e ESPN em 4K já estão liberados.\n\n"
             "📱 *Como assistir:*\n"
-            "• Toque no botão abaixo para abrir seu Cartão VIP em 1 clique;\n"
+            "• Use os dados acima no seu aplicativo favorito (XCIPTV, Smarters, etc);\n"
             "• Ou vá em *Passo a Passo Smart TV* para ativar sua TV Samsung/LG sem digitar nada!"
         )
         keyboard = [
-            [InlineKeyboardButton("✨ ABRIR CARTÃO VIP INTERATIVO", url=vip_page_url)],
-            [InlineKeyboardButton("▶️ Assistir Agora no Navegador", url=web_player_url)],
             [InlineKeyboardButton("📱 Ativar na Smart TV", callback_data="auto_activate_tv")],
             [InlineKeyboardButton("⬅️ Menu Principal", callback_data="main_menu")]
         ]
@@ -308,17 +350,62 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     if data == "download_guide_pdf":
-        pdf_path = "/opt/data/nexus_playtv_bot/assets/manual_vip_exemplo.pdf"
-        if os.path.exists(pdf_path):
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        c.execute("SELECT product_id, delivered_credentials, m3u_url, expires_at FROM orders WHERE user_id = ? AND status = 'paid' ORDER BY created_at DESC LIMIT 1", (user.id,))
+        last_order = c.fetchone()
+        conn.close()
+
+        pdf_path = f"/tmp/Guia_VIP_{user.id}.pdf"
+        
+        # Extrair dados reais se o usuário tiver assinatura paga
+        pname = "Nexus PlayTV VIP"
+        iptv_user = "nexus_cliente"
+        iptv_pass = "********"
+        server_dns = "http://atmt.space"
+        m3u_url = "http://atmt.space"
+        exp_str = "Consulte seu bot"
+
+        if last_order:
+            pid, cred_str, m3u, exp = last_order
+            pname = PRODUCTS.get(pid, {}).get("name", pid)
+            exp_str = exp or "Ativo"
+            if m3u:
+                m3u_url = m3u
+            if cred_str and "Usuário:" in cred_str:
+                try:
+                    parts = cred_str.split("|")
+                    for p in parts:
+                        if "Usuário:" in p:
+                            iptv_user = p.split("Usuário:")[1].strip()
+                        elif "Senha:" in p:
+                            iptv_pass = p.split("Senha:")[1].strip()
+                        elif "Servidor:" in p:
+                            server_dns = p.split("Servidor:")[1].strip()
+                except Exception:
+                    pass
+
+        try:
+            from pdf_generator import generate_playtv_vip_dossier
+            generate_playtv_vip_dossier(
+                pdf_path=pdf_path,
+                username=iptv_user,
+                password=iptv_pass,
+                server_url=server_dns,
+                m3u_url=m3u_url,
+                plan_name=pname,
+                valid_until=exp_str
+            )
             with open(pdf_path, "rb") as f_pdf:
                 await query.message.reply_document(
                     document=f_pdf,
                     filename="Guia_VIP_Nexus_PlayTV.pdf",
-                    caption="📄 *Guia VIP Nexus PlayTV:* Passo a passo completo para Samsung, LG, Firestick e Celular.",
+                    caption=f"📄 *Seu Guia VIP Personalizado:* Instruções e dados oficiais de configuração ({server_dns}).",
                     parse_mode="Markdown"
                 )
-        else:
-            await query.answer("Gerando guia...", show_alert=True)
+        except Exception as e:
+            logger.error(f"Erro ao gerar PDF: {e}")
+            await query.answer("Erro ao gerar o PDF. Tente novamente em instantes.", show_alert=True)
         return
 
     if data.startswith("inst_"):
@@ -388,7 +475,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 "1. Abra a App Store;\n"
                 "2. Baixe o **Smarters Player Lite** ou **Stream Player - ISP**;\n"
                 "3. Selecione login com API Xtream Codes:\n"
-                "   • Servidor: `http://man77.work`\n"
+                "   • Servidor: `http://atmt.space`\n"
                 "   • Use o Usuário e Senha do seu Cartão VIP!"
             ),
             "pc": (
@@ -413,20 +500,27 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     if data == "auto_activate_tv":
-        # Checar se usuário tem acesso ativo (ordem paga ou teste gratis)
+        # Checar se usuário tem acesso ativo (ordem paga, teste grátis ou passe resgatado)
         conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
-        c.execute("""
-        SELECT delivered_item, m3u_url FROM orders 
-        WHERE user_id = ? AND status = 'paid' ORDER BY id DESC LIMIT 1
-        """, (user.id,))
-        order_row = c.fetchone()
         
         m3u = None
-        if order_row and order_row[1]:
-            m3u = order_row[1]
-        else:
-            # Checar trial
+        
+        # 1. Checar se tem passe resgatado recente
+        c.execute("SELECT m3u_url FROM pass_redemptions WHERE user_id = ? ORDER BY id DESC LIMIT 1", (user.id,))
+        p_row = c.fetchone()
+        if p_row and p_row[0]:
+            m3u = p_row[0]
+
+        # 2. Checar ordem paga com m3u
+        if not m3u:
+            c.execute("SELECT m3u_url FROM orders WHERE user_id = ? AND status = 'paid' AND m3u_url IS NOT NULL ORDER BY created_at DESC LIMIT 1", (user.id,))
+            order_row = c.fetchone()
+            if order_row and order_row[0]:
+                m3u = order_row[0]
+        
+        # 3. Checar teste grátis
+        if not m3u:
             c.execute("SELECT m3u_url FROM free_trials WHERE user_id = ? ORDER BY id DESC LIMIT 1", (user.id,))
             trial_row = c.fetchone()
             if trial_row and trial_row[0]:
@@ -480,28 +574,81 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if data == "my_access":
         conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
-        c.execute("SELECT order_id, product_id, delivered_credentials, created_at FROM orders WHERE user_id = ? AND status = 'paid' ORDER BY created_at DESC LIMIT 3", (user.id,))
+        
+        # 1. Checar saldo de passes de jogo
+        c.execute("""
+            SELECT SUM(remaining_passes) FROM game_passes 
+            WHERE user_id = ? AND remaining_passes > 0 AND expires_at > datetime('now')
+        """, (user.id,))
+        pass_res = c.fetchone()
+        remaining_passes = pass_res[0] if pass_res and pass_res[0] else 0
+
+        # 2. Checar pedidos pagos
+        c.execute("SELECT order_id, product_id, delivered_credentials, created_at, m3u_url, expires_at FROM orders WHERE user_id = ? AND status = 'paid' ORDER BY created_at DESC LIMIT 3", (user.id,))
         orders = c.fetchall()
         conn.close()
 
-        if not orders:
+        keyboard = []
+
+        if not orders and remaining_passes == 0:
             text = (
                 "📦 *Você ainda não possui assinaturas ativas!*\n\n"
                 "Adquira um dos nossos planos ou gere um teste grátis de 4 horas para conhecer a qualidade dos canais."
             )
-            keyboard = [
-                [InlineKeyboardButton("⚡ Gerar Teste Grátis (4h)", callback_data="free_trial")],
-                [InlineKeyboardButton("📺 Ver Planos", callback_data="view_plans")],
-                [InlineKeyboardButton("⬅️ Voltar ao Menu", callback_data="main_menu")]
-            ]
+            keyboard.append([InlineKeyboardButton("⚡ Gerar Teste Grátis (4h)", callback_data="free_trial")])
+            keyboard.append([InlineKeyboardButton("📺 Ver Planos", callback_data="view_plans")])
         else:
-            text = "📦 *Suas Assinaturas e Acessos Recentes:*\n\n"
-            for o in orders:
-                pid, cred, date = o[1], o[2], o[3]
-                pname = PRODUCTS.get(pid, {}).get("name", pid)
-                text += f"📺 *{pname}*\n📅 Ativação: {date}\n🔑 Credenciais: `{cred}`\n\n"
-            keyboard = [[InlineKeyboardButton("⬅️ Voltar ao Menu", callback_data="main_menu")]]
+            text = "📦 *Suas Assinaturas e Acessos:*\n\n"
+            
+            if remaining_passes > 0:
+                text += (
+                    f"⚽ *Passes de Futebol / Lutas (Pack 3 Jogos)*\n"
+                    f"🎟️ *Saldo Disponível:* {remaining_passes} acessos de 4 horas\n"
+                    f"💡 *Como usar:* Quando for começar a partida que deseja assistir, clique no botão abaixo para liberar o acesso de 4h na hora!\n\n"
+                )
+                keyboard.append([InlineKeyboardButton("⚽ ATIVAR 1 ACESSO DE JOGO (4 HORAS)", callback_data="redeem_game_pass")])
 
+            if orders:
+                text += "📋 *Histórico de Assinaturas:*\n"
+                for o in orders:
+                    oid, pid, cred, date, m3u, exp = o[0], o[1], o[2], o[3], o[4], o[5]
+                    pname = PRODUCTS.get(pid, {}).get("name", pid)
+                    text += f"• *{pname}*\n  📅 Ativação: {date}\n"
+                    if exp:
+                        text += f"  ⏳ Validade: {exp}\n"
+                    if cred:
+                        text += f"  🔑 Credenciais: `{cred}`\n"
+                    text += "\n"
+
+            keyboard.append([InlineKeyboardButton("📱 Ativar na Smart TV", callback_data="auto_activate_tv")])
+
+        keyboard.append([InlineKeyboardButton("⬅️ Voltar ao Menu", callback_data="main_menu")])
+
+        await safe_edit(text, reply_markup=InlineKeyboardMarkup(keyboard))
+        return
+
+    if data.startswith("prod_direct_"):
+        pid = data.replace("prod_direct_", "")
+        p = PRODUCTS.get(pid)
+        if not p:
+            await query.message.reply_text("Plano indisponível.")
+            return
+
+        text = (
+            f"*{p['name']}*\n\n"
+            f"{p['description']}\n\n"
+            f"💰 *Investimento:*\n"
+            f"• *PIX:* R$ {p['price_brl']:.2f}\n"
+            f"• *Cripto:* ${p['price_usd']:.2f} USDT\n\n"
+            f"⚡ *Entrega Instantânea das credenciais no chat.*\n\n"
+            f"👇 *Escolha como deseja pagar:*"
+        )
+
+        keyboard = [
+            [InlineKeyboardButton(f"🟢 Pagar via PIX (R$ {p['price_brl']:.2f})", callback_data=f"ask_cpf_{pid}")],
+            [InlineKeyboardButton(f"💎 Pagar com Cripto (${p['price_usd']:.2f} USDT)", callback_data=f"crypto_hub_{pid}")],
+            [InlineKeyboardButton("⬅️ Voltar aos Planos", callback_data="view_plans")]
+        ]
         await safe_edit(text, reply_markup=InlineKeyboardMarkup(keyboard))
         return
 
@@ -534,7 +681,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             }
         }
 
-        if pid in UPGRADE_MAP and not data.startswith("prod_direct_"):
+        if pid in UPGRADE_MAP:
             up = UPGRADE_MAP[pid]
             upsell_text = (
                 f"📺 *{p['name']}*\n\n"
@@ -553,13 +700,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await safe_edit(upsell_text, reply_markup=InlineKeyboardMarkup(upsell_kb))
             return
 
-    if data.startswith("prod_direct_"):
-        pid = data.replace("prod_direct_", "")
-        p = PRODUCTS.get(pid)
-        if not p:
-            await query.message.reply_text("Plano indisponível.")
-            return
-
+        # Para planos sem upsell (ex: pack_3_games, planos que já são 2 telas), vai direto para o checkout:
         text = (
             f"*{p['name']}*\n\n"
             f"{p['description']}\n\n"
@@ -720,6 +861,62 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await safe_edit(f"❌ Erro ao gerar pagamento cripto: {e}", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("⬅️ Voltar", callback_data="main_menu")]]))
         return
 
+    if data.startswith("check_order_"):
+        order_id = data.replace("check_order_", "")
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        c.execute("SELECT status, delivered_credentials, m3u_url, expires_at, payment_id, product_id FROM orders WHERE order_id = ?", (order_id,))
+        row = c.fetchone()
+        conn.close()
+
+        if not row:
+            await query.answer("Pedido não encontrado.", show_alert=True)
+            return
+
+        status, creds, m3u, exp, payment_id, pid = row
+        
+        # Fallback de Polling em tempo real se o webhook ainda não tiver chegado
+        if status != "paid" and payment_id:
+            try:
+                from services import get_pixget_headers, PIXGET_BASE_URL
+                import requests
+                chk_url = f"{PIXGET_BASE_URL.rstrip('/')}/api/v1/payments/{payment_id}/status"
+                r = requests.get(chk_url, headers=get_pixget_headers(), timeout=5)
+                if r.status_code == 200:
+                    st_data = r.json().get("data", {})
+                    if st_data.get("status") == "completed":
+                        # Disparar a entrega imediatamente
+                        import importlib.util
+                        spec = importlib.util.spec_from_file_location("wh_server", "/opt/data/digital_store_bot/webhook_server.py")
+                        wh_mod = importlib.util.module_from_spec(spec)
+                        spec.loader.exec_module(wh_mod)
+                        wh_mod.deliver_playtv_order_async(order_id)
+                        
+                        # Reconsultar banco
+                        conn2 = sqlite3.connect(DB_PATH)
+                        c2 = conn2.cursor()
+                        c2.execute("SELECT status, delivered_credentials, m3u_url, expires_at FROM orders WHERE order_id = ?", (order_id,))
+                        row2 = c2.fetchone()
+                        conn2.close()
+                        if row2:
+                            status, creds, m3u, exp = row2
+            except Exception as e:
+                logger.error(f"Erro no polling de status: {e}")
+
+        if status == "paid":
+            await query.answer("✅ Pagamento confirmado!", show_alert=True)
+            await query.message.reply_text(
+                f"🎉 *PAGAMENTO APROVADO COM SUCESSO!*\n\n"
+                f"🆔 *Pedido:* `{order_id}`\n\n"
+                f"📋 *Acesso Liberado:*\n`{creds}`\n\n"
+                f"🔗 *Lista M3U:*\n`{m3u or 'N/A'}`\n\n"
+                f"⏳ *Validade:* {exp}",
+                parse_mode="Markdown"
+            )
+        else:
+            await query.answer("⏳ Pagamento ainda não detectado. Aguarde alguns instantes e tente novamente.", show_alert=True)
+        return
+
     if data.startswith("copy_"):
         parts = data.split("_")
         action = parts[1]
@@ -727,27 +924,45 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
-        c.execute("SELECT delivered_credentials FROM orders WHERE order_id = ?", (order_id,))
+        c.execute("SELECT delivered_credentials, payment_id, m3u_url FROM orders WHERE order_id = ?", (order_id,))
         row = c.fetchone()
         conn.close()
 
+        labels = {"addr": "Endereço", "dns": "Servidor", "user": "Usuário", "pass": "Senha", "m3u": "Lista M3U"}
+
         val = ""
-        if row and row[0]:
-            # formato: Usuário: xxx | Senha: yyy | Servidor: zzz
-            cred_str = row[0]
-            for part in cred_str.split("|"):
-                if action == "dns" and "Servidor:" in part:
-                    val = part.split("Servidor:")[1].strip()
-                elif action == "user" and "Usuário:" in part:
-                    val = part.split("Usuário:")[1].strip()
-                elif action == "pass" and "Senha:" in part:
-                    val = part.split("Senha:")[1].strip()
+        if row:
+            cred_str = row[0] or ""
+            pay_id = row[1] or ""
+            m3u = row[2] or ""
+
+            if action == "addr":
+                # Endereço da carteira cripto (gravado em payment_id no fluxo BlockBee)
+                val = pay_id
+            elif action == "m3u":
+                val = m3u
+            else:
+                # formato: Usuário: xxx | Senha: yyy | Servidor: zzz
+                for part in cred_str.split("|"):
+                    if action == "dns" and "Servidor:" in part:
+                        val = part.split("Servidor:")[1].strip()
+                    elif action == "user" and "Usuário:" in part:
+                        val = part.split("Usuário:")[1].strip()
+                    elif action == "pass" and "Senha:" in part:
+                        val = part.split("Senha:")[1].strip()
 
         if val:
+            label = labels.get(action, action.upper())
             await query.answer(f"Copiado: {val}", show_alert=True)
-            await query.message.reply_text(f"📋 *{action.upper()}:*\n`{val}`\n*(Toque no texto para copiar)*", parse_mode="Markdown")
+            await query.message.reply_text(
+                f"📋 *{label}:*\n`{val}`\n\n_(Toque no texto acima para copiar)_",
+                parse_mode="Markdown"
+            )
         else:
-            await query.answer("Código copiado para a área de transferência!", show_alert=True)
+            await query.answer("Não há dados para copiar neste pedido.", show_alert=True)
+            await query.message.reply_text(
+                "⚠️ Não encontrei o dado solicitado para este pedido. Se o pagamento ainda não foi confirmado, aguarde a liberação e tente novamente."
+            )
         return
 
 async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -888,7 +1103,13 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_photo(photo=bio, caption=text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
         except Exception as e:
             logger.error(f"Erro PIX: {e}")
-            await update.message.reply_text(f"❌ Erro ao gerar PIX: {e}")
+            err_str = str(e)
+            if "RECEITA FEDERAL" in err_str.upper() or "CPF IRREGULAR" in err_str.upper():
+                msg_err = "⚠️ *CPF não encontrado ou irregular na Receita Federal.*\nPor favor, digite um CPF válido para que o Banco Central aprove a cobrança PIX:"
+                AWAITING_CPF[user.id] = stored
+            else:
+                msg_err = f"❌ *Erro ao gerar PIX:* {err_str}"
+            await update.message.reply_text(msg_err, parse_mode="Markdown")
         return
 
 async def push_trial_reminders(context: ContextTypes.DEFAULT_TYPE):
@@ -909,7 +1130,7 @@ async def push_trial_reminders(context: ContextTypes.DEFAULT_TYPE):
 
         for tid, uid, uname, exp_str in trials_to_check:
             try:
-                exp_dt = datetime.strptime(exp_str, "%Y-%m-%d %H:%M:%S")
+                exp_dt = parse_iso_or_br(exp_str)
                 # Se faltam menos de 35 minutos para expirar e ainda não expirou
                 if timedelta(seconds=0) < (exp_dt - now) <= timedelta(minutes=35):
                     text_alert = (
@@ -943,7 +1164,7 @@ async def push_trial_reminders(context: ContextTypes.DEFAULT_TYPE):
 
         for tid, uid, uname, exp_str in expired_to_check:
             try:
-                exp_dt = datetime.strptime(exp_str, "%Y-%m-%d %H:%M:%S")
+                exp_dt = parse_iso_or_br(exp_str)
                 if now >= exp_dt:
                     text_expired = (
                         "🔒 *SEU SINAL DE TESTE FOI ENCERRADO!*\n\n"
@@ -976,7 +1197,7 @@ async def push_trial_reminders(context: ContextTypes.DEFAULT_TYPE):
 
         for oid, uid, pid, exp_str, r3d, r1d, rexp in paid_orders:
             try:
-                exp_dt = datetime.strptime(exp_str, "%Y-%m-%d %H:%M:%S")
+                exp_dt = parse_iso_or_br(exp_str)
                 diff = exp_dt - now
 
                 # 3.1 Aviso de 3 Dias Antes
@@ -1099,14 +1320,42 @@ async def coupon_admin_command(update: Update, context: ContextTypes.DEFAULT_TYP
 async def photo_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Lê a foto da tela da Smart TV enviada pelo usuário, extrai Device ID e Key via OCR e ativa automaticamente"""
     user = update.effective_user
-    if user.id not in AWAITING_TV_CODES:
+    
+    # Auto-recuperar m3u se o usuário não clicou antes no botão
+    m3u_url = None
+    if user.id in AWAITING_TV_CODES:
+        m3u_url = AWAITING_TV_CODES[user.id].get("m3u_url")
+    
+    if not m3u_url:
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        c.execute("SELECT m3u_url FROM pass_redemptions WHERE user_id = ? ORDER BY id DESC LIMIT 1", (user.id,))
+        p_row = c.fetchone()
+        if p_row and p_row[0]:
+            m3u_url = p_row[0]
+        if not m3u_url:
+            c.execute("SELECT m3u_url FROM orders WHERE user_id = ? AND status = 'paid' AND m3u_url IS NOT NULL ORDER BY created_at DESC LIMIT 1", (user.id,))
+            o_row = c.fetchone()
+            if o_row and o_row[0]:
+                m3u_url = o_row[0]
+        if not m3u_url:
+            c.execute("SELECT m3u_url FROM free_trials WHERE user_id = ? ORDER BY id DESC LIMIT 1", (user.id,))
+            t_row = c.fetchone()
+            if t_row and t_row[0]:
+                m3u_url = t_row[0]
+        conn.close()
+
+    if not m3u_url:
         await update.message.reply_text(
-            "📸 Recebi sua foto! Se deseja ativar uma Smart TV automaticamente, vá em **📱 Como Instalar** e clique em **🚀 Ativar Minha TV** primeiro."
+            "📸 Recebi sua foto! Para ativar a sua Smart TV, você precisa ter uma assinatura ou teste ativo primeiro.\n\n"
+            "Gere um teste grátis ou assine um plano no menu:",
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton("⚡ Gerar Teste Grátis (4h)", callback_data="free_trial")],
+                [InlineKeyboardButton("📺 Assinar Plano", callback_data="view_plans")]
+            ]),
+            parse_mode="Markdown"
         )
         return
-
-    session = AWAITING_TV_CODES[user.id]
-    m3u_url = session.get("m3u_url")
 
     status_msg = await update.message.reply_text(
         "🔍 *Analisando a foto da sua TV com Inteligência Artificial...*\n"
@@ -1121,35 +1370,11 @@ async def photo_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         local_img = f"/tmp/tv_screen_{user.id}_{int(time.time())}.jpg"
         await file_obj.download_to_drive(local_img)
 
-        # Usar PyMuPDF / Tesseract ou regex de imagem para extrair MAC e Key
-        import re, subprocess
-        mac_found = None
-        key_found = None
+        # Usar Visão Computacional de Elite com Gemini Flash
+        from tv_vision_ocr import extract_tv_codes_from_image
+        ocr_result = extract_tv_codes_from_image(local_img)
 
-        # Tentar extrair texto via OCR tesseract se disponível, ou regex simples de strings
-        try:
-            cmd = ["tesseract", local_img, "stdout", "--oem", "1", "-l", "eng"]
-            ocr_text = subprocess.check_output(cmd, stderr=subprocess.DEVNULL).decode("utf-8")
-        except Exception:
-            # Fallback usando strings do arquivo ou inspeção rápida
-            ocr_text = ""
-
-        # Procurar formato MAC (ex: aa:bb:cc:dd:ee:ff ou aabbccddeeff)
-        mac_match = re.search(r'([0-9a-fA-F]{2}[:-][0-9a-fA-F]{2}[:-][0-9a-fA-F]{2}[:-][0-9a-fA-F]{2}[:-][0-9a-fA-F]{2}[:-][0-9a-fA-F]{2})', ocr_text)
-        if mac_match:
-            mac_found = mac_match.group(1).lower()
-
-        # Procurar Device Key (normalmente 4 a 8 dígitos/letras)
-        key_match = re.search(r'(?:key|senha|device\s*key)[\s:]*([0-9a-zA-Z]{4,8})', ocr_text, re.I)
-        if key_match:
-            key_found = key_match.group(1)
-        else:
-            # Pegar sequências numéricas de 6 dígitos comuns no IBO Player
-            digits_matches = re.findall(r'\b([0-9]{5,7})\b', ocr_text)
-            if digits_matches:
-                key_found = digits_matches[0]
-
-        if not mac_found or not key_found:
+        if not ocr_result.get("success"):
             await status_msg.edit_text(
                 "⚠️ *Não consegui ler todos os dados com clareza da foto.*\n\n"
                 "Por favor, certifique-se de que a foto está nítida ou digite os códigos no chat:\n"
@@ -1157,6 +1382,9 @@ async def photo_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 parse_mode="Markdown"
             )
             return
+
+        mac_found = ocr_result["mac"]
+        key_found = ocr_result["key"]
 
         await status_msg.edit_text(
             f"✅ *Dados Identificados na sua TV:*\n"
@@ -1175,6 +1403,19 @@ async def photo_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         if res.get("success"):
             AWAITING_TV_CODES.pop(user.id, None)
+
+            # Disparar alerta no @Alerta_nexusbot do Daniel
+            try:
+                alert_playtv_sale(
+                    plan_name="Ativação Smart TV (IBO Player)",
+                    amount_str="Automática (Visão IA)",
+                    method="IBO PLAYER",
+                    customer_info=f"@{user.username or 'SemUser'} (MAC {mac_found})",
+                    order_id=f"TV_{int(time.time())}"
+                )
+            except Exception as e_tv:
+                logger.error(f"Erro alerta TV: {e_tv}")
+
             await status_msg.edit_text(
                 "🎉 *SUA SMART TV FOI ATIVADA COM SUCESSO!*\n\n"
                 "✅ A lista completa de canais, filmes e jogos já está sincronizada.\n\n"
@@ -1195,6 +1436,21 @@ async def photo_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         logger.error(f"Erro photo_handler: {e}")
         await status_msg.edit_text("Erro ao processar a imagem. Por favor, envie os códigos digitados no chat.")
+
+async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Error handler global: registra a exceção e avisa o usuário sem deixá-lo no vácuo."""
+    logger.error("Exceção não tratada no PlayTV bot:", exc_info=context.error)
+    try:
+        if isinstance(update, Update) and getattr(update, "effective_chat", None):
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id,
+                text=(
+                    "⚠️ Ocorreu um erro inesperado ao processar sua solicitação.\n"
+                    "Nossa equipe foi notificada — tente novamente em instantes ou acione o suporte."
+                ),
+            )
+    except Exception as e:
+        logger.error(f"Falha ao notificar usuário sobre erro: {e}")
 
 def main():
     import socket
@@ -1220,6 +1476,7 @@ def main():
     app.add_handler(CallbackQueryHandler(callback_handler))
     app.add_handler(MessageHandler(filters.PHOTO, photo_handler))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, message_handler))
+    app.add_error_handler(error_handler)
     app.run_polling(drop_pending_updates=True)
 
 if __name__ == "__main__":

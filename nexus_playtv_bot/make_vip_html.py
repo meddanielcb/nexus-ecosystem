@@ -143,7 +143,7 @@ if __name__ == "__main__":
     generate_interactive_html(
         "/opt/data/nexus_playtv_bot/assets/acesso_vip.html",
         username="nexus_vip_7894",
-        password="[REDACTED]",
+        password="play_pass_2026",
         server_url="http://cdn.nexusplay.tv:8080",
         m3u_url="http://cdn.nexusplay.tv:8080/get.php?username=nexus_vip_7894&password=play_pass_2026&type=m3u_plus",
         plan_name="Pass Final de Semana 48h",

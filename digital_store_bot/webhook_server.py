@@ -33,6 +33,78 @@ DELIVERY_LOCK = threading.Lock()
 PLAYTV_DB_PATH = "/opt/data/nexus_playtv_bot/data/playtv.db"
 PLAYTV_BOT_TOKEN = "8979028734:AAFvHUW2ML8XmUnRXtY8f5j6l-pOeKxwj5s"
 
+# ---------------------------------------------------------------------------
+# P0-4 - Dominios oficiais de entrega.
+# Os dominios legados player.nexusplay.tv / cdn.nexusplay.tv / cdn-nexus.playtv.live
+# sao NXDOMAIN (verificado 2026-09-15) e nao podem ser entregues ao cliente.
+#   Servidor oficial:  http://atmt.space
+#   WebPlayer oficial: http://painelmaster.app/portal
+# ---------------------------------------------------------------------------
+OFFICIAL_SERVER_URL = "http://atmt.space"
+OFFICIAL_WEB_PLAYER = "http://painelmaster.app/portal"
+DEAD_HOSTS = ("player.nexusplay.tv", "cdn.nexusplay.tv", "cdn-nexus.playtv.live")
+
+
+def sanitize_server_url(url: str) -> str:
+    """Substitui dominios mortos (NXDOMAIN) pelo servidor oficial."""
+    if not url or any(host in url for host in DEAD_HOSTS):
+        return OFFICIAL_SERVER_URL
+    return url.rstrip("/")
+
+
+def sanitize_m3u_url(m3u_url, server_url, username, password) -> str:
+    """Garante que a lista M3U aponte para um host que resolve."""
+    if not m3u_url or any(host in m3u_url for host in DEAD_HOSTS):
+        return f"{server_url}/get.php?username={username}&password={password}&type=m3u_plus&output=ts"
+    return m3u_url
+
+
+# ---------------------------------------------------------------------------
+# P2 - Idempotencia persistente de deliveries (sobrevive a restart do processo).
+# ---------------------------------------------------------------------------
+def _ensure_delivery_schema():
+    for path in (DB_PATH, PLAYTV_DB_PATH):
+        try:
+            conn = sqlite3.connect(path, timeout=10)
+            conn.execute(
+                "CREATE TABLE IF NOT EXISTS processed_deliveries ("
+                "delivery_id TEXT PRIMARY KEY, source TEXT, "
+                "processed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"
+            )
+            conn.commit()
+            conn.close()
+        except Exception as e:
+            print(f"Aviso: nao foi possivel preparar idempotencia em {path}: {e}")
+
+
+def claim_delivery(delivery_id: str, source: str = "pixget") -> bool:
+    """Persiste o delivery em SQLite.
+
+    Retorna True apenas se o delivery for inedito (deve ser processado).
+    Retorna False em replay (mesmo X-Pixget-Delivery apos restart, por exemplo).
+    """
+    if not delivery_id:
+        return True
+    for path in (DB_PATH, PLAYTV_DB_PATH):
+        try:
+            conn = sqlite3.connect(path, timeout=10)
+            cur = conn.execute(
+                "INSERT OR IGNORE INTO processed_deliveries (delivery_id, source) VALUES (?, ?)",
+                (delivery_id, source)
+            )
+            conn.commit()
+            inserted = cur.rowcount
+            conn.close()
+            return inserted == 1
+        except Exception as e:
+            print(f"Aviso: idempotencia indisponivel em {path}: {e}")
+    # Sem persistencia disponivel nao bloqueamos a entrega (fail-open, igual ao comportamento antigo)
+    return True
+
+
+_ensure_delivery_schema()
+
+
 def deliver_order_async(order_id: str):
     """Executa a entrega do produto e salva no banco de dados de forma idempotente"""
     # 1. Roteamento Inteligente: Verificar se é pedido do Nexus PlayTV ou do Nexus Tools
@@ -104,9 +176,17 @@ def deliver_order_async(order_id: str):
 def deliver_playtv_order_async(order_id: str):
     """Executa a entrega e ativação da assinatura Nexus PlayTV"""
     import sys
-    sys.path.append("/opt/data/nexus_playtv_bot")
-    from services import generate_iptv_access
-    from notifier import alert_playtv_sale
+    # Importar diretamente do módulo do playtv sem colidir com digital_store_bot/services.py
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("playtv_services", "/opt/data/nexus_playtv_bot/services.py")
+    playtv_services = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(playtv_services)
+    generate_iptv_access = playtv_services.generate_iptv_access
+
+    spec_notif = importlib.util.spec_from_file_location("playtv_notifier", "/opt/data/nexus_playtv_bot/notifier.py")
+    playtv_notifier = importlib.util.module_from_spec(spec_notif)
+    spec_notif.loader.exec_module(playtv_notifier)
+    alert_playtv_sale = playtv_notifier.alert_playtv_sale
 
     conn = sqlite3.connect(PLAYTV_DB_PATH)
     c = conn.cursor()
@@ -161,6 +241,19 @@ def deliver_playtv_order_async(order_id: str):
             }, timeout=10)
         except Exception as err:
             print("Erro ao enviar confirmação de pass PlayTV:", err)
+
+        # Disparar alerta no @Alerta_nexusbot do Daniel para Passes
+        try:
+            val_str = f"R$ {amount:.2f}" if method == "pix" else f"${amount:.2f} USDT"
+            alert_playtv_sale(
+                plan_name="Pack 3 Jogos (Futebol/UFC)",
+                amount_str=val_str,
+                method=method.upper(),
+                customer_info=f"Telegram ID {user_id}",
+                order_id=order_id
+            )
+        except Exception as alert_err:
+            print("Erro ao disparar alert_playtv_sale para pack_3_games:", alert_err)
         return
 
     days_map = {
@@ -190,7 +283,7 @@ def deliver_playtv_order_async(order_id: str):
 
     # Enviar credenciais diretamente no chat do cliente no Nexus PlayTV com botões de 1 clique
     vip_web_url = f"https://nexus.pixget.io/vip/{order_id}"
-    web_player_url = f"https://player.nexusplay.tv/?user={access['username']}&pass={access['password']}"
+    web_player_url = f"{OFFICIAL_WEB_PLAYER}/?user={access['username']}&pass={access['password']}"
 
     msg = (
         "🎉 *PAGAMENTO APROVADO! SEU ACESSO NEXUS PLAYTV ESTÁ ATIVO!*\n\n"
@@ -266,30 +359,39 @@ def deliver_playtv_order_async(order_id: str):
         print("Erro ao alertar venda PlayTV:", e)
 
 class WebhookHandler(BaseHTTPRequestHandler):
+    def do_HEAD(self):
+        self.send_response(200)
+        self.end_headers()
+
     def do_GET(self):
         parsed = urlparse(self.path)
         path = parsed.path
         
         # Servir página VIP interativa móvel: /vip/<order_id>
         if path.startswith("/vip/"):
-            order_id = path.replace("/vip/", "")
+            order_id = path.replace("/vip/", "").strip()
             conn = sqlite3.connect("/opt/data/nexus_playtv_bot/data/playtv.db")
             c = conn.cursor()
-            c.execute("SELECT delivered_credentials, product_id, created_at FROM orders WHERE order_id = ?", (order_id,))
+            c.execute("SELECT delivered_credentials, product_id, created_at, expires_at FROM orders WHERE order_id = ? AND status = 'paid'", (order_id,))
             row = c.fetchone()
             conn.close()
 
-            dns, user, pw, m3u = "http://cdn.nexusplay.tv:8080", "nexus_vip", "pass2026", ""
-            plan_name = "Pass VIP"
-            valid_until = "Ativo"
+            if not row or not row[0]:
+                self.send_response(404)
+                self.send_header('Content-Type', 'text/plain; charset=utf-8')
+                self.end_headers()
+                self.wfile.write(b"404 - Acesso ou Pedido VIP nao encontrado.")
+                return
 
-            if row and row[0]:
-                cred_str = row[0]
-                for part in cred_str.split("|"):
-                    if "Servidor:" in part: dns = part.split("Servidor:")[1].strip()
-                    elif "Usuário:" in part: user = part.split("Usuário:")[1].strip()
-                    elif "Senha:" in part: pw = part.split("Senha:")[1].strip()
-                plan_name = row[1] or "Nexus PlayTV"
+            dns, user, pw, m3u = "http://atmt.space", "", "", ""
+            plan_name = row[1] or "Nexus PlayTV"
+            valid_until = row[3] or "Ativo"
+
+            cred_str = row[0]
+            for part in cred_str.split("|"):
+                if "Servidor:" in part: dns = part.split("Servidor:")[1].strip()
+                elif "Usuário:" in part: user = part.split("Usuário:")[1].strip()
+                elif "Senha:" in part: pw = part.split("Senha:")[1].strip()
 
             import sys
             sys.path.append("/opt/data/nexus_playtv_bot")
@@ -402,21 +504,7 @@ class WebhookHandler(BaseHTTPRequestHandler):
                     conn.close()
             return
 
-        if parsed_path == "/webhook/cryptobot":
-            try:
-                data = json.loads(raw_body.decode('utf-8'))
-            except Exception:
-                data = {}
-                
-            if data.get("update_type") == "invoice_paid":
-                order_id = data.get("payload", {}).get("payload")
-                if order_id:
-                    threading.Thread(target=deliver_order_async, args=(order_id,), daemon=True).start()
-                    
-            self.send_response(200)
-            self.end_headers()
-            self.wfile.write(b"OK")
-            return
+
 
         if parsed_path == "/api/webhooks/blockbee":
             # 1. Validação Obrigatória de Assinatura RSA do BlockBee
