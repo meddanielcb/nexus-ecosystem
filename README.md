@@ -150,3 +150,12 @@ Qualquer agente ou desenvolvedor que assumir o projeto deve seguir esta prioriza
 - **Implementação:** Criar planos de revenda no bot (ex: 10 créditos por R$ 150, 25 créditos por R$ 300).
 - **Automação MasterX:** Usar os endpoints `/api.php?action=reseller&sub=create` e `/api.php?action=reseller&sub=credits` para criar sub-revendedores automaticamente assim que o pagamento PIX for confirmado.
 
+### 7. Estratégia de Defesa & Blindagem Offshore (Anti-Derrubada)
+- **Documento Mestre:** Ver `docs/NEXUS_DEFENSE_AND_OFFSHORE_ARCHITECTURE.md`.
+- **Estratégia:**
+  1. Registrar domínio internacional anônimo (Njalla / Porkbun) com Whois Privacy 100%.
+  2. Ocultar o IP real da VPS atrás de camada de Proxy Anti-DDoS.
+  3. Planejar espelhamento da VPS para datacenter offshore DMCA-Ignored (Alexhost/Moldávia ou Holanda).
+  4. Preservação financeira via PixGet + Criptomoeda direta (BlockBee USDT).
+
+
