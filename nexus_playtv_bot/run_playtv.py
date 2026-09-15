@@ -414,7 +414,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             pass
 
         vip_page_url = f"https://nexus.pixget.io/vip/{trial_id}"
-        web_player_url = f"https://player.nexusplay.tv/?user={cred['username']}&pass={cred['password']}"
+        web_player_url = f"http://painelmaster.app/portal/?user={cred['username']}&pass={cred['password']}"
 
         text = (
             "🎉 *SEU TESTE GRÁTIS DE 4 HORAS FOI LIBERADO!*\n\n"
@@ -1057,9 +1057,13 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
     elif msg_text == "⚡ Teste Grátis (4h)":
-        update.callback_query = None
-        # Dispara logica de teste gratis
-        await update.message.reply_text("Gerando teste...", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Confirmar Teste Grátis", callback_data="free_trial")]]))
+        await update.message.reply_text(
+            "⚡ *Teste Degustação Grátis (4 Horas)*\n\n"
+            "Assista a todos os canais Premiere, UFC, Filmes e Séries em 4K sem pagar nada e comprove a estabilidade StreamCore™.\n\n"
+            "Clique no botão abaixo para gerar instantaneamente seu acesso:",
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("⚡ Confirmar e Liberar Teste (4 Horas)", callback_data="free_trial")]]),
+            parse_mode="Markdown"
+        )
         return
     elif msg_text == "📱 Como Instalar":
         await update.message.reply_text("Selecione o seu aparelho:", reply_markup=InlineKeyboardMarkup([
