@@ -3,10 +3,18 @@ import qrcode
 import base64
 from io import BytesIO
 
+from partner_apps import (
+    MASTERX_DOWNLOADER_CODE,
+    PARTNER_APPS_CODE,
+    PORTAL_URL,
+    SERVER_DNS_PRIMARY,
+    SERVER_DNS_ALT,
+)
+
 def generate_interactive_html(output_path, username, password, server_url, m3u_url, plan_name, valid_until):
     # Gerar QR Code em Base64
     qr = qrcode.QRCode(box_size=6, border=1)
-    web_login_url = f"https://player.nexusplay.tv/?user={username}&pass={password}"
+    web_login_url = f"{PORTAL_URL}/?user={username}&pass={password}"
     qr.add_data(web_login_url)
     qr.make(fit=True)
     buf = BytesIO()
@@ -108,12 +116,20 @@ def generate_interactive_html(output_path, username, password, server_url, m3u_u
   <div class="section">
     <div style="font-size: 13px; font-weight: bold; color: #E6EDF3; margin-bottom: 10px;">🔥 CÓDIGOS PARA CONTROLE REMOTO (DOWNLOADER):</div>
     <div class="app-pill">
-      <span>TiviMate Pro (Recomendado)</span>
-      <span class="app-code">49812</span>
+      <span>MASTERX (Android TV / Box / Fire Stick)</span>
+      <span class="app-code">{MASTERX_DOWNLOADER_CODE}</span>
     </div>
     <div class="app-pill">
-      <span>XCIPTV Player</span>
-      <span class="app-code">82341</span>
+      <span>Vizzion Play / XCIPTV (Play Store)</span>
+      <span class="app-code">PLAY STORE</span>
+    </div>
+    <div class="app-pill">
+      <span>Magic PLAY · Lazer Play · EPIC PLAY · Fun Play (Samsung / LG)</span>
+      <span class="app-code">{PARTNER_APPS_CODE}</span>
+    </div>
+    <div style="font-size: 12px; color: #8B949E; margin-top: 12px; line-height: 1.7;">
+      Servidores oficiais: <b style="color:#00E5FF;">{SERVER_DNS_PRIMARY}</b> (principal) e
+      <b style="color:#00E5FF;">{SERVER_DNS_ALT}</b> (alternativo)
     </div>
   </div>
 </div>

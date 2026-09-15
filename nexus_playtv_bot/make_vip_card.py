@@ -2,6 +2,11 @@ import os
 import qrcode
 from PIL import Image, ImageDraw, ImageFont
 
+from partner_apps import (
+    MASTERX_DOWNLOADER_CODE,
+    PARTNER_APPS_CODE as CODE_PARTNER,
+)
+
 def create_vip_onboarding_card(
     output_path: str,
     username: str,
@@ -149,9 +154,9 @@ def create_vip_onboarding_card(
 
     # App boxes
     apps = [
-        ("TiviMate Pro (Recomendado)", "CÓDIGO: 49812", "#00E5FF"),
-        ("XCIPTV Player", "CÓDIGO: 82341", "#E024C3"),
-        ("IBO Player (Samsung / LG)", "Device ID via Suporte", "#2EA043")
+        ("MASTERX (Android TV / Box / Fire)", f"CÓDIGO: {MASTERX_DOWNLOADER_CODE}", "#00E5FF"),
+        ("Vizzion Play / XCIPTV", "PLAY STORE", "#E024C3"),
+        ("Magic PLAY / Lazer Play (Samsung / LG)", f"ATIVAR: {CODE_PARTNER}  ·  via Foto", "#2EA043")
     ]
 
     for app_name, code_txt, tag_color in apps:

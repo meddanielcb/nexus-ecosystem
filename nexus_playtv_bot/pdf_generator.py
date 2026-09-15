@@ -8,6 +8,9 @@ from reportlab.platypus import (
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 import fitz # PyMuPDF
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from partner_apps import PARTNER_APPS_CODE, MASTERX_DOWNLOADER_CODE, MASTERX_APK_URL, SERVER_DNS_ALT
+
 def generate_playtv_vip_dossier(pdf_path: str, username: str, password: str, server_url: str, m3u_url: str, plan_name: str, valid_until: str):
     os.makedirs(os.path.dirname(pdf_path), exist_ok=True)
     doc = SimpleDocTemplate(
@@ -109,7 +112,8 @@ def generate_playtv_vip_dossier(pdf_path: str, username: str, password: str, ser
         ],
         [
             Paragraph("<b>DNS / SERVIDOR (HOST):</b>", code_label),
-            Paragraph(f"<code>{server_url}</code>", code_val)
+            Paragraph(f"<code>{server_url}</code><br/>"
+                      f"<font size=7 color='#8B949E'>Alternativo: {SERVER_DNS_ALT}</font>", code_val)
         ],
         [
             Paragraph("<b>USUÁRIO:</b>", code_label),
@@ -180,41 +184,52 @@ def generate_playtv_vip_dossier(pdf_path: str, username: str, password: str, ser
         ],
         [
             Paragraph("<b>Smart TV Samsung</b><br/>(Tizen)", body_style),
-            Paragraph("<b>IBO Player</b><br/>ou Smart IPTV", body_style),
+            Paragraph("<b>Magic PLAY</b><br/>Lazer Play · EPIC PLAY<br/>FunPlays · IBO Player", body_style),
             Paragraph(
-                "1. Abra a loja da TV Samsung e instale o <b>IBO Player</b>.<br/>"
-                "2. Ao abrir, o app exibe <b>Device ID</b> e <b>Device Key</b>.<br/>"
-                "3. Envie esses 2 códigos aqui no chat do bot que ativamos a lista pra você!",
+                "1. Abra a loja da TV Samsung e instale um dos apps parceiros.<br/>"
+                f"2. Se o app pedir o <b>Código de Aplicativos Parceiros</b>, digite <b>{PARTNER_APPS_CODE}</b>.<br/>"
+                "3. Ou mande uma foto da tela no bot que ativamos a lista automaticamente!",
                 body_style
             )
         ],
         [
             Paragraph("<b>Smart TV LG</b><br/>(webOS)", body_style),
-            Paragraph("<b>IBO Player</b><br/>ou IPTV Smarters", body_style),
+            Paragraph("<b>Magic PLAY</b><br/>Lazer Play · Super Play<br/>FunPlays · IBO Player", body_style),
             Paragraph(
-                "1. Abra a LG Content Store e baixe o <b>IBO Player</b>.<br/>"
-                "2. Abra o app e selecione <b>Xtream Codes API</b>.<br/>"
-                "3. Digite o Servidor, Usuário e Senha fornecidos no cartão acima.",
+                "1. Abra a LG Content Store e baixe um dos apps parceiros.<br/>"
+                f"2. Se o app pedir o <b>Código de Aplicativos Parceiros</b>, digite <b>{PARTNER_APPS_CODE}</b>.<br/>"
+                "3. Servidor: <b>atmt.space</b> — depois use Usuário e Senha do cartão acima.",
                 body_style
             )
         ],
         [
             Paragraph("<b>Fire Stick / TV Box</b><br/>(Android TV)", body_style),
-            Paragraph("<b>TiviMate</b> 👑<br/>ou XCIPTV", body_style),
+            Paragraph("<b>MASTERX</b> (Play Store)<br/>ou XCIPTV / Vizzion Play", body_style),
             Paragraph(
-                "1. Baixe o <b>TiviMate</b> na Play Store ou Downloader.<br/>"
-                "2. Clique em <i>Adicionar Lista</i> ➔ Selecione <i>Xtream Codes</i>.<br/>"
-                "3. Digite o Servidor, Usuário e Senha. A lista carrega em 5 segundos.",
+                "1. Na Play Store instale o <b>MASTERX</b>. Alternativa via <b>Downloader</b>:<br/>"
+                f"   código <b>{MASTERX_DOWNLOADER_CODE}</b> ({MASTERX_APK_URL}).<br/>"
+                f"2. Se pedir o <b>Código de Aplicativos Parceiros</b>, digite <b>{PARTNER_APPS_CODE}</b>.<br/>"
+                "3. Use o Servidor, Usuário e Senha do cartão acima. A lista carrega em 5 segundos.",
                 body_style
             )
         ],
         [
             Paragraph("<b>iPhone / iPad / Apple TV</b>", body_style),
-            Paragraph("<b>Smarters Lite</b><br/>ou GSE Smart IPTV", body_style),
+            Paragraph("<b>VU Player Pro</b><br/>ou Smarters Player", body_style),
             Paragraph(
-                "1. Baixe o <b>Smarters Player Lite</b> grátis na App Store.<br/>"
+                "1. Baixe o <b>VU Player Pro</b> grátis na App Store.<br/>"
                 "2. Selecione <i>Add Your Playlist (via Xtream Codes)</i>.<br/>"
-                "3. Digite o Usuário e Senha e assista ao vivo.",
+                "3. Servidor: <b>atmt.space</b> — use o Usuário e Senha do cartão acima.",
+                body_style
+            )
+        ],
+        [
+            Paragraph("<b>Windows / Mac</b>", body_style),
+            Paragraph("<b>IPTV Smarters</b><br/>ou WebPlayer", body_style),
+            Paragraph(
+                "1. Windows: baixe o instalador oficial <b>painelmaster.app/uploads/smarters-pc.exe</b>.<br/>"
+                "2. Ou abra o WebPlayer no navegador: <b>painelmaster.app/portal</b>.<br/>"
+                "3. Entre com Servidor, Usuário e Senha do cartão acima.",
                 body_style
             )
         ]

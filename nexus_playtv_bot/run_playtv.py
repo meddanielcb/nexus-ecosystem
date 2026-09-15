@@ -52,6 +52,18 @@ from services import (
 )
 from notifier import alert_playtv_sale, alert_playtv_trial
 from ibo_injector import activate_smart_tv_ibo
+from partner_apps import (
+    PARTNER_APPS,
+    PARTNER_APPS_CODE,
+    PLAYSTORE_APPS,
+    MASTERX_DOWNLOADER_CODE,
+    MASTERX_APK_URL,
+    WINDOWS_SMARTERS_URL,
+    IPHONE_APP,
+    PORTAL_URL,
+    SERVER_DNS_PRIMARY,
+    SERVER_DNS_ALT,
+)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("nexus_playtv")
@@ -385,7 +397,8 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"🔗 *Lista M3U:*\n`{cred['m3u_url']}`\n\n"
             "✨ *COMO ASSISTIR AGORA:*\n"
             "1️⃣ *No Computador/Celular:* Clique no botão **Assistir no Navegador** abaixo para abrir sem digitar senha!\n"
-            "2️⃣ *Na Smart TV:* Clique em **Ativar na Smart TV** e mande a foto do app IBO Player!"
+            "2️⃣ *Na Smart TV:* Clique em **Ativar na Smart TV** e mande a foto da tela do seu app!"
+            " (funciona com FunPlays, Magic PLAY, Power Play, EPIC PLAY, IBO Player e Smart IPTV)"
         )
         keyboard = [
             [InlineKeyboardButton("▶️ Assistir no Navegador (WebPlayer)", url=web_player_url)],
@@ -613,92 +626,85 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         device = data.replace("inst_", "")
         instructions = {
             "samsung": (
-                "📺 *Instalação na Smart TV Samsung (Tizen):*\n\n"
-                "✨ *Você NÃO precisa digitar senhas ou links na TV!*\n\n"
-                "1. Abra a loja de aplicativos da sua TV Samsung;\n"
-                "2. Pesquise e baixe o aplicativo **IBO Player**;\n"
-                "3. Abra o IBO Player na sua TV;\n"
-                "4. Clique no botão abaixo para **tirar uma foto da tela** ou digitar os códigos.\n\n"
-                "👇 O robô injeta os canais na sua TV na hora:"
+                "📺 *Instalação na Smart TV Samsung*\n\n"
+                "✨ *Você NÃO precisa digitar senhas nem links na TV!*\n\n"
+                "1️⃣ Abra a loja de aplicativos da sua Samsung;\n"
+                f"2️⃣ Baixe um destes parceiros: *{PARTNER_APPS[0]}*, *{PARTNER_APPS[3]}* ou *EPIC PLAY*;\n"
+                "3️⃣ Abra o aplicativo. Ele abre já pedindo para ativar;\n"
+                f"4️⃣ Se ele pedir o *Código de Aplicativos Parceiros*, digite: `{PARTNER_APPS_CODE}`\n\n"
+                "🤖 *Ou deixe o robô configurar pra você:* clique no botão abaixo e envie uma foto da tela do aplicativo."
             ),
             "lg": (
-                "📺 *Instalação na Smart TV LG (webOS):*\n\n"
-                "✨ *Você NÃO precisa digitar senhas ou links na TV!*\n\n"
-                "1. Abra a LG Content Store na sua TV;\n"
-                "2. Pesquise e baixe o aplicativo **IBO Player**;\n"
-                "3. Abra o IBO Player na sua TV;\n"
-                "4. Clique no botão abaixo para **tirar uma foto da tela** ou digitar os códigos.\n\n"
-                "👇 O robô injeta os canais na sua TV na hora:"
+                "📺 *Instalação na Smart TV LG (webOS)*\n\n"
+                "✨ *Você NÃO precisa digitar senhas nem links na TV!*\n\n"
+                "1️⃣ Abra a LG Content Store;\n"
+                f"2️⃣ Baixe um destes parceiros: *{PARTNER_APPS[0]}*, *{PARTNER_APPS[3]}* ou *Super Play*;\n"
+                "3️⃣ Abra o aplicativo;\n"
+                f"4️⃣ Se pedir o *Código de Aplicativos Parceiros*, digite: `{PARTNER_APPS_CODE}`\n\n"
+                "🤖 *Ou deixe o robô configurar pra você:* clique no botão abaixo e envie uma foto da tela do aplicativo."
             ),
             "android": (
-                "🔥 *Instalação no Fire TV Stick:*\n\n"
-                "✨ *Escolha como prefere instalar:*\n\n"
-                "1️⃣ *Opção 1 (Aplicativo Oficial New Hybrid - Mais estável):*\n"
-                "• Abra o app **Downloader** na sua TV e digite o código: **`1941290`**\n"
-                "• Ou se usar o app **NtDown**, use o código: **`73783`**\n\n"
-                "2️⃣ *Opção 2 (Central V3 / DreamTV):*\n"
-                "• No app Downloader, digite: **`9007131`** (Central V3) ou **`8627648`** (DreamTV)\n\n"
-                "3️⃣ *Opção 3 (Ativação Automática via IBO Player):*\n"
-                "• Baixe o **IBO Player**, abra e clique no botão abaixo para o robô injetar os canais na sua TV!"
+                "🔥 *Instalação no Fire TV Stick*\n\n"
+                "1️⃣ Abra o aplicativo *Downloader* na sua TV;\n"
+                f"2️⃣ Na barra de endereço digite o código: *`{MASTERX_DOWNLOADER_CODE}`*\n"
+                f"   (ou o endereço completo: `{MASTERX_APK_URL}`)\n"
+                "3️⃣ Instale o aplicativo *MASTERX* e abra;\n"
+                f"4️⃣ Se pedir o *Código de Aplicativos Parceiros*, digite: `{PARTNER_APPS_CODE}`\n\n"
+                "🤖 *Ativação automática:* abra o app na TV e clique no botão abaixo para o robô gravar a lista via foto!"
             ),
             "androidtv": (
-                "📱 *Instalação no Android TV / TV Box / Google TV:*\n\n"
-                "✨ *Aplicativos Oficiais Recomendados:*\n\n"
-                "1️⃣ *New Hybrid P2P (Recomendado):*\n"
-                "• No app **Downloader**, digite o código: **`1941290`** (ou NtDown: **`73783`**)\n\n"
-                "2️⃣ *FiveTV PRO / Central V3:*\n"
-                "• Downloader: **`7877135`** (FiveTV) | **`9007131`** (Central V3)\n\n"
-                "3️⃣ *Ativação Automática IBO Player:*\n"
-                "• Baixe o **IBO Player** na Google Play Store e clique no botão abaixo!"
+                "📱 *Instalação no Android TV / TV Box / Google TV*\n\n"
+                f"1️⃣ Na *Play Store*, instale: *{PLAYSTORE_APPS[0]}* (oficial) ou *{PLAYSTORE_APPS[1]}*;\n"
+                "2️⃣ Alternativa via *Downloader* (APK oficial):\n"
+                f"   • Código: *`{MASTERX_DOWNLOADER_CODE}`*  →  `{MASTERX_APK_URL}`\n"
+                "3️⃣ Abra o aplicativo e conecte com o seu Usuário e Senha Nexus;\n"
+                f"4️⃣ Se pedir o *Código de Aplicativos Parceiros*, digite: `{PARTNER_APPS_CODE}`\n\n"
+                "🤖 *Ativação automática:* abra o app na TV e clique no botão abaixo para o robô gravar a lista via foto!"
             ),
             "roku": (
-                "🔵 *Instalação na Roku TV (AOC, Philco, TCL Roku, Semp):*\n\n"
-                "✨ *Ativação Automática disponível — sem digitar na TV!*\n\n"
-                "1. Na tela inicial da Roku, vá em **Streaming Channels**;\n"
-                "2. Pesquise e adicione o canal **IBO Player**;\n"
-                "3. Abra o app e anote o **Device ID** e o **Device Key** da tela:"
+                "🔵 *Instalação na Roku TV (AOC, Philco, TCL Roku, Semp)*\n\n"
+                "1. Na tela inicial da Roku, vá em *Streaming Channels*;\n"
+                f"2. Pesquise e adicione o canal *{PLAYSTORE_APPS[2]}* ou *Smarters Player*;\n"
+                "3. Abra o app e conecte com o seu Usuário e Senha Nexus:"
             ),
             "appletv": (
-                "🍏 *Instalação no Apple TV:*\n\n"
-                "✨ *Ativação Automática disponível — sem digitar na TV!*\n\n"
-                "1. Abra a App Store do Apple TV;\n"
-                "2. Baixe o **IBO Player**;\n"
-                "3. Abra o app e anote o **Device ID** e o **Device Key**:"
+                "🍏 *Instalação no Apple TV*\n\n"
+                f"1. Abra a App Store do Apple TV;\n"
+                f"2. Baixe o *{IPHONE_APP}* ou *Smarters Player*;\n"
+                "3. Abra o app e conecte com o seu Usuário e Senha Nexus:"
             ),
             "mobile": (
-                "📲 *Instalação no Celular / Tablet (Android ou iPhone):*\n\n"
-                "1️⃣ *Android:* Baixe o app oficial em **`abrela.me/ftvpro`** (FiveTV) ou instale o **IBO Player** na Play Store.\n"
-                "2️⃣ *iPhone / iPad:* Baixe o **Smarters Player Lite** na App Store e use os dados do seu acesso (Servidor: `http://atmt.space`).\n"
-                "3️⃣ *No Navegador:* Acesse direto pelo WebPlayer em **http://painelmaster.app/portal** com seu usuário e senha."
+                " *Instalação no Celular / Tablet*\n\n"
+                f"1️⃣ *Android:* instale o *{PLAYSTORE_APPS[0]}* na Play Store "
+                f"(ou *{PLAYSTORE_APPS[1]}*);\n"
+                f"2️⃣ *iPhone / iPad:* baixe o *{IPHONE_APP}* na App Store;\n"
+                f"3️⃣ *No navegador:* acesse o WebPlayer em *{PORTAL_URL}* com o seu usuário e senha."
             ),
             "apple": (
-                "🍏 *Instalação no iPhone, iPad ou Apple TV:*\n\n"
-                "1. Abra a App Store;\n"
-                "2. Baixe o **Smarters Player Lite** ou **Stream Player - ISP**;\n"
-                "3. Selecione login com API Xtream Codes:\n"
-                "   • Servidor: `http://atmt.space`\n"
-                "   • Use o Usuário e Senha da sua conta/passe ativo!"
+                " *Instalação no iPhone / iPad*\n\n"
+                f"1. Abra a App Store;\n"
+                f"2. Baixe o *{IPHONE_APP}* ou *Smarters Player Lite*;\n"
+                "3. Escolha a opção *API Xtream Codes* e preencha:\n"
+                f"   • Servidor: `{SERVER_DNS_PRIMARY}`\n"
+                "   • Usuário e Senha da sua conta Nexus."
             ),
             "pc": (
-                "💻 *Instalação e Acesso no Computador (Mac / Windows):*\n\n"
-                "✨ *Opção 1: WebPlayer no Navegador (Chrome / Safari)*\n"
-                "• Acesse: **http://webtv-new.iptvsmarters.com**\n"
-                "• Selecione **Xtream Codes API**;\n"
-                "• Preencha com os dados da sua conta:\n"
-                "  - **Nome:** Nexus PlayTV\n"
-                "  - **Usuário:** seu usuário ativo\n"
-                "  - **Senha:** sua senha ativa\n"
-                "  - **URL do Servidor:** `http://atmt.space`\n\n"
-                "✨ *Opção 2: Aplicativo Nativo no Mac (Melhor experiência)*\n"
-                "• Baixe o app **IPTV Smarters Pro** ou **Smarters Player Lite** direto na **App Store do Mac**;\n"
-                "• Entre com seu Usuário, Senha e Servidor (`http://atmt.space`).\n\n"
-                "✨ *Opção 3: VLC Media Player (100% Grátis no Mac)*\n"
-                "• No VLC, pressione `Cmd + N` (Abrir Rede) e cole o link da sua **Lista M3U**!"
+                "💻 *Instalação no Computador (Windows / Mac)*\n\n"
+                "✨ *Opção 1 — Instalador oficial (recomendado no Windows):*\n"
+                f"• Baixe e abra: `{WINDOWS_SMARTERS_URL}`\n"
+                "• Selecione *Xtream Codes API* e preencha:\n"
+                f"  - Servidor: `{SERVER_DNS_PRIMARY}`\n"
+                "  - Usuário e Senha da sua conta Nexus.\n\n"
+                "✨ *Opção 2 — WebPlayer no navegador (Chrome / Safari / Edge):*\n"
+                f"• Acesse: *{PORTAL_URL}*\n"
+                "• Entre com o seu Usuário e Senha. Roda na hora, sem instalar nada.\n\n"
+                "✨ *Opção 3 — Mac:* baixe *IPTV Smarters Pro* na App Store, ou abra a sua "
+                "*Lista M3U* no VLC (Cmd+N → Abrir Rede)."
             )
         }
         text = instructions.get(device, "Instruções disponíveis no suporte.")
         
-        # Ativação automática via 2Captcha — todos os Apps IBO Player (Device ID + Key)
+        # Ativação automática (multi-app: FunPlays / IBO Player / Smart IPTV / SmartOne)
         AUTO_ACTIVATE_DEVICES = ["samsung", "lg", "roku", "appletv", "android", "androidtv", "mobile"]
         keyboard = []
         if device in AUTO_ACTIVATE_DEVICES:
@@ -757,7 +763,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.message.reply_text(
             "📺 *CONFIGURAÇÃO AUTOMÁTICA DE SMART TV*\n\n"
             "✨ *Você tem duas formas super fáceis:*\n\n"
-            "📸 *FORMA 1 (Mais fácil):* Tire uma foto da tela da sua TV mostrando o app IBO Player aberto e envie aqui no chat!\n\n"
+            "📸 *FORMA 1 (Mais fácil):* Tire uma foto (ou print) da tela da sua TV com o aplicativo aberto e envie aqui no chat!\n\n"
             "⌨️ *FORMA 2:* Digite o seu **Device ID** e **Device Key** separados por espaço.\n"
             "Exemplo: `a1:b2:c3:d4:e5:f6 123456`\n\n"
             "*(Nosso sistema lê sua foto ou código e injeta os canais na sua TV em 8 segundos)*",
@@ -1364,21 +1370,26 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             parse_mode="Markdown"
         )
 
-        res = activate_smart_tv_ibo(
-            mac_address=mac_fmt,
-            device_key=key_clean,
-            playlist_name="Nexus PlayTV Oficial",
-            playlist_url=m3u_url
+        from tv_activator import activate_tv
+
+        res = activate_tv(
+            mac=mac_fmt,
+            key=key_clean,
+            playlist_url=m3u_url,
+            site=session.get("site", "") or "",
+            app_name=session.get("app", "") or "",
+            playlist_name="Nexus PlayTV VIP",
         )
 
         if res.get("success"):
             AWAITING_TV_CODES.pop(user.id, None)
+            app_label = res.get("app_label") or "Smart TV"
 
             try:
                 alert_playtv_sale(
-                    plan_name="Ativação Smart TV (IBO Player)",
+                    plan_name=f"Ativação Smart TV ({app_label})",
                     amount_str="Automática (digitação)",
-                    method="IBO PLAYER",
+                    method=app_label.upper(),
                     customer_info=f"@{user.username or 'SemUser'} (MAC {mac_fmt})",
                     order_id=f"TV_{int(time.time())}"
                 )
@@ -1387,11 +1398,12 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             await status_msg.edit_text(
                 "🎉 *SUA SMART TV FOI ATIVADA COM SUCESSO!*\n\n"
-                "✅ A lista completa de canais, filmes e jogos já está sincronizada.\n\n"
+                f"✅ Aplicativo: *{app_label}*\n"
+                "✅ A lista completa de canais, filmes e séries já está gravada.\n\n"
                 "📺 *Como assistir agora:*\n"
-                "1. Vá até a sua TV;\n"
-                "2. Pressione a tecla de **Reload / Recarregar** (ou o botão vermelho do controle);\n"
-                "3. Pronto! A grade completa do Nexus PlayTV já está na sua tela.\n\n"
+                "1. Saia da tela de configurações na TV;\n"
+                "2. Selecione a lista *Nexus PlayTV VIP*;\n"
+                "3. Se não aparecer, pressione **Reload / Recarregar**.\n\n"
                 "Bom divertimento! 🍿⚽",
                 parse_mode="Markdown"
             )
@@ -1400,7 +1412,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await status_msg.edit_text(
                 f"❌ *Não foi possível ativar sua TV:*\n`{err_msg}`\n\n"
                 "Confira se o **Device ID** e o **Device Key** estão exatamente como aparecem na tela "
-                "do IBO Player (app oficial, não o IBO PRO TV) e envie novamente no formato:\n"
+                "do aplicativo e envie novamente no formato:\n"
                 "`a1:b2:c3:d4:e5:f6 123456`",
                 parse_mode="Markdown"
             )
@@ -1685,14 +1697,15 @@ async def coupon_admin_command(update: Update, context: ContextTypes.DEFAULT_TYP
     )
 
 async def photo_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Lê a foto da tela da Smart TV enviada pelo usuário, extrai Device ID e Key via OCR e ativa automaticamente"""
+    """Le a foto da tela da Smart TV, extrai os codigos via OCR (Gemini Vision)
+    e ativa a lista automaticamente no backend correto do aplicativo detectado."""
     user = update.effective_user
-    
-    # Auto-recuperar m3u se o usuário não clicou antes no botão
+
+    # Auto-recuperar m3u se o usuario nao clicou antes no botao
     m3u_url = None
     if user.id in AWAITING_TV_CODES:
         m3u_url = AWAITING_TV_CODES[user.id].get("m3u_url")
-    
+
     if not m3u_url:
         conn = db_connect()
         c = conn.cursor()
@@ -1731,56 +1744,30 @@ async def photo_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
     try:
-        # Baixar a foto enviada pelo usuário
+        # Baixar a foto enviada pelo usuario
         photo = update.message.photo[-1]
         file_obj = await context.bot.get_file(photo.file_id)
         local_img = f"/tmp/tv_screen_{user.id}_{int(time.time())}.jpg"
         await file_obj.download_to_drive(local_img)
 
-        # Usar Visão Computacional de Elite com Gemini Flash
+        # Visao computacional (Gemini Flash)
         from tv_vision_ocr import extract_tv_codes_from_image
         ocr_result = extract_tv_codes_from_image(local_img)
 
-        if not ocr_result.get("success"):
-            mac_p = ocr_result.get("mac")
-            site_p = (ocr_result.get("site") or "").lower()
-            app_p = (ocr_result.get("app_name") or "").strip()
+        from tv_activator import activate_tv, detect_app, APP_NAMES
 
-            # Caso 1: MAC lido, mas SEM Device Key na tela -> app de ativacao por codigo
-            if mac_p:
-                if "ibotv" in site_p or "iboprotv" in site_p or "pro tv" in app_p.lower():
-                    AWAITING_TV_CODES[user.id] = {"m3u_url": m3u_url, "mode": "ibo_pro"}
-                    await status_msg.edit_text(
-                        "📺 *Identifiquei a tela do aplicativo IBO PRO TV.*\n\n"
-                        f"• MAC da sua TV: `{mac_p}`\n\n"
-                        "⚠️ *Atenção:* esse aplicativo (IBO PRO TV) *não* usa o sistema de "
-                        "Device ID + Device Key. Ele exige que você crie um *código de ativação* "
-                        "no site `ibotv.pro` antes de aceitar qualquer lista de canais.\n\n"
-                        "✅ *Solução mais rápida (funciona agora, sem custo):* use um player que aceita "
-                        "a lista direto. Vou te mandar o passo a passo do app correto.\n\n"
-                        "Escolha abaixo:",
-                        reply_markup=InlineKeyboardMarkup([
-                            [InlineKeyboardButton("📱 Ver app correto + link da lista", callback_data="how_to_install")],
-                            [InlineKeyboardButton("🎬 Tentar ativar pelo IBO Player", callback_data="auto_activate_tv")]
-                        ]),
-                        parse_mode="Markdown"
-                    )
-                    return
+        mac_found = ocr_result.get("mac")
+        key_found = ocr_result.get("key")
+        site_p = (ocr_result.get("site") or "").lower()
+        app_p = (ocr_result.get("app_name") or "").strip()
+        detected = detect_app(site_p, app_p)
 
-                # MAC lido mas sem key e sem site reconhecido
-                AWAITING_TV_CODES[user.id] = {"m3u_url": m3u_url, "mode": "manual", "mac_pending": mac_p}
-                await status_msg.edit_text(
-                    "🔍 *Encontrei o MAC da sua TV, mas não achei o Device Key na foto.*\n\n"
-                    f"• MAC: `{mac_p}`\n\n"
-                    "Envie o *Device Key* (o código numérico que aparece logo abaixo do MAC) "
-                    "apenas com os números. Ex: `256294`\n\n"
-                    "💡 *Dica:* tire o print direto da tela da TV (não fotografe a tela do celular), "
-                    "que a leitura fica perfeita.",
-                    parse_mode="Markdown"
-                )
-                return
+        logger.info(f"[PHOTO] OCR mac={mac_found} key={key_found} site={site_p} app={app_p} -> backend={detected}")
 
-            # Caso 2: nada lido
+        # ------------------------------------------------------------------
+        # Nada legivel na foto
+        # ------------------------------------------------------------------
+        if not mac_found:
             await status_msg.edit_text(
                 "⚠️ *Não consegui identificar os códigos nessa foto.*\n\n"
                 "Para a leitura automática funcionar:\n"
@@ -1792,33 +1779,79 @@ async def photo_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
             return
 
-        mac_found = ocr_result["mac"]
-        key_found = ocr_result["key"]
+        # ------------------------------------------------------------------
+        # App de credito pre-pago: sem injecao possivel
+        # ------------------------------------------------------------------
+        if detected == "ibopro":
+            AWAITING_TV_CODES[user.id] = {"m3u_url": m3u_url, "mode": "ibo_pro"}
+            await status_msg.edit_text(
+                "📺 *Identifiquei a tela do aplicativo IBO PRO TV.*\n\n"
+                f"• MAC da sua TV: `{mac_found}`\n\n"
+                "⚠️ *Atenção:* esse aplicativo (IBO PRO TV) *não* usa o sistema de "
+                "Device ID + Device Key. Ele exige que você crie um *código de ativação* "
+                "no site `ibotv.pro` antes de aceitar qualquer lista de canais.\n\n"
+                "✅ *Solução mais rápida (funciona agora, sem custo):* use um player que aceita "
+                "a lista direto. Vou te mandar o passo a passo do app correto.\n\n"
+                "Escolha abaixo:",
+                reply_markup=InlineKeyboardMarkup([
+                    [InlineKeyboardButton("📱 Ver app correto + link da lista", callback_data="how_to_install")],
+                    [InlineKeyboardButton("🎬 Tentar outro aplicativo", callback_data="auto_activate_tv")]
+                ]),
+                parse_mode="Markdown"
+            )
+            return
+
+        # ------------------------------------------------------------------
+        # Apps que exigem Device Key: se a foto nao mostrou, pede o numero
+        # ------------------------------------------------------------------
+        if detected in ("funplays", "ibo") and not key_found:
+            AWAITING_TV_CODES[user.id] = {"m3u_url": m3u_url, "mode": "manual", "mac_pending": mac_found,
+                                          "app": detected, "site": detected}
+            label = APP_NAMES.get(detected, "seu aplicativo")
+            await status_msg.edit_text(
+                f"🔍 *Encontrei o MAC da sua TV ({label}), mas falta a Chave.*\n\n"
+                f"• MAC: `{mac_found}`\n\n"
+                "Envie a *Chave do dispositivo* (o código que aparece perto do MAC, "
+                "ex: \"Chave do dispositivo: 668267\") apenas com os números.\n\n"
+                "💡 *Dica:* tire o print direto da tela da TV (não fotografe a tela do celular), "
+                "que a leitura fica perfeita.",
+                parse_mode="Markdown"
+            )
+            return
+
+        # ------------------------------------------------------------------
+        # Ativacao automatica
+        # ------------------------------------------------------------------
+        if detected in ("funplays", "ibo"):
+            resumo = (f"✅ *Dados Identificados na sua TV:*\n"
+                      f"• Device ID: `{mac_found}`\n"
+                      f"• Device Key: `{key_found}`\n\n")
+        else:
+            resumo = (f"✅ *Dados Identificados na sua TV:*\n"
+                      f"• Device ID: `{mac_found}`\n\n")
 
         await status_msg.edit_text(
-            f"✅ *Dados Identificados na sua TV:*\n"
-            f"• Device ID: `{mac_found}`\n"
-            f"• Device Key: `{key_found}`\n\n"
-            "⏳ *Injetando canais na sua Smart TV via 2Captcha...*",
+            resumo + "⏳ *Injetando os canais na sua Smart TV...* aguarde de 10 a 40 segundos.",
             parse_mode="Markdown"
         )
 
-        res = activate_smart_tv_ibo(
-            mac_address=mac_found,
-            device_key=key_found,
-            playlist_name="Nexus PlayTV Oficial",
-            playlist_url=m3u_url
+        res = activate_tv(
+            mac=mac_found,
+            key=key_found,
+            playlist_url=m3u_url,
+            site=site_p,
+            app_name=app_p,
+            playlist_name="Nexus PlayTV VIP",
         )
 
         if res.get("success"):
             AWAITING_TV_CODES.pop(user.id, None)
-
-            # Disparar alerta no @Alerta_nexusbot do Daniel
+            app_label = res.get("app_label") or "Smart TV"
             try:
                 alert_playtv_sale(
-                    plan_name="Ativação Smart TV (IBO Player)",
+                    plan_name=f"Ativação Smart TV ({app_label})",
                     amount_str="Automática (Visão IA)",
-                    method="IBO PLAYER",
+                    method=app_label.upper(),
                     customer_info=f"@{user.username or 'SemUser'} (MAC {mac_found})",
                     order_id=f"TV_{int(time.time())}"
                 )
@@ -1827,24 +1860,45 @@ async def photo_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             await status_msg.edit_text(
                 "🎉 *SUA SMART TV FOI ATIVADA COM SUCESSO!*\n\n"
-                "✅ A lista completa de canais, filmes e jogos já está sincronizada.\n\n"
+                f"✅ Aplicativo: *{app_label}*\n"
+                "✅ A lista completa de canais, filmes e séries já está gravada na TV.\n\n"
                 "📺 *Como assistir agora:*\n"
-                "1. Vá até a sua TV;\n"
-                "2. Pressione a tecla de **Reload / Recarregar** (ou o botão vermelho do controle);\n"
-                "3. Pronto! A grade completa do Nexus PlayTV já está na sua tela.\n\n"
+                "1. Saia da tela de configurações do aplicativo na TV;\n"
+                "2. Selecione a lista *Nexus PlayTV VIP*;\n"
+                "3. Se não aparecer, pressione *Reload / Recarregar* no app.\n\n"
                 "Bom divertimento! 🍿⚽",
                 parse_mode="Markdown"
             )
         else:
+            err = res.get("message") or "Erro desconhecido"
             await status_msg.edit_text(
-                f"❌ *Não foi possível ativar sua TV:*\n`{res.get('message')}`\n\n"
-                "Verifique os códigos na tela e tente novamente digitando no formato:\n"
-                "`a1:b2:c3:d4:e5:f6 123456`",
+                f"❌ *Não foi possível ativar sua TV automaticamente:*\n`{err}`\n\n"
+                "Confira se os códigos na tela estão corretos e envie novamente no formato:\n"
+                "`a1:b2:c3:d4:e5:f6 123456`\n\n"
+                "Se preferir, nosso suporte finaliza a ativação manualmente em segundos.",
+                reply_markup=InlineKeyboardMarkup([
+                    [InlineKeyboardButton("💬 Falar com o Suporte", callback_data="support_faq")],
+                    [InlineKeyboardButton("⬅️ Menu Inicial", callback_data="main_menu")]
+                ]),
                 parse_mode="Markdown"
             )
+
     except Exception as e:
-        logger.error(f"Erro photo_handler: {e}")
-        await status_msg.edit_text("Erro ao processar a imagem. Por favor, envie os códigos digitados no chat.")
+        logger.error(f"Erro photo_handler: {e}", exc_info=True)
+        try:
+            await status_msg.edit_text(
+                "⚠️ *Não consegui concluir a ativação automática agora.*\n\n"
+                "Envie os códigos digitados aqui no chat no formato:\n"
+                "`a1:b2:c3:d4:e5:f6 123456`\n\n"
+                "Ou acione o suporte que resolvemos na hora.",
+                reply_markup=InlineKeyboardMarkup([
+                    [InlineKeyboardButton("💬 Suporte", callback_data="support_faq")]
+                ]),
+                parse_mode="Markdown"
+            )
+        except Exception:
+            pass
+
 
 async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Error handler global: registra a exceção e avisa o usuário sem deixá-lo no vácuo."""
