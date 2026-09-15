@@ -101,6 +101,16 @@ def get_main_keyboard():
         ]
     ]
 
+def get_persistent_reply_keyboard():
+    """Menu fixo na barra de digitação: objetivo, sem poluição e sem o botão de teste."""
+    return ReplyKeyboardMarkup(
+        [
+            [KeyboardButton("📺 Planos"), KeyboardButton("📱 Instalação")],
+            [KeyboardButton("📦 Minha Conta"), KeyboardButton("❓ Suporte")]
+        ],
+        resize_keyboard=True
+    )
+
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     args = context.args if context and context.args else []
@@ -136,6 +146,7 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     
     banner_path = "/opt/data/nexus_playtv_bot/assets/nexus_playtv_banner.png"
+    persistent_kb = get_persistent_reply_keyboard()
     if os.path.exists(banner_path):
         try:
             with open(banner_path, "rb") as photo_file:
@@ -157,6 +168,12 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=InlineKeyboardMarkup(get_main_keyboard()),
             parse_mode="Markdown"
         )
+    
+    # Enviar/Atualizar menu inferior fixo sem poluição
+    try:
+        await update.message.reply_text("👇 Utilize o menu rápido abaixo:", reply_markup=persistent_kb)
+    except Exception:
+        pass
 
 async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -670,12 +687,20 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 "   • Use o Usuário e Senha da sua conta/passe ativo!"
             ),
             "pc": (
-                "💻 *Instalação no Computador (Windows / Mac):*\n\n"
-                "1️⃣ *No Navegador (Zero Instalação):*\n"
-                "• Acesse o WebPlayer oficial: **http://painelmaster.app/portal**\n"
-                "• Faça login com o Usuário e Senha da sua conta/passe ativo!\n\n"
-                "2️⃣ *App para Windows:*\n"
-                "• Baixe o aplicativo oficial pelo código Downloader: **`9351066`** (Smarters) ou use o Purple IPTV."
+                "💻 *Instalação e Acesso no Computador (Mac / Windows):*\n\n"
+                "✨ *Opção 1: WebPlayer no Navegador (Chrome / Safari)*\n"
+                "• Acesse: **http://webtv-new.iptvsmarters.com**\n"
+                "• Selecione **Xtream Codes API**;\n"
+                "• Preencha com os dados da sua conta:\n"
+                "  - **Nome:** Nexus PlayTV\n"
+                "  - **Usuário:** seu usuário ativo\n"
+                "  - **Senha:** sua senha ativa\n"
+                "  - **URL do Servidor:** `http://atmt.space`\n\n"
+                "✨ *Opção 2: Aplicativo Nativo no Mac (Melhor experiência)*\n"
+                "• Baixe o app **IPTV Smarters Pro** ou **Smarters Player Lite** direto na **App Store do Mac**;\n"
+                "• Entre com seu Usuário, Senha e Servidor (`http://atmt.space`).\n\n"
+                "✨ *Opção 3: VLC Media Player (100% Grátis no Mac)*\n"
+                "• No VLC, pressione `Cmd + N` (Abrir Rede) e cole o link da sua **Lista M3U**!"
             )
         }
         text = instructions.get(device, "Instruções disponíveis no suporte.")
@@ -1240,14 +1265,26 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             parse_mode="Markdown"
         )
         return
-    elif msg_text == "📱 Como Instalar":
+    elif msg_text in ("📱 Instalação", "📱 Como Instalar"):
         await update.message.reply_text("Selecione o seu aparelho:", reply_markup=InlineKeyboardMarkup([
             [InlineKeyboardButton("Smart TV Samsung", callback_data="inst_samsung"), InlineKeyboardButton("Smart TV LG", callback_data="inst_lg")],
             [InlineKeyboardButton("TV Box / Firestick", callback_data="inst_android"), InlineKeyboardButton("iPhone / Apple TV", callback_data="inst_apple")],
-            [InlineKeyboardButton("Computador", callback_data="inst_pc")]
+            [InlineKeyboardButton("Computador / Mac", callback_data="inst_pc")]
         ]))
         return
-    elif msg_text == "❓ Suporte":
+    elif msg_text in ("📦 Minha Conta", "💼 Minha Conta"):
+        # Chamar a rotina de minha conta
+        class DummyQuery:
+            def __init__(self, msg, usr):
+                self.message = msg
+                self.from_user = usr
+                self.data = "my_access"
+            async def answer(self, *a, **k): pass
+        
+        dummy_update = Update(update.update_id, callback_query=DummyQuery(update.message, user))
+        await callback_handler(dummy_update, context)
+        return
+    elif msg_text in ("❓ Suporte", "❓ Dúvidas & Suporte"):
         await update.message.reply_text("Precisa de ajuda com o PlayTV?", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Ver Dúvidas Frequentes", callback_data="support_faq")]]))
         return
 
