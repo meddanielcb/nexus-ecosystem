@@ -382,6 +382,50 @@ def deliver_playtv_order_async(order_id: str):
     except Exception as e:
         print("Erro ao alertar venda PlayTV:", e)
 
+    # ---------------------------------------------------------------------------
+    # Concessão Automática de Recompensa Cumulativa de Indicação (MGM)
+    # ---------------------------------------------------------------------------
+    try:
+        conn_ref = sqlite3.connect(PLAYTV_DB_PATH)
+        c_ref = conn_ref.cursor()
+        c_ref.execute("SELECT id, referrer_id, status FROM referrals WHERE referred_user_id = ?", (user_id,))
+        ref_row = c_ref.fetchone()
+        if ref_row and ref_row[2] != "rewarded":
+            ref_id, referrer_id, _ = ref_row
+            # Creditar 1 mês grátis (30 dias) na carteira do indicador
+            c_ref.execute("""
+            INSERT INTO bonus_rewards (user_id, reward_type, days, status, source_referral_id)
+            VALUES (?, 'monthly_plan', 30, 'available', ?)
+            """, (referrer_id, ref_id))
+            c_ref.execute("UPDATE referrals SET status = 'rewarded' WHERE id = ?", (ref_id,))
+            conn_ref.commit()
+
+            # Notificar o indicador da recompensa recebida na carteira
+            reward_msg = (
+                "🎁 *PARABÉNS! VOCÊ GANHOU 1 MÊS DE ACESSO GRÁTIS!*\n\n"
+                "Um amigo acabou de assinar o Nexus PlayTV através do seu link exclusivo!\n\n"
+                "🎟️ *Sua recompensa já está guardada na sua carteira!*\n"
+                "Você pode acumulá-la ou ativá-la quando quiser acessando o menu:\n"
+                "👉 *Minha Conta / Acessos*."
+            )
+            requests.post(
+                f"https://api.telegram.org/bot{PLAYTV_BOT_TOKEN}/sendMessage",
+                json={
+                    "chat_id": referrer_id,
+                    "text": reward_msg,
+                    "parse_mode": "Markdown",
+                    "reply_markup": {
+                        "inline_keyboard": [
+                            [{"text": "💼 Ver Minha Carteira", "callback_data": "my_access"}]
+                        ]
+                    }
+                },
+                timeout=10
+            )
+        conn_ref.close()
+    except Exception as ref_err:
+        print("Erro ao processar recompensa de indicação:", ref_err)
+
 class WebhookHandler(BaseHTTPRequestHandler):
     def do_HEAD(self):
         self.send_response(200)

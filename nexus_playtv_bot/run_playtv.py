@@ -368,6 +368,69 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await safe_edit(text, reply_markup=InlineKeyboardMarkup(keyboard))
         return
 
+    if data == "redeem_bonus_reward":
+        # Ativar 1 recompensa de 30 dias de indicação da carteira
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        c.execute("""
+            SELECT id, days FROM bonus_rewards
+            WHERE user_id = ? AND status = 'available'
+            ORDER BY id ASC LIMIT 1
+        """, (user.id,))
+        bonus_row = c.fetchone()
+
+        if not bonus_row:
+            conn.close()
+            await query.answer("Você não tem bônus de indicação disponíveis para ativar!", show_alert=True)
+            return
+
+        b_id, b_days = bonus_row[0], bonus_row[1]
+
+        # Gerar linha de 30 dias no MasterX
+        cred = generate_iptv_access(duration_days=b_days)
+        bonus_order_id = f"BONUS_{user.id}_{int(time.time())}"
+        cred_str = f"Usuário: {cred['username']} | Senha: {cred['password']} | Servidor: {cred['server_url']}"
+
+        # Gravar ordem paga de bônus para histórico
+        c.execute("""
+            INSERT INTO orders (order_id, user_id, username, product_id, status, payment_method, amount, delivered_credentials, m3u_url, expires_at)
+            VALUES (?, ?, ?, 'bônus_indicação_30d', 'paid', 'referral_bonus', 0.0, ?, ?, ?)
+        """, (bonus_order_id, user.id, user.username or "", cred_str, cred["m3u_url"], cred["expires_at"]))
+
+        # Marcar bônus como resgatado
+        c.execute("UPDATE bonus_rewards SET status = 'redeemed', activated_at = CURRENT_TIMESTAMP WHERE id = ?", (b_id,))
+        conn.commit()
+
+        # Checar se ainda sobraram outros bônus
+        c.execute("SELECT COUNT(*) FROM bonus_rewards WHERE user_id = ? AND status = 'available'", (user.id,))
+        rem_bonus = c.fetchone()[0]
+        conn.close()
+
+        web_player_url = f"http://painelmaster.app/portal/?user={cred['username']}&pass={cred['password']}"
+
+        text = (
+            "🎉 *PARABÉNS! SEU MÊS DE BÔNUS ESTÁ ATIVO!*\n\n"
+            f"🎁 *Recompensa de Indicação Ativada com Sucesso!*\n\n"
+            f"📋 *DADOS DE ACESSO (30 DIAS):*\n"
+            f"• Servidor: `{cred['server_url']}`\n"
+            f"• Usuário: `{cred['username']}`\n"
+            f"• Senha: `{cred['password']}`\n\n"
+            f"🔗 *Lista M3U:*\n`{cred['m3u_url']}`\n\n"
+            f"⏳ *Validade:* 30 Dias (Até {cred['expires_at']})\n"
+            f"🎟️ *Meses de bônus ainda na sua carteira:* {rem_bonus}\n\n"
+            "📺 *Como Assistir:*\n"
+            "• Clique abaixo para assistir no navegador sem senha;\n"
+            "• Ou use na sua Smart TV Samsung, LG ou TV Box."
+        )
+
+        kb = [
+            [InlineKeyboardButton("▶️ Assistir no Navegador (WebPlayer)", url=web_player_url)],
+            [InlineKeyboardButton("📱 Ativar na Smart TV", callback_data="auto_activate_tv")],
+            [InlineKeyboardButton("💼 Minha Conta / Carteira", callback_data="my_access")]
+        ]
+        await safe_edit(text, reply_markup=InlineKeyboardMarkup(kb))
+        return
+
     if data == "free_trial":
         conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
@@ -694,23 +757,40 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         pass_res = c.fetchone()
         remaining_passes = pass_res[0] if pass_res and pass_res[0] else 0
 
-        # 2. Checar pedidos pagos
+        # 2. Checar recompensas de indicação acumuladas na carteira
+        c.execute("""
+            SELECT COUNT(*), SUM(days) FROM bonus_rewards
+            WHERE user_id = ? AND status = 'available'
+        """, (user.id,))
+        bonus_res = c.fetchone()
+        bonus_count = bonus_res[0] if bonus_res and bonus_res[0] else 0
+        bonus_days = bonus_res[1] if bonus_res and bonus_res[1] else 0
+
+        # 3. Checar pedidos pagos
         c.execute("SELECT order_id, product_id, delivered_credentials, created_at, m3u_url, expires_at FROM orders WHERE user_id = ? AND status = 'paid' ORDER BY created_at DESC LIMIT 3", (user.id,))
         orders = c.fetchall()
         conn.close()
 
         keyboard = []
 
-        if not orders and remaining_passes == 0:
+        if not orders and remaining_passes == 0 and bonus_count == 0:
             text = (
                 "📦 *Central da Sua Conta & Carteira*\n\n"
                 "Você ainda não possui assinaturas nem passes ativos no momento.\n\n"
-                "Adquira um dos nossos planos ou gere um teste grátis de 4 horas para conhecer a qualidade dos canais."
+                "Adquira um dos nossos planos, indique amigos para ganhar meses grátis ou gere um teste de 4 horas para conhecer a qualidade dos canais."
             )
             keyboard.append([InlineKeyboardButton("⚡ Gerar Teste Grátis (4h)", callback_data="free_trial")])
             keyboard.append([InlineKeyboardButton("📺 Ver Planos", callback_data="view_plans")])
         else:
             text = "💼 *Central da Sua Conta & Carteira:*\n\n"
+
+            if bonus_count > 0:
+                text += (
+                    f"🎁 *Recompensas de Indicação (Acumuladas)*\n"
+                    f"🎟️ *Saldo Disponível:* `{bonus_count} meses grátis` ({bonus_days} dias de acesso)\n"
+                    f"💡 *Status:* Guardados na sua carteira. Ative quando quiser!\n\n"
+                )
+                keyboard.append([InlineKeyboardButton(f"🎁 ATIVAR 1 MÊS DE BÔNUS ({bonus_count} DISPONÍVEL)", callback_data="redeem_bonus_reward")])
             
             if remaining_passes > 0:
                 text += (

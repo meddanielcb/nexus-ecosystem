@@ -114,6 +114,27 @@ SCHEMA = {
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """,
+    "referrals": """
+        CREATE TABLE IF NOT EXISTS referrals (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            referrer_id INTEGER,
+            referred_user_id INTEGER UNIQUE,
+            status TEXT DEFAULT 'pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """,
+    "bonus_rewards": """
+        CREATE TABLE IF NOT EXISTS bonus_rewards (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            reward_type TEXT DEFAULT 'monthly_plan',
+            days INTEGER DEFAULT 30,
+            status TEXT DEFAULT 'available',
+            source_referral_id INTEGER,
+            activated_at TIMESTAMP,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """,
 }
 
 # Colunas que podem faltar em bancos legados -> (tabela, coluna, DDL do ALTER).
