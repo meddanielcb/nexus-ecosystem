@@ -1321,7 +1321,17 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if user.id in AWAITING_TV_CODES:
         session = AWAITING_TV_CODES[user.id]
         parts = [p.strip() for p in msg_text.replace("\n", " ").replace(",", " ").split() if p.strip()]
-        if len(parts) < 2:
+        m3u_url = session.get("m3u_url")
+
+        mac_in = None
+        key_in = None
+        if len(parts) >= 2:
+            mac_in, key_in = parts[0], parts[1]
+        elif len(parts) == 1 and session.get("mac_pending"):
+            # Usuario ja teve o MAC lido pela IA e agora mandou apenas o Device Key
+            mac_in, key_in = session.get("mac_pending"), parts[0]
+
+        if not mac_in or not key_in:
             await update.message.reply_text(
                 "⚠️ *Formato incorreto!*\n\n"
                 "Por favor, envie o **Device ID** e o **Device Key** separados por espaço.\n"
@@ -1330,25 +1340,51 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
             return
 
-        mac_in = parts[0]
-        key_in = parts[1]
-        m3u_url = session.get("m3u_url")
+        # Normaliza o MAC (aceita com ou sem dois-pontos)
+        mac_clean = "".join(ch for ch in mac_in if ch.isalnum())
+        if len(mac_clean) == 12:
+            mac_fmt = ":".join(mac_clean[i:i + 2] for i in range(0, 12, 2)).lower()
+        else:
+            await update.message.reply_text(
+                "⚠️ *Esse Device ID não parece válido.*\n\n"
+                f"Recebi: `{mac_in}`\n"
+                "O formato correto tem 12 caracteres, como: `a1:b2:c3:d4:e5:f6`",
+                parse_mode="Markdown"
+            )
+            return
+
+        key_clean = "".join(ch for ch in key_in if ch.isalnum())
+        if not key_clean:
+            await update.message.reply_text("⚠️ O Device Key deve conter números. Tente novamente.")
+            return
 
         status_msg = await update.message.reply_text(
-            "⏳ *Conectando à sua Smart TV e resolvendo autenticação...*\n"
-            "Aguarde cerca de 5 a 8 segundos. Não feche o aplicativo na TV...",
+            "⏳ *Conectando à sua Smart TV e autenticando...*\n"
+            "Aguarde de 10 a 40 segundos. Não feche o aplicativo na TV...",
             parse_mode="Markdown"
         )
 
         res = activate_smart_tv_ibo(
-            mac_address=mac_in,
-            device_key=key_in,
+            mac_address=mac_fmt,
+            device_key=key_clean,
             playlist_name="Nexus PlayTV Oficial",
             playlist_url=m3u_url
         )
 
         if res.get("success"):
             AWAITING_TV_CODES.pop(user.id, None)
+
+            try:
+                alert_playtv_sale(
+                    plan_name="Ativação Smart TV (IBO Player)",
+                    amount_str="Automática (digitação)",
+                    method="IBO PLAYER",
+                    customer_info=f"@{user.username or 'SemUser'} (MAC {mac_fmt})",
+                    order_id=f"TV_{int(time.time())}"
+                )
+            except Exception as e_tv:
+                logger.error(f"Erro alerta TV: {e_tv}")
+
             await status_msg.edit_text(
                 "🎉 *SUA SMART TV FOI ATIVADA COM SUCESSO!*\n\n"
                 "✅ A lista completa de canais, filmes e jogos já está sincronizada.\n\n"
@@ -1360,9 +1396,12 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 parse_mode="Markdown"
             )
         else:
+            err_msg = res.get("message") or "Erro desconhecido"
             await status_msg.edit_text(
-                f"❌ *Não foi possível ativar sua TV:*\n`{res.get('message')}`\n\n"
-                "Verifique se digitou o Device ID e Device Key exatamente como aparecem na tela do IBO Player e tente enviar novamente:",
+                f"❌ *Não foi possível ativar sua TV:*\n`{err_msg}`\n\n"
+                "Confira se o **Device ID** e o **Device Key** estão exatamente como aparecem na tela "
+                "do IBO Player (app oficial, não o IBO PRO TV) e envie novamente no formato:\n"
+                "`a1:b2:c3:d4:e5:f6 123456`",
                 parse_mode="Markdown"
             )
         return
@@ -1703,10 +1742,52 @@ async def photo_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ocr_result = extract_tv_codes_from_image(local_img)
 
         if not ocr_result.get("success"):
+            mac_p = ocr_result.get("mac")
+            site_p = (ocr_result.get("site") or "").lower()
+            app_p = (ocr_result.get("app_name") or "").strip()
+
+            # Caso 1: MAC lido, mas SEM Device Key na tela -> app de ativacao por codigo
+            if mac_p:
+                if "ibotv" in site_p or "iboprotv" in site_p or "pro tv" in app_p.lower():
+                    AWAITING_TV_CODES[user.id] = {"m3u_url": m3u_url, "mode": "ibo_pro"}
+                    await status_msg.edit_text(
+                        "📺 *Identifiquei a tela do aplicativo IBO PRO TV.*\n\n"
+                        f"• MAC da sua TV: `{mac_p}`\n\n"
+                        "⚠️ *Atenção:* esse aplicativo (IBO PRO TV) *não* usa o sistema de "
+                        "Device ID + Device Key. Ele exige que você crie um *código de ativação* "
+                        "no site `ibotv.pro` antes de aceitar qualquer lista de canais.\n\n"
+                        "✅ *Solução mais rápida (funciona agora, sem custo):* use um player que aceita "
+                        "a lista direto. Vou te mandar o passo a passo do app correto.\n\n"
+                        "Escolha abaixo:",
+                        reply_markup=InlineKeyboardMarkup([
+                            [InlineKeyboardButton("📱 Ver app correto + link da lista", callback_data="how_to_install")],
+                            [InlineKeyboardButton("🎬 Tentar ativar pelo IBO Player", callback_data="auto_activate_tv")]
+                        ]),
+                        parse_mode="Markdown"
+                    )
+                    return
+
+                # MAC lido mas sem key e sem site reconhecido
+                AWAITING_TV_CODES[user.id] = {"m3u_url": m3u_url, "mode": "manual", "mac_pending": mac_p}
+                await status_msg.edit_text(
+                    "🔍 *Encontrei o MAC da sua TV, mas não achei o Device Key na foto.*\n\n"
+                    f"• MAC: `{mac_p}`\n\n"
+                    "Envie o *Device Key* (o código numérico que aparece logo abaixo do MAC) "
+                    "apenas com os números. Ex: `256294`\n\n"
+                    "💡 *Dica:* tire o print direto da tela da TV (não fotografe a tela do celular), "
+                    "que a leitura fica perfeita.",
+                    parse_mode="Markdown"
+                )
+                return
+
+            # Caso 2: nada lido
             await status_msg.edit_text(
-                "⚠️ *Não consegui ler todos os dados com clareza da foto.*\n\n"
-                "Por favor, certifique-se de que a foto está nítida ou digite os códigos no chat:\n"
-                "Exemplo: `a1:b2:c3:d4:e5:f6 123456`",
+                "⚠️ *Não consegui identificar os códigos nessa foto.*\n\n"
+                "Para a leitura automática funcionar:\n"
+                "• Tire o **print direto da tela da TV** (ou uma foto bem reta e nítida);\n"
+                "• Evite fotografar a tela do celular;\n"
+                "• Ou simplesmente *digite* os códigos aqui no chat no formato:\n"
+                "`a1:b2:c3:d4:e5:f6 123456`",
                 parse_mode="Markdown"
             )
             return
