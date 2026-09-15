@@ -12,8 +12,7 @@ from telegram import (
     Update,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
-    ReplyKeyboardMarkup,
-    KeyboardButton
+    ReplyKeyboardRemove
 )
 from telegram.ext import (
     ApplicationBuilder,
@@ -86,15 +85,6 @@ def get_main_keyboard():
         ]
     ]
 
-def get_reply_keyboard():
-    return ReplyKeyboardMarkup(
-        [
-            [KeyboardButton("📺 Planos"), KeyboardButton("⚡ Teste Grátis (4h)")],
-            [KeyboardButton("📱 Como Instalar"), KeyboardButton("❓ Suporte")]
-        ],
-        resize_keyboard=True
-    )
-
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     args = context.args if context and context.args else []
@@ -151,7 +141,6 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=InlineKeyboardMarkup(get_main_keyboard()),
             parse_mode="Markdown"
         )
-    await update.message.reply_text("Navegue pelo menu rápido abaixo:", reply_markup=get_reply_keyboard())
 
 async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
