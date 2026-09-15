@@ -937,28 +937,50 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # Fallback de Polling em tempo real se o webhook ainda não tiver chegado
         if status != "paid" and payment_id:
             try:
-                from services import get_pixget_headers, PIXGET_BASE_URL
-                import requests
-                chk_url = f"{PIXGET_BASE_URL.rstrip('/')}/api/v1/payments/{payment_id}/status"
-                r = requests.get(chk_url, headers=get_pixget_headers(), timeout=5)
-                if r.status_code == 200:
-                    st_data = r.json().get("data", {})
-                    if st_data.get("status") == "completed":
-                        # Disparar a entrega imediatamente
-                        import importlib.util
-                        spec = importlib.util.spec_from_file_location("wh_server", "/opt/data/digital_store_bot/webhook_server.py")
-                        wh_mod = importlib.util.module_from_spec(spec)
-                        spec.loader.exec_module(wh_mod)
-                        wh_mod.deliver_playtv_order_async(order_id)
-                        
-                        # Reconsultar banco
-                        conn2 = sqlite3.connect(DB_PATH)
-                        c2 = conn2.cursor()
-                        c2.execute("SELECT status, delivered_credentials, m3u_url, expires_at FROM orders WHERE order_id = ?", (order_id,))
-                        row2 = c2.fetchone()
-                        conn2.close()
-                        if row2:
-                            status, creds, m3u, exp = row2
+                # 1. Checagem se for PIX
+                if not payment_id.startswith("0x"):
+                    from services import get_pixget_headers, PIXGET_BASE_URL
+                    import requests
+                    chk_url = f"{PIXGET_BASE_URL.rstrip('/')}/api/v1/payments/{payment_id}/status"
+                    r = requests.get(chk_url, headers=get_pixget_headers(), timeout=5)
+                    if r.status_code == 200:
+                        st_data = r.json().get("data", {})
+                        if st_data.get("status") == "completed":
+                            import importlib.util
+                            spec = importlib.util.spec_from_file_location("wh_server", "/opt/data/digital_store_bot/webhook_server.py")
+                            wh_mod = importlib.util.module_from_spec(spec)
+                            spec.loader.exec_module(wh_mod)
+                            wh_mod.deliver_playtv_order_async(order_id)
+                # 2. Checagem se for Cripto (BlockBee)
+                else:
+                    import requests
+                    from services import BLOCKBEE_API_KEY
+                    # Consultar logs da BlockBee para verificar se recebeu o depósito
+                    # A moeda pode ser inferida pelo método de pagamento ou testar bep20/usdt
+                    for coin_check in ["bep20/usdt", "polygon/usdt", "trc20/usdt"]:
+                        chk_url = f"https://api.blockbee.io/{coin_check}/logs/"
+                        r = requests.get(chk_url, params={"apikey": BLOCKBEE_API_KEY, "address": payment_id}, timeout=5)
+                        if r.status_code == 200:
+                            logs_data = r.json()
+                            # Se houver callback executado ou pagamento detectado com pending=0
+                            callbacks = logs_data.get("callbacks", [])
+                            for cb in callbacks:
+                                if cb.get("result") in ["success", "pending_zero"] or cb.get("response_status") == 200:
+                                    import importlib.util
+                                    spec = importlib.util.spec_from_file_location("wh_server", "/opt/data/digital_store_bot/webhook_server.py")
+                                    wh_mod = importlib.util.module_from_spec(spec)
+                                    spec.loader.exec_module(wh_mod)
+                                    wh_mod.deliver_playtv_order_async(order_id)
+                                    break
+                
+                # Reconsultar banco após polling
+                conn2 = sqlite3.connect(DB_PATH)
+                c2 = conn2.cursor()
+                c2.execute("SELECT status, delivered_credentials, m3u_url, expires_at FROM orders WHERE order_id = ?", (order_id,))
+                row2 = c2.fetchone()
+                conn2.close()
+                if row2:
+                    status, creds, m3u, exp = row2
             except Exception as e:
                 logger.error(f"Erro no polling de status: {e}")
 
