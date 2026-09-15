@@ -140,8 +140,8 @@ def generate_iptv_access(duration_days: int = 30, is_trial: bool = False, userna
             "password": iptv_pass,
             "server_url": server_dns,
             "m3u_url": m3u_link,
-            "duration": f"{duration_days} Dias" if not is_trial else "6 Horas",
-            "expires_at": (datetime.now() + (timedelta(hours=6) if is_trial else timedelta(days=duration_days))).strftime("%Y-%m-%d %H:%M:%S"),
+            "duration": f"{duration_days} Dias" if not is_trial else "4 Horas",
+            "expires_at": (datetime.now() + (timedelta(hours=4) if is_trial else timedelta(days=duration_days))).strftime("%Y-%m-%d %H:%M:%S"),
             "partner_code": "00042",
             "downloader_code": "3054398",
             "web_player": "http://painelmaster.app/portal"
