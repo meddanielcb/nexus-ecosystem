@@ -23,7 +23,7 @@ from telegram.ext import (
     filters
 )
 
-from db import init_db, DB_PATH
+from db import init_db, DB_PATH, db_connect
 from services import (
     create_pixget_charge,
     convert_usd_to_crypto,
@@ -89,7 +89,7 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     args = context.args if context and context.args else []
     
-    conn = sqlite3.connect(DB_PATH)
+    conn = db_connect()
     c = conn.cursor()
     c.execute("INSERT OR REPLACE INTO users (user_id, username, first_name) VALUES (?, ?, ?)",
               (user.id, user.username or "", user.first_name or ""))
@@ -284,7 +284,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if data == "redeem_game_pass":
         # Ativar 1 passe de jogo do saldo do usuário
-        conn = sqlite3.connect(DB_PATH)
+        conn = db_connect()
         c = conn.cursor()
         c.execute("""
         SELECT id, remaining_passes FROM game_passes 
@@ -370,7 +370,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if data == "redeem_bonus_reward":
         # Ativar 1 recompensa de 30 dias de indicação da carteira
-        conn = sqlite3.connect(DB_PATH)
+        conn = db_connect()
         c = conn.cursor()
         c.execute("""
             SELECT id, days FROM bonus_rewards
@@ -432,7 +432,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     if data == "free_trial":
-        conn = sqlite3.connect(DB_PATH)
+        conn = db_connect()
         c = conn.cursor()
         c.execute("SELECT iptv_username, iptv_password, server_url, m3u_url, expires_at FROM free_trials WHERE user_id = ?", (user.id,))
         existing = c.fetchone()
@@ -524,7 +524,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     if data == "download_guide_pdf":
-        conn = sqlite3.connect(DB_PATH)
+        conn = db_connect()
         c = conn.cursor()
         c.execute("SELECT product_id, delivered_credentials, m3u_url, expires_at FROM orders WHERE user_id = ? AND status = 'paid' ORDER BY created_at DESC LIMIT 1", (user.id,))
         last_order = c.fetchone()
@@ -675,7 +675,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if data == "auto_activate_tv":
         # Checar se usuário tem acesso ativo (ordem paga, teste grátis ou passe resgatado)
-        conn = sqlite3.connect(DB_PATH)
+        conn = db_connect()
         c = conn.cursor()
         
         m3u = None
@@ -746,7 +746,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     if data == "my_access":
-        conn = sqlite3.connect(DB_PATH)
+        conn = db_connect()
         c = conn.cursor()
         
         # 1. Checar saldo de passes de jogo
@@ -769,6 +769,10 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # 3. Checar pedidos pagos
         c.execute("SELECT order_id, product_id, delivered_credentials, created_at, m3u_url, expires_at FROM orders WHERE user_id = ? AND status = 'paid' ORDER BY created_at DESC LIMIT 3", (user.id,))
         orders = c.fetchall()
+
+        # 4. Mapa de saldo restante por pacote (antecipa a query antes de fechar a conexao)
+        c.execute("SELECT order_id, remaining_passes FROM game_passes WHERE user_id = ?", (user.id,))
+        pass_map = {row[0]: row[1] for row in c.fetchall()}
         conn.close()
 
         keyboard = []
@@ -807,10 +811,8 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     pname = PRODUCTS.get(pid, {}).get("name", pid)
                     text += f"• *{pname}*\n  📅 Compra: {date}\n"
                     if pid == "pack_3_games":
-                        # Buscar saldo atual desse pacote
-                        c.execute("SELECT remaining_passes FROM game_passes WHERE order_id = ?", (oid,))
-                        gp_row = c.fetchone()
-                        rem = gp_row[0] if gp_row else 0
+                        # Buscar saldo atual desse pacote (ja carregado antes do close)
+                        rem = pass_map.get(oid, 0)
                         text += f"  🎟️ Saldo deste pacote: `{rem} de 3 passes`\n"
                     elif cred:
                         text += f"  🔑 Credenciais: `{cred}`\n"
@@ -975,7 +977,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             address = bb.get("address_in")
             qr_url = bb.get("qr_code")
 
-            conn = sqlite3.connect(DB_PATH)
+            conn = db_connect()
             c = conn.cursor()
             c.execute("""
             INSERT INTO orders (order_id, user_id, username, product_id, payment_method, amount, status, payment_id)
@@ -1019,7 +1021,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if data.startswith("check_order_"):
         order_id = data.replace("check_order_", "")
-        conn = sqlite3.connect(DB_PATH)
+        conn = db_connect()
         c = conn.cursor()
         c.execute("SELECT status, delivered_credentials, m3u_url, expires_at, payment_id, product_id FROM orders WHERE order_id = ?", (order_id,))
         row = c.fetchone()
@@ -1071,7 +1073,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                                     break
                 
                 # Reconsultar banco após polling
-                conn2 = sqlite3.connect(DB_PATH)
+                conn2 = db_connect()
                 c2 = conn2.cursor()
                 c2.execute("SELECT status, delivered_credentials, m3u_url, expires_at FROM orders WHERE order_id = ?", (order_id,))
                 row2 = c2.fetchone()
@@ -1119,7 +1121,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
             return
 
-        conn = sqlite3.connect(DB_PATH)
+        conn = db_connect()
         c = conn.cursor()
         c.execute("SELECT delivered_credentials, payment_id, m3u_url FROM orders WHERE order_id = ?", (order_id,))
         row = c.fetchone()
@@ -1274,7 +1276,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 cpf=cpf_clean
             )
 
-            conn = sqlite3.connect(DB_PATH)
+            conn = db_connect()
             c = conn.cursor()
             c.execute("""
             INSERT INTO orders (order_id, user_id, username, product_id, payment_method, amount, status, payment_id)
@@ -1323,7 +1325,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def push_trial_reminders(context: ContextTypes.DEFAULT_TYPE):
     """Job periódico (executado a cada 1 minuto) para engajamento e conversão de testes"""
     try:
-        conn = sqlite3.connect(DB_PATH)
+        conn = db_connect()
         c = conn.cursor()
         now = datetime.now()
 
@@ -1496,7 +1498,7 @@ async def coupon_admin_command(update: Update, context: ContextTypes.DEFAULT_TYP
             await update.message.reply_text("Desconto e Usos devem ser números inteiros.")
             return
 
-        conn = sqlite3.connect(DB_PATH)
+        conn = db_connect()
         c = conn.cursor()
         try:
             c.execute("INSERT INTO coupons (code, discount_pct, max_uses, created_by) VALUES (?, ?, ?, ?)",
@@ -1510,7 +1512,7 @@ async def coupon_admin_command(update: Update, context: ContextTypes.DEFAULT_TYP
         return
 
     elif len(text) >= 2 and text[1].upper() == "LISTAR":
-        conn = sqlite3.connect(DB_PATH)
+        conn = db_connect()
         c = conn.cursor()
         c.execute("SELECT code, discount_pct, max_uses, used_count FROM coupons ORDER BY id DESC LIMIT 15")
         rows = c.fetchall()
@@ -1541,7 +1543,7 @@ async def photo_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         m3u_url = AWAITING_TV_CODES[user.id].get("m3u_url")
     
     if not m3u_url:
-        conn = sqlite3.connect(DB_PATH)
+        conn = db_connect()
         c = conn.cursor()
         c.execute("SELECT m3u_url FROM pass_redemptions WHERE user_id = ? ORDER BY id DESC LIMIT 1", (user.id,))
         p_row = c.fetchone()

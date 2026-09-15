@@ -23,6 +23,21 @@ import sys
 
 DB_PATH = "/opt/data/nexus_playtv_bot/data/playtv.db"
 
+
+def db_connect(path=None):
+    """Conexão SQLite resiliente.
+
+    Todo o ecossistema (bot, webhook, scheduler) escreve no mesmo arquivo,
+    então usamos um timeout generoso + PRAGMA busy_timeout para que escritas
+    concorrentes esperem a vez em vez de estourar "database is locked".
+    """
+    conn = sqlite3.connect(path or DB_PATH, timeout=30)
+    try:
+        conn.execute("PRAGMA busy_timeout=30000")
+    except Exception:
+        pass
+    return conn
+
 # Versão lógica do schema.  Toda vez que SCHEMA/COLUMN_MIGRATIONS mudar,
 # incremente e registre o motivo em MIGRATION_NOTES.
 SCHEMA_VERSION = 2
