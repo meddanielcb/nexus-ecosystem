@@ -87,18 +87,17 @@ AWAITING_TV_CODES = {} # user_id -> {'order_id': order_id, 'm3u_url': url}
 
 def get_main_keyboard():
     return [
-        [InlineKeyboardButton("📺 Planos & Assinaturas", callback_data="view_plans")],
-        [InlineKeyboardButton("⚡ Gerar Teste Grátis (4 Horas)", callback_data="free_trial")],
+        [InlineKeyboardButton("📺 Planos", callback_data="view_plans"), InlineKeyboardButton("⚡ Teste Grátis (4h)", callback_data="free_trial")],
         [
-            InlineKeyboardButton("📱 Como Instalar (Apps)", callback_data="how_to_install"),
-            InlineKeyboardButton("🚀 Ativar Smart TV", callback_data="auto_activate_tv")
+            InlineKeyboardButton("📱 Instalação", callback_data="how_to_install"),
+            InlineKeyboardButton("🚀 Ativar TV", callback_data="auto_activate_tv")
         ],
         [
-            InlineKeyboardButton("🎁 Indique & Ganhe (Programa VIP)", callback_data="referral_program"),
-            InlineKeyboardButton("📦 Minha Conta / Acessos", callback_data="my_access")
+            InlineKeyboardButton("🎁 Indicação", callback_data="referral_program"),
+            InlineKeyboardButton("📦 Minha Conta", callback_data="my_access")
         ],
         [
-            InlineKeyboardButton("❓ Dúvidas & Suporte", callback_data="support_faq")
+            InlineKeyboardButton("❓ Suporte", callback_data="support_faq")
         ]
     ]
 
