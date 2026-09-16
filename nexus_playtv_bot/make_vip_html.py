@@ -67,17 +67,9 @@ def generate_interactive_html(output_path, username, password, server_url, m3u_u
     <p>Plano: <b>{plan_name}</b> • Validade: {valid_until}</p>
   </div>
 
-  <!-- BOTAO INSTANTANEO -->
-  <div class="section">
-    <a href="{web_login_url}" target="_blank" class="btn-play">
-      ▶ ASSISTIR AGORA NO NAVEGADOR
-    </a>
-    <p style="font-size: 12px; color: #8B949E; text-align: center;">Clique acima para abrir direto sem digitar senha no celular/PC</p>
-  </div>
-
   <!-- DADOS COM COPIAR COM 1 TOQUE -->
   <div class="section">
-    <div style="font-size: 13px; font-weight: bold; color: #E6EDF3; margin-bottom: 12px;">📺 CONFIGURAR NA SMART TV (CLIQUE PARA COPIAR):</div>
+    <div style="font-size: 13px; font-weight: bold; color: #E6EDF3; margin-bottom: 12px;">📺 CONFIGURAR NA SMART TV OU NO SEU PLAYER FAVORITO:</div>
     
     <div class="field-box">
       <div class="field-info">
@@ -112,25 +104,27 @@ def generate_interactive_html(output_path, username, password, server_url, m3u_u
     </div>
   </div>
 
-  <!-- CODIGOS DOWNLOADER TV -->
+  <!-- COMO INSTALAR NOS PRINCIPAIS APARELHOS -->
   <div class="section">
-    <div style="font-size: 13px; font-weight: bold; color: #E6EDF3; margin-bottom: 10px;">🔥 CÓDIGOS PARA CONTROLE REMOTO (DOWNLOADER):</div>
+    <div style="font-size: 13px; font-weight: bold; color: #E6EDF3; margin-bottom: 10px;">📱 COMO ASSISTIR NOS SEUS APARELHOS:</div>
     <div class="app-pill">
-      <span>MASTERX (Android TV / Box / Fire Stick)</span>
-      <span class="app-code">{MASTERX_DOWNLOADER_CODE}</span>
+      <span>Smart TV Samsung ou LG</span>
+      <span class="app-code">FUNPLAYS / MAGIC PLAY</span>
     </div>
+    <p style="font-size: 11px; color: #8B949E; margin-bottom: 8px;">Instale o app na loja da TV, clique em <b>Ativar na Smart TV</b> no Telegram e mande a foto da tela.</p>
+
     <div class="app-pill">
-      <span>Vizzion Play / XCIPTV (Play Store)</span>
-      <span class="app-code">PLAY STORE</span>
+      <span>Android TV / TV Box / Fire Stick</span>
+      <span class="app-code">DOWNLOADER: 3054398</span>
     </div>
+    <p style="font-size: 11px; color: #8B949E; margin-bottom: 8px;">Abra o app <b>Downloader</b>, digite o código <b>3054398</b> e instale o player direto.</p>
+
     <div class="app-pill">
-      <span>Magic PLAY · Lazer Play · EPIC PLAY · Fun Play (Samsung / LG)</span>
-      <span class="app-code">CÓDIGO NA TELA</span>
+      <span>Celular Android ou iPhone</span>
+      <span class="app-code">PLAY STORE / APP STORE</span>
     </div>
-    <div class="app-pill">
-      <span>MASTERX (código próprio deste app)</span>
-      <span class="app-code">{PARTNER_APPS_CODE}</span>
-    </div>
+    <p style="font-size: 11px; color: #8B949E; margin-bottom: 8px;">Baixe <b>IPTV Smarters Pro</b> ou <b>XCIPTV</b> e entre com Servidor, Usuário e Senha acima.</p>
+
     <div style="font-size: 12px; color: #8B949E; margin-top: 12px; line-height: 1.7;">
       Servidores oficiais: <b style="color:#00E5FF;">{SERVER_DNS_PRIMARY}</b> (principal) e
       <b style="color:#00E5FF;">{SERVER_DNS_ALT}</b> (alternativo)

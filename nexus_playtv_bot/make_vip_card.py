@@ -78,37 +78,18 @@ def create_vip_onboarding_card(
     draw.text((W//2, curr_y), f"Plano: {plan_name} • Ativação Imediata", font=font_subtitle, fill="#E6EDF3", anchor="mm")
     curr_y += 50
 
-    # 2. Hero Card: QR CODE "ZERO DIGITAÇÃO" (1-CLIQUE NO CELULAR)
-    # Background card
+    # 2. Hero Card: Informações do Acesso
     card1_top = curr_y
-    card1_h = 420
+    card1_h = 160
     draw.rounded_rectangle([40, card1_top, W - 40, card1_top + card1_h], radius=24, fill="#121820", outline="#00E5FF", width=2)
     
-    # Generate QR Code pointing to web player auto-login
-    web_login_url = f"https://player.nexusplay.tv/?user={username}&pass={password}"
-    qr = qrcode.QRCode(box_size=7, border=2)
-    qr.add_data(web_login_url)
-    qr.make(fit=True)
-    qr_img = qr.make_image(fill_color="#000000", back_color="#FFFFFF").convert("RGB")
-    qw, qh = qr_img.size
-
-    # Paste QR Code on the right side of Card 1
-    qr_x = W - 40 - qw - 30
-    qr_y = card1_top + (card1_h - qh) // 2 + 10
-    img.paste(qr_img, (qr_x, qr_y))
-
-    # Text inside Card 1 (Left side)
     tx = 70
-    ty = card1_top + 35
-    draw.text((tx, ty), "⚡ ASSISTA AGORA NO CELULAR / PC", font=font_section, fill="#00E5FF")
+    ty = card1_top + 30
+    draw.text((tx, ty), "✨ SEU ACESSO VIP ESTÁ ATIVO", font=font_section, fill="#00E5FF")
     ty += 40
-    draw.text((tx, ty), "ZERO DIGITAÇÃO DE SENHAS", font=font_label, fill="#E024C3")
-    ty += 40
-    draw.text((tx, ty), "1. Aponte a câmera do celular para o QR Code\n2. O WebPlayer abre conectado na hora\n3. Futebol ao vivo, filmes e séries em 4K", font=font_body, fill="#E6EDF3")
-    ty += 95
-    # Big Button look
-    draw.rounded_rectangle([tx, ty, tx + 420, ty + 55], radius=12, fill="#00E5FF")
-    draw.text((tx + 210, ty + 27), "▶ ASSISTIR NO NAVEGADOR", font=font_btn, fill="#080B10", anchor="mm")
+    draw.text((tx, ty), f"PLANO: {plan_name.upper()}  •  STATUS: ATIVO 100%", font=font_label, fill="#2EA043")
+    ty += 35
+    draw.text((tx, ty), "Utilize as credenciais abaixo na sua Smart TV, TV Box ou aplicativo preferido.", font=font_body, fill="#E6EDF3")
 
     curr_y = card1_top + card1_h + 30
 

@@ -146,17 +146,17 @@ def generate_playtv_vip_dossier(pdf_path: str, username: str, password: str, ser
     elements.append(t_cred)
     elements.append(Spacer(1, 14))
 
-    # 3. ATALHO ZERO CONFIGURAÇÃO: ASSISTA AGORA NO NAVEGADOR
+    # 3. ATALHO ZERO CONFIGURAÇÃO: ASSISTA NOS SEUS DISPOSITIVOS
     web_data = [
         [
-            Paragraph("⚡ <b>OPÇÃO 1: ASSISTA AGORA NO CELULAR OU PC (ZERO CONFIGURAÇÃO)</b>", ParagraphStyle('W1', fontName='Helvetica-Bold', fontSize=10.5, textColor=CYAN)),
+            Paragraph("📱 <b>ACESSO RÁPIDO: CELULAR, SMART TV OU COMPUTADOR</b>", ParagraphStyle('W1', fontName='Helvetica-Bold', fontSize=10.5, textColor=CYAN)),
         ],
         [
             Paragraph(
-                "Não quer instalar nada agora? Você pode assistir <b>imediatamente</b> no Google Chrome, Safari ou Edge:<br/>"
-                "1. Acesse o WebPlayer Oficial: <b><code>http://painelmaster.app/portal</code></b><br/>"
-                "2. Digite o Usuário e Senha do seu cartão acima.<br/>"
-                "3. Pronto! Grade completa de futebol ao vivo, filmes e séries rodando em 5 segundos.",
+                "Você pode assistir imediatamente no seu aparelho preferido:<br/>"
+                "1. <b>Celular ou Computador:</b> baixe o app <b>IPTV Smarters Pro</b> ou <b>XCIPTV</b> na loja de aplicativos.<br/>"
+                "2. <b>Smart TV Samsung ou LG:</b> instale o <b>FunPlays</b> ou <b>Magic PLAY</b> e ative via foto no bot.<br/>"
+                "3. Insira o Servidor, Usuário e Senha fornecidos no cartão acima para liberar todo o conteúdo.",
                 body_style
             )
         ]
@@ -225,10 +225,10 @@ def generate_playtv_vip_dossier(pdf_path: str, username: str, password: str, ser
         ],
         [
             Paragraph("<b>Windows / Mac</b>", body_style),
-            Paragraph("<b>IPTV Smarters</b><br/>ou WebPlayer", body_style),
+            Paragraph("<b>IPTV Smarters Pro</b>", body_style),
             Paragraph(
-                "1. Windows: baixe o instalador oficial <b>painelmaster.app/uploads/smarters-pc.exe</b>.<br/>"
-                "2. Ou abra o WebPlayer no navegador: <b>painelmaster.app/portal</b>.<br/>"
+                "1. Baixe o <b>IPTV Smarters Pro</b> para PC/Mac.<br/>"
+                "2. Selecione 'Xtream Codes API'.<br/>"
                 "3. Entre com Servidor, Usuário e Senha do cartão acima.",
                 body_style
             )
