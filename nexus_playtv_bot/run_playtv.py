@@ -539,9 +539,13 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         text = (
             "🎉 *SEU TESTE GRÁTIS DE 4 HORAS FOI LIBERADO!*\n\n"
-            "Todos os canais Premiere, Champions, UFC, Filmes e Séries em 4K estão ativos.\n\n"
-            "📱 *Toque no botão abaixo para abrir seu Cartão VIP Interativo:*\n"
-            "Lá você tem o botão direto para assistir no celular sem digitar nada e botões de cópia rápida para sua Smart TV."
+            "📺 *Dados para Conectar na sua Smart TV:*\n"
+            f"• 🔢 *Código:* `{PARTNER_APPS_CODE}`\n"
+            f"• 👤 *Nome de usuário:* `{cred['username']}`\n"
+            f"• 🔑 *Senha:* `{cred['password']}`\n"
+            f"• 🌐 *Servidor/Host:* `{cred['server_url']}`\n\n"
+            "💡 *No aplicativo da TV:* Basta preencher os 3 campos acima (Código, Usuário e Senha) e clicar em OK!\n\n"
+            "📱 *Ou abra o Cartão VIP Interativo no celular:*"
         )
         keyboard = [
             [InlineKeyboardButton("✨ ABRIR CARTÃO VIP INTERATIVO", url=vip_page_url)],
@@ -888,7 +892,22 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                         rem = pass_map.get(oid, 0)
                         text += f"  🎟️ Saldo deste pacote: `{rem} de 3 passes`\n"
                     elif cred:
-                        text += f"  🔑 Credenciais: `{cred}`\n"
+                        # Extrair usuario, senha e servidor limpos
+                        u_val, p_val, s_val = "", "", "http://atmt.space"
+                        for part in cred.split("|"):
+                            if "Usuário:" in part: u_val = part.split("Usuário:")[1].strip()
+                            elif "Senha:" in part: p_val = part.split("Senha:")[1].strip()
+                            elif "Servidor:" in part: s_val = part.split("Servidor:")[1].strip()
+
+                        if u_val and p_val:
+                            text += (
+                                f"  🔢 *Código Parceiro:* `{PARTNER_APPS_CODE}`\n"
+                                f"  👤 *Usuário:* `{u_val}`\n"
+                                f"  🔑 *Senha:* `{p_val}`\n"
+                                f"  🌐 *Servidor:* `{s_val}`\n"
+                            )
+                        else:
+                            text += f"  🔑 Credenciais: `{cred}`\n"
                     if exp:
                         text += f"  ⏳ Validade do Pacote: {exp_brt}\n"
                     text += "\n"
@@ -902,6 +921,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     srv_clean = srv_pass or "http://atmt.space"
                     text += (
                         f"• *Ativado em:* `{r_at_brt}`\n"
+                        f"  🔢 *Código:* `{PARTNER_APPS_CODE}`\n"
                         f"  👤 *Usuário:* `{u_pass}`\n"
                         f"  🔑 *Senha:* `{pw_pass}`\n"
                         f"  🌐 *Servidor:* `{srv_clean}`\n"
@@ -2019,29 +2039,45 @@ async def photo_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     e ativa a lista automaticamente no backend correto do aplicativo detectado."""
     user = update.effective_user
 
+    if not user:
+        return
+    user_id = user.id
+
     # Auto-recuperar m3u se o usuario nao clicou antes no botao
     m3u_url = None
-    if user.id in AWAITING_TV_CODES:
-        m3u_url = AWAITING_TV_CODES[user.id].get("m3u_url")
+    u_found = ""
+    p_found = ""
+    if user_id in AWAITING_TV_CODES:
+        m3u_url = AWAITING_TV_CODES[user_id].get("m3u_url")
 
-    if not m3u_url:
-        conn = db_connect()
-        c = conn.cursor()
-        c.execute("SELECT m3u_url FROM pass_redemptions WHERE user_id = ? ORDER BY id DESC LIMIT 1", (user.id,))
-        p_row = c.fetchone()
-        if p_row and p_row[0]:
-            m3u_url = p_row[0]
-        if not m3u_url:
-            c.execute("SELECT m3u_url FROM orders WHERE user_id = ? AND status = 'paid' AND m3u_url IS NOT NULL ORDER BY created_at DESC LIMIT 1", (user.id,))
-            o_row = c.fetchone()
-            if o_row and o_row[0]:
-                m3u_url = o_row[0]
-        if not m3u_url:
-            c.execute("SELECT m3u_url FROM free_trials WHERE user_id = ? ORDER BY id DESC LIMIT 1", (user.id,))
-            t_row = c.fetchone()
-            if t_row and t_row[0]:
-                m3u_url = t_row[0]
-        conn.close()
+    conn = db_connect()
+    c = conn.cursor()
+    c.execute("SELECT username, password, m3u_url FROM pass_redemptions WHERE user_id = ? ORDER BY id DESC LIMIT 1", (user_id,))
+    p_row = c.fetchone()
+    if p_row:
+        u_found, p_found = p_row[0], p_row[1]
+        if not m3u_url and p_row[2]:
+            m3u_url = p_row[2]
+
+    if not u_found:
+        c.execute("SELECT delivered_credentials, m3u_url FROM orders WHERE user_id = ? AND status = 'paid' ORDER BY created_at DESC LIMIT 1", (user_id,))
+        o_row = c.fetchone()
+        if o_row:
+            if o_row[0]:
+                for part in o_row[0].split("|"):
+                    if "Usuário:" in part: u_found = part.split("Usuário:")[1].strip()
+                    elif "Senha:" in part: p_found = part.split("Senha:")[1].strip()
+            if not m3u_url and o_row[1]:
+                m3u_url = o_row[1]
+
+    if not u_found:
+        c.execute("SELECT iptv_username, iptv_password, m3u_url FROM free_trials WHERE user_id = ? ORDER BY id DESC LIMIT 1", (user_id,))
+        t_row = c.fetchone()
+        if t_row:
+            u_found, p_found = t_row[0], t_row[1]
+            if not m3u_url and t_row[2]:
+                m3u_url = t_row[2]
+    conn.close()
 
     if not m3u_url:
         await update.message.reply_text(
@@ -2202,17 +2238,13 @@ async def photo_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             err = res.get("message") or "Servidor do aplicativo em manutenção"
             await status_msg.edit_text(
-                f"⚠️ *O servidor do {app_label} não respondeu à ativação automática.*\n\n"
-                f"Lemos os dados da sua TV com sucesso:\n"
-                f"• MAC / Device ID: `{mac_found}`\n"
-                f"• Chave / Device Key: `{key_found}`\n\n"
-                f"👉 *Como você mesmo ativa em 1 minuto pelo celular:*\n"
-                f"1. Abra o site oficial: `{portal_url}`\n"
-                f"2. Digite o MAC e a Chave informados acima;\n"
-                f"3. Cole a sua Lista VIP no campo URL (M3U):\n"
-                f"`{m3u_url}`\n"
-                f"4. Clique em Salvar e reinicie o aplicativo na sua TV!\n\n"
-                f"💬 *Se preferir, clique abaixo e nosso suporte humano ativa para você agora:*",
+                f"📺 *COMO CONECTAR DIRETAMENTE NA SUA SMART TV:*\n\n"
+                f"Na tela do seu aplicativo, preencha apenas os 3 campos:\n\n"
+                f"• 🔢 *Código:* `{PARTNER_APPS_CODE}`\n"
+                f"• 👤 *Nome de usuário:* `{u_found}`\n"
+                f"• 🔑 *Senha:* `{p_found}`\n"
+                f"• 🌐 *Servidor:* `http://atmt.space`\n\n"
+                f"👉 *Clique em OK no controle e sua TV já entra com todos os canais!*",
                 reply_markup=InlineKeyboardMarkup([
                     [InlineKeyboardButton("💬 Chamar Suporte Humano", callback_data="support_faq")],
                     [InlineKeyboardButton("⬅️ Menu Principal", callback_data="main_menu")]
