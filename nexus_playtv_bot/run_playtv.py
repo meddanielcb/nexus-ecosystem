@@ -936,10 +936,13 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"👇 *Escolha como deseja pagar:*"
         )
 
-        keyboard = [
-            [InlineKeyboardButton(f"🟢 Pagar via PIX (R$ {price_brl:.2f})", callback_data=f"ask_cpf_{pid}")],
-            [InlineKeyboardButton(f"💎 Pagar com Cripto (${price_usd:.2f} USDT)", callback_data=f"crypto_hub_{pid}")]
-        ]
+        keyboard = []
+        if price_brl <= 0.0:
+            # Desconto integral de 100%: ativação instantânea gratuita sem gateway de pagamento
+            keyboard.append([InlineKeyboardButton("🎁 Ativar Acesso Grátis Agora (R$ 0,00)", callback_data=f"claim_free_{pid}")])
+        else:
+            keyboard.append([InlineKeyboardButton(f"🟢 Pagar via PIX (R$ {price_brl:.2f})", callback_data=f"ask_cpf_{pid}")])
+            keyboard.append([InlineKeyboardButton(f"💎 Pagar com Cripto (${price_usd:.2f} USDT)", callback_data=f"crypto_hub_{pid}")])
 
         if not applied:
             keyboard.append([InlineKeyboardButton("🎟️ Tenho um Cupom de Desconto", callback_data=f"ask_coupon_{pid}")])
@@ -948,6 +951,110 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         keyboard.append([InlineKeyboardButton("⬅️ Voltar aos Planos", callback_data="view_plans")])
         await safe_edit(text, reply_markup=InlineKeyboardMarkup(keyboard))
+        return
+
+    if data.startswith("claim_free_"):
+        pid = data.replace("claim_free_", "")
+        p = PRODUCTS.get(pid)
+        if not p:
+            await query.message.reply_text("Plano indisponível.")
+            return
+
+        applied = USER_APPLIED_COUPONS.get(user.id)
+        # Marcar cupom como usado se for de uso limitado
+        coupon_code = applied["code"] if applied else "PROMO100"
+        if applied:
+            conn_cp = db_connect()
+            c_cp = conn_cp.cursor()
+            c_cp.execute("UPDATE coupons SET used_count = used_count + 1 WHERE code = ?", (applied["code"],))
+            conn_cp.commit()
+            conn_cp.close()
+            USER_APPLIED_COUPONS.pop(user.id, None)
+
+        order_id = f"PLAYTV_FREE_{uuid.uuid4().hex[:8].upper()}"
+
+        # Se for o pack_3_games
+        if pid == "pack_3_games":
+            conn = db_connect()
+            c = conn.cursor()
+            exp_date = (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S")
+            c.execute("""
+                INSERT INTO orders (order_id, user_id, username, product_id, status, payment_method, amount, delivered_credentials, expires_at)
+                VALUES (?, ?, ?, ?, 'paid', 'coupon_100', 0.0, ?, ?)
+            """, (order_id, user.id, user.username or "", pid, "Pack 3 Jogos (Restantes: 3)", exp_date))
+            c.execute("""
+                INSERT INTO game_passes (user_id, order_id, total_passes, remaining_passes, expires_at)
+                VALUES (?, ?, 3, 3, ?)
+            """, (user.id, order_id, exp_date))
+            conn.commit()
+            conn.close()
+
+            text_done = (
+                "🎉 *PLANO ATIVADO COM SUCESSO! (100% OFF)*\n\n"
+                f"⚽ *{p['name']}*\n"
+                f"🎟️ Cupom utilizado: `{coupon_code}`\n\n"
+                "Seus **3 Passes de Jogo de 4 Horas** já estão disponíveis na sua carteira!\n"
+                "Para ativar qualquer jogo na sua Smart TV, vá em **Minha Conta**."
+            )
+            kb_done = [
+                [InlineKeyboardButton("⚽ Ativar 1 Passe Agora", callback_data="redeem_game_pass")],
+                [InlineKeyboardButton("📦 Minha Conta / Passes", callback_data="my_access")],
+                [InlineKeyboardButton("🏠 Menu Principal", callback_data="main_menu")]
+            ]
+            await safe_edit(text_done, reply_markup=InlineKeyboardMarkup(kb_done))
+            return
+
+        # Para planos mensais/trimestrais/anuais: gerar acesso IPTV completo
+        days_map = {
+            "iptv_mensal_1": 30, "iptv_mensal_2": 30, "iptv_mensal_3": 30,
+            "iptv_trimestral_1": 90, "iptv_trimestral_2": 90, "iptv_trimestral_3": 90,
+            "iptv_semestral_1": 180, "iptv_semestral_2": 180, "iptv_semestral_3": 180,
+            "iptv_anual_1": 365, "iptv_anual_2": 365, "iptv_anual_3": 365,
+        }
+        days = days_map.get(pid, 30)
+        cred = generate_iptv_access(duration_days=days)
+        cred_str = f"Usuário: {cred['username']} | Senha: {cred['password']} | Servidor: {cred['server_url']}"
+
+        conn = db_connect()
+        c = conn.cursor()
+        c.execute("""
+            INSERT INTO orders (order_id, user_id, username, product_id, status, payment_method, amount, delivered_credentials, m3u_url, expires_at)
+            VALUES (?, ?, ?, ?, 'paid', 'coupon_100', 0.0, ?, ?, ?)
+        """, (order_id, user.id, user.username or "", pid, cred_str, cred["m3u_url"], cred["expires_at"]))
+        conn.commit()
+        conn.close()
+
+        # Alerta para o admin no Telegram
+        try:
+            alert_playtv_sale(
+                plan_name=f"{p['name']} (Cupom 100% OFF)",
+                amount_str="R$ 0,00 (Gratuito)",
+                method=f"CUPOM {coupon_code}",
+                customer_info=f"@{user.username or 'SemUser'} (ID {user.id})",
+                order_id=order_id
+            )
+        except Exception:
+            pass
+
+        vip_page_url = f"https://nexus.pixget.io/vip/{order_id}"
+        text_done = (
+            "🎉 *PLANO ATIVADO COM SUCESSO! (100% OFF)*\n\n"
+            f"📺 *Plano:* {p['name']}\n"
+            f"🎟️ *Cupom:* `{coupon_code}` (-100%)\n"
+            f"⏳ *Validade:* {days} Dias (Até: {to_brt_str(cred['expires_at'])})\n\n"
+            f"📋 *DADOS DE ACESSO:*\n"
+            f"• Servidor: `{cred['server_url']}`\n"
+            f"• Usuário: `{cred['username']}`\n"
+            f"• Senha: `{cred['password']}`\n\n"
+            f"🔗 *Lista M3U Completa:*\n`{cred['m3u_url']}`\n\n"
+            "📱 *Toque abaixo para abrir o seu Cartão VIP Interativo:*"
+        )
+        kb_done = [
+            [InlineKeyboardButton("✨ ABRIR CARTÃO VIP INTERATIVO", url=vip_page_url)],
+            [InlineKeyboardButton("🚀 Ativar na Smart TV", callback_data="auto_activate_tv")],
+            [InlineKeyboardButton("🏠 Menu Principal", callback_data="main_menu")]
+        ]
+        await safe_edit(text_done, reply_markup=InlineKeyboardMarkup(kb_done))
         return
 
     if data.startswith("ask_coupon_"):
@@ -1546,6 +1653,70 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         p = PRODUCTS.get(pid)
         price_to_charge = stored.get("price", p["price_brl"]) if isinstance(stored, dict) else p["price_brl"]
+
+        # Se o valor for 0 (cupom de 100%), ativa imediatamente sem chamar a Pixget
+        if price_to_charge <= 0.0:
+            applied = USER_APPLIED_COUPONS.pop(user.id, None)
+            coupon_code = applied["code"] if applied else "VIP100"
+            conn_cp = db_connect()
+            c_cp = conn_cp.cursor()
+            c_cp.execute("UPDATE coupons SET used_count = used_count + 1 WHERE code = ?", (coupon_code,))
+            conn_cp.commit()
+            conn_cp.close()
+
+            order_id = f"PLAYTV_FREE_{uuid.uuid4().hex[:8].upper()}"
+
+            days_map = {
+                "iptv_mensal_1": 30, "iptv_mensal_2": 30, "iptv_mensal_3": 30,
+                "iptv_trimestral_1": 90, "iptv_trimestral_2": 90, "iptv_trimestral_3": 90,
+                "iptv_semestral_1": 180, "iptv_semestral_2": 180, "iptv_semestral_3": 180,
+                "iptv_anual_1": 365, "iptv_anual_2": 365, "iptv_anual_3": 365,
+            }
+            days = days_map.get(pid, 30)
+            cred = generate_iptv_access(duration_days=days)
+            cred_str = f"Usuário: {cred['username']} | Senha: {cred['password']} | Servidor: {cred['server_url']}"
+
+            conn = db_connect()
+            c = conn.cursor()
+            c.execute("""
+                INSERT INTO orders (order_id, user_id, username, product_id, status, payment_method, amount, delivered_credentials, m3u_url, expires_at)
+                VALUES (?, ?, ?, ?, 'paid', 'coupon_100', 0.0, ?, ?, ?)
+            """, (order_id, user.id, user.username or "", pid, cred_str, cred["m3u_url"], cred["expires_at"]))
+            conn.commit()
+            conn.close()
+
+            try:
+                alert_playtv_sale(
+                    plan_name=f"{p['name']} (Cupom 100% OFF)",
+                    amount_str="R$ 0,00 (Gratuito)",
+                    method=f"CUPOM {coupon_code}",
+                    customer_info=f"@{user.username or 'SemUser'} (ID {user.id})",
+                    order_id=order_id
+                )
+            except Exception:
+                pass
+
+            vip_page_url = f"https://nexus.pixget.io/vip/{order_id}"
+            text_done = (
+                "🎉 *PLANO ATIVADO COM SUCESSO! (100% OFF)*\n\n"
+                f"📺 *Plano:* {p['name']}\n"
+                f"🎟️ *Cupom:* `{coupon_code}` (-100%)\n"
+                f"⏳ *Validade:* {days} Dias (Até: {to_brt_str(cred['expires_at'])})\n\n"
+                f"📋 *DADOS DE ACESSO:*\n"
+                f"• Servidor: `{cred['server_url']}`\n"
+                f"• Usuário: `{cred['username']}`\n"
+                f"• Senha: `{cred['password']}`\n\n"
+                f"🔗 *Lista M3U Completa:*\n`{cred['m3u_url']}`\n\n"
+                "📱 *Toque abaixo para abrir o seu Cartão VIP Interativo:*"
+            )
+            kb_done = [
+                [InlineKeyboardButton("✨ ABRIR CARTÃO VIP INTERATIVO", url=vip_page_url)],
+                [InlineKeyboardButton("🚀 Ativar na Smart TV", callback_data="auto_activate_tv")],
+                [InlineKeyboardButton("🏠 Menu Principal", callback_data="main_menu")]
+            ]
+            await update.message.reply_text(text_done, reply_markup=InlineKeyboardMarkup(kb_done), parse_mode="Markdown")
+            return
+
         order_id = f"PLAYTV_{uuid.uuid4().hex[:8].upper()}"
 
         try:
