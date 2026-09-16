@@ -41,16 +41,17 @@ PROMPT = (
     '{"mac": "04:B9:E3:BE:57:5C", "key": null, "app_name": "IBO PRO TV", "site": "ibotv.pro", "screen_text": "..."}'
 )
 
-MAC_RE = re.compile(r"\b([0-9A-Fa-f]{2}(?::|-)?){5}[0-9A-Fa-f]{2}\b")
+MAC_RE = re.compile(r"\b(?:[0-9A-Fa-f]{2}(?::|-)){5,7}[0-9A-Fa-f]{2}\b")
 
 
 def _normalize_mac(raw):
     if not raw:
         return None
     digits = re.sub(r"[^0-9A-Fa-f]", "", str(raw))
-    if len(digits) != 12:
+    # Aceita tanto MAC padrao IEEE 802 (6 bytes = 12 hex) quanto EUI-64 / Philips Smart TV (8 bytes = 16 hex)
+    if len(digits) not in (12, 16):
         return None
-    return ":".join(digits[i:i + 2] for i in range(0, 12, 2)).lower()
+    return ":".join(digits[i:i + 2] for i in range(0, len(digits), 2)).lower()
 
 
 def _fallback_from_text(text):
