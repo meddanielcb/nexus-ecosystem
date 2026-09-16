@@ -99,6 +99,8 @@ with open("/opt/data/nexus_playtv_bot/products_playtv.json") as f:
 
 AWAITING_CPF = {}
 AWAITING_TV_CODES = {} # user_id -> {'order_id': order_id, 'm3u_url': url}
+AWAITING_COUPON = {} # user_id -> {'pid': pid}
+USER_APPLIED_COUPONS = {} # user_id -> {'code': code, 'discount_pct': disc}
 
 def get_main_keyboard():
     return [
@@ -898,62 +900,91 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await safe_edit(text, reply_markup=InlineKeyboardMarkup(keyboard))
         return
 
-    if data.startswith("prod_direct_"):
-        pid = data.replace("prod_direct_", "")
+    if data.startswith("prod_direct_") or data.startswith("prod_"):
+        if data.startswith("prod_direct_"):
+            pid = data.replace("prod_direct_", "")
+        else:
+            pid = data.replace("prod_", "")
+
         p = PRODUCTS.get(pid)
         if not p:
             await query.message.reply_text("Plano indisponível.")
             return
 
+        applied = USER_APPLIED_COUPONS.get(user.id)
+        price_brl = p["price_brl"]
+        price_usd = p["price_usd"]
+        coupon_str = ""
+
+        if applied:
+            disc = applied["discount_pct"]
+            mult = max(0.0, 1.0 - (disc / 100.0))
+            price_brl = round(price_brl * mult, 2)
+            price_usd = round(price_usd * mult, 2)
+            coupon_str = f"🎟️ *Cupom Ativo:* `{applied['code']}` (*-{disc}% OFF*)\n"
+
         text = (
             f"*{p['name']}*\n\n"
             f"{p['description']}\n\n"
             f"💰 *Investimento:*\n"
-            f"• *PIX:* R$ {p['price_brl']:.2f}\n"
-            f"• *Cripto:* ${p['price_usd']:.2f} USDT\n\n"
+            f"• *PIX:* R$ {price_brl:.2f}\n"
+            f"• *Cripto:* ${price_usd:.2f} USDT\n\n"
+            f"{coupon_str}"
             f"⚡ *Entrega Instantânea das credenciais no chat.*\n\n"
             f"👇 *Escolha como deseja pagar:*"
         )
 
         keyboard = [
-            [InlineKeyboardButton(f"🟢 Pagar via PIX (R$ {p['price_brl']:.2f})", callback_data=f"ask_cpf_{pid}")],
-            [InlineKeyboardButton(f"💎 Pagar com Cripto (${p['price_usd']:.2f} USDT)", callback_data=f"crypto_hub_{pid}")],
-            [InlineKeyboardButton("⬅️ Voltar aos Planos", callback_data="view_plans")]
+            [InlineKeyboardButton(f"🟢 Pagar via PIX (R$ {price_brl:.2f})", callback_data=f"ask_cpf_{pid}")],
+            [InlineKeyboardButton(f"💎 Pagar com Cripto (${price_usd:.2f} USDT)", callback_data=f"crypto_hub_{pid}")]
         ]
+
+        if not applied:
+            keyboard.append([InlineKeyboardButton("🎟️ Tenho um Cupom de Desconto", callback_data=f"ask_coupon_{pid}")])
+        else:
+            keyboard.append([InlineKeyboardButton("❌ Remover Cupom", callback_data=f"remove_coupon_{pid}")])
+
+        keyboard.append([InlineKeyboardButton("⬅️ Voltar aos Planos", callback_data="view_plans")])
         await safe_edit(text, reply_markup=InlineKeyboardMarkup(keyboard))
         return
 
-    if data.startswith("prod_"):
-        pid = data.replace("prod_", "")
+    if data.startswith("ask_coupon_"):
+        pid = data.replace("ask_coupon_", "")
         p = PRODUCTS.get(pid)
-        if not p:
-            await query.message.reply_text("Plano indisponível.")
-            return
-
+        AWAITING_COUPON[user.id] = {"pid": pid}
         text = (
-            f"*{p['name']}*\n\n"
-            f"{p['description']}\n\n"
-            f"💰 *Investimento:*\n"
-            f"• *PIX:* R$ {p['price_brl']:.2f}\n"
-            f"• *Cripto:* ${p['price_usd']:.2f} USDT\n\n"
-            f"⚡ *Entrega Instantânea das credenciais no chat.*\n\n"
-            f"👇 *Escolha como deseja pagar:*"
+            f"🎟️ *Inserir Cupom de Desconto*\n\n"
+            f"Plano: *{p['name']}*\n"
+            f"Valor Original: *R$ {p['price_brl']:.2f}*\n\n"
+            "✍️ Por favor, digite o código do seu cupom de desconto no chat:"
         )
-
-        keyboard = [
-            [InlineKeyboardButton(f"🟢 Pagar via PIX (R$ {p['price_brl']:.2f})", callback_data=f"ask_cpf_{pid}")],
-            [InlineKeyboardButton(f"💎 Pagar com Cripto (${p['price_usd']:.2f} USDT)", callback_data=f"crypto_hub_{pid}")],
-            [InlineKeyboardButton("⬅️ Voltar aos Planos", callback_data="view_plans")]
-        ]
+        keyboard = [[InlineKeyboardButton("⬅️ Cancelar", callback_data=f"prod_{pid}")]]
         await safe_edit(text, reply_markup=InlineKeyboardMarkup(keyboard))
         return
+
+    if data.startswith("remove_coupon_"):
+        pid = data.replace("remove_coupon_", "")
+        USER_APPLIED_COUPONS.pop(user.id, None)
+        await query.answer("Cupom removido!", show_alert=True)
+        # Recarregar tela do plano
+        data = f"prod_{pid}"
 
     if data.startswith("crypto_hub_"):
         pid = data.replace("crypto_hub_", "")
         p = PRODUCTS.get(pid)
+        applied = USER_APPLIED_COUPONS.get(user.id)
+        base_usd = p["price_usd"]
+        coupon_info = ""
+        if applied:
+            disc = applied["discount_pct"]
+            mult = max(0.0, 1.0 - (disc / 100.0))
+            base_usd = round(base_usd * mult, 2)
+            coupon_info = f"🎟️ Cupom aplicado: *{applied['code']}* (-{disc}%)\n"
+
         text = (
             f"💎 *Pagamento Cripto — {p['name']}*\n\n"
-            f"Valor Base: *${p['price_usd']:.2f} USDT*\n\n"
+            f"{coupon_info}"
+            f"Valor Base: *${base_usd:.2f} USDT*\n\n"
             "Escolha a categoria de rede:"
         )
         keyboard = [
@@ -968,6 +999,12 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         pid = data.replace("fast_net_", "")
         p = PRODUCTS.get(pid)
         base = p["price_usd"]
+
+        applied = USER_APPLIED_COUPONS.get(user.id)
+        if applied:
+            disc = applied["discount_pct"]
+            mult = max(0.0, 1.0 - (disc / 100.0))
+            base = round(base * mult, 2)
         
         fee_base = get_network_fee_estimate("base/usdc")
         total_base = base if fee_base <= 0.60 else base + fee_base
@@ -992,6 +1029,12 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         pid = data.replace("other_net_", "")
         p = PRODUCTS.get(pid)
         base = p["price_usd"]
+
+        applied = USER_APPLIED_COUPONS.get(user.id)
+        if applied:
+            disc = applied["discount_pct"]
+            mult = max(0.0, 1.0 - (disc / 100.0))
+            base = round(base * mult, 2)
 
         fee_btc = get_network_fee_estimate("btc")
         total_btc = base if fee_btc <= 0.60 else base + fee_btc
@@ -1019,15 +1062,25 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if data.startswith("ask_cpf_"):
         pid = data.replace("ask_cpf_", "")
         p = PRODUCTS.get(pid)
-        AWAITING_CPF[user.id] = {"pid": pid, "price": p["price_brl"]}
+        price_brl = p["price_brl"]
+        applied = USER_APPLIED_COUPONS.get(user.id)
+        coupon_text = ""
+        if applied:
+            disc = applied["discount_pct"]
+            mult = max(0.0, 1.0 - (disc / 100.0))
+            price_brl = round(price_brl * mult, 2)
+            coupon_text = f"🎟️ *Cupom Aplicado:* `{applied['code']}` (-{disc}%)\n"
+
+        AWAITING_CPF[user.id] = {"pid": pid, "price": price_brl}
         text = (
             f"🟢 *Pagamento via PIX — {p['name']}*\n\n"
-            f"Valor: *R$ {p['price_brl']:.2f}*\n\n"
+            f"{coupon_text}"
+            f"Valor: *R$ {price_brl:.2f}*\n\n"
             "Por gentileza, informe o seu **CPF** (apenas números) para emissão do PIX Oficial do Banco Central:\n\n"
             "ℹ️ *Aviso importante:* O pagamento deve ser feito a partir da conta bancária vinculada a este mesmo CPF. "
             "PIX de contas de terceiros não serão aprovados pelo sistema."
         )
-        keyboard = [[InlineKeyboardButton("⬅️ Cancelar", callback_data="main_menu")]]
+        keyboard = [[InlineKeyboardButton("⬅️ Cancelar", callback_data=f"prod_{pid}")]]
         await safe_edit(text, reply_markup=InlineKeyboardMarkup(keyboard))
         return
 
@@ -1037,6 +1090,13 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         pid = "_".join(parts[2:])
         p = PRODUCTS.get(pid)
         base_usd = p["price_usd"]
+
+        applied = USER_APPLIED_COUPONS.get(user.id)
+        if applied:
+            disc = applied["discount_pct"]
+            mult = max(0.0, 1.0 - (disc / 100.0))
+            base_usd = round(base_usd * mult, 2)
+
         fee = get_network_fee_estimate(coin)
         total_usd = base_usd if fee <= 0.60 else base_usd + fee
         crypto_qty, display_qty = convert_usd_to_crypto(coin, total_usd)
@@ -1324,6 +1384,59 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Precisa de ajuda com o PlayTV?", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Ver Dúvidas Frequentes", callback_data="support_faq")]]))
         return
 
+    # Tratamento de Inserção de Cupom de Desconto
+    if user.id in AWAITING_COUPON:
+        session = AWAITING_COUPON.pop(user.id)
+        pid = session.get("pid")
+        code_in = msg_text.strip().upper()
+
+        conn = db_connect()
+        c = conn.cursor()
+        c.execute("SELECT code, discount_pct, max_uses, used_count FROM coupons WHERE code = ?", (code_in,))
+        row = c.fetchone()
+        conn.close()
+
+        if not row:
+            await update.message.reply_text(
+                "❌ *Cupom não encontrado ou inválido!*\n\n"
+                "Verifique se digitou corretamente o código promocional.",
+                reply_markup=InlineKeyboardMarkup([
+                    [InlineKeyboardButton("🔄 Tentar Novamente", callback_data=f"ask_coupon_{pid}")],
+                    [InlineKeyboardButton("⬅️ Voltar ao Plano", callback_data=f"prod_{pid}")]
+                ]),
+                parse_mode="Markdown"
+            )
+            return
+
+        code_db, disc_pct, max_u, used_c = row
+        if used_c >= max_u:
+            await update.message.reply_text(
+                "⚠️ *Este cupom de desconto já atingiu o limite máximo de usos!*",
+                reply_markup=InlineKeyboardMarkup([
+                    [InlineKeyboardButton("⬅️ Voltar ao Plano", callback_data=f"prod_{pid}")]
+                ]),
+                parse_mode="Markdown"
+            )
+            return
+
+        USER_APPLIED_COUPONS[user.id] = {"code": code_db, "discount_pct": disc_pct}
+        p = PRODUCTS.get(pid)
+        orig_brl = p["price_brl"]
+        mult = max(0.0, 1.0 - (disc_pct / 100.0))
+        new_brl = round(orig_brl * mult, 2)
+
+        await update.message.reply_text(
+            f"🎉 *Cupom `{code_db}` aplicado com sucesso!*\n\n"
+            f"Desconto: *{disc_pct}% OFF*\n"
+            f"Valor com desconto: *R$ {new_brl:.2f}* (era R$ {orig_brl:.2f})\n\n"
+            "Toque no botão abaixo para concluir o pagamento com seu desconto:",
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton("✅ Continuar para Pagamento", callback_data=f"prod_{pid}")]
+            ]),
+            parse_mode="Markdown"
+        )
+        return
+
     # Tratamento de Ativação Automática de Smart TV Samsung / LG via 2Captcha
     if user.id in AWAITING_TV_CODES:
         session = AWAITING_TV_CODES[user.id]
@@ -1430,11 +1543,12 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return
 
         p = PRODUCTS.get(pid)
+        price_to_charge = stored.get("price", p["price_brl"]) if isinstance(stored, dict) else p["price_brl"]
         order_id = f"PLAYTV_{uuid.uuid4().hex[:8].upper()}"
 
         try:
             charge = create_pixget_charge(
-                amount_brl=p["price_brl"],
+                amount_brl=price_to_charge,
                 order_id=order_id,
                 description=f"Nexus PlayTV - {p['name']}",
                 cpf=cpf_clean
@@ -1445,7 +1559,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             c.execute("""
             INSERT INTO orders (order_id, user_id, username, product_id, payment_method, amount, status, payment_id)
             VALUES (?, ?, ?, ?, 'pix', ?, 'pending', ?)
-            """, (order_id, user.id, user.username or "", pid, p["price_brl"], charge.get("payment_id")))
+            """, (order_id, user.id, user.username or "", pid, price_to_charge, charge.get("payment_id")))
             conn.commit()
             conn.close()
 
@@ -1453,7 +1567,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text = (
                 f"🟢 *Pagamento PIX Gerado com Sucesso!*\n\n"
                 f"📺 *Plano:* {p['name']}\n"
-                f"💵 *Valor:* R$ {p['price_brl']:.2f}\n"
+                f"💵 *Valor:* R$ {price_to_charge:.2f}\n"
                 f"🆔 *Pedido:* `{order_id}`\n\n"
                 f"📋 *PIX Copia e Cola:*\n"
                 f"```\n{qr_code}\n```\n\n"
