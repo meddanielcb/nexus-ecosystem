@@ -365,11 +365,17 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         cred = generate_iptv_access(is_trial=True) # 4 horas ilimitadas
         redemption_id = f"PASS_{user.id}_{int(time.time())}"
         
-        # Inserir apenas no pass_redemptions com expiração
+        # Inserir no pass_redemptions com expiração
         c.execute("""
         INSERT INTO pass_redemptions (user_id, pass_id, username, password, m3u_url, expires_at)
         VALUES (?, ?, ?, ?, ?, ?)
         """, (user.id, pass_id, cred["username"], cred["password"], cred["m3u_url"], cred["expires_at"]))
+
+        # Também salvar no orders para permitir que o Cartão VIP /vip/{redemption_id} funcione perfeitamente
+        c.execute("""
+        INSERT OR REPLACE INTO orders (order_id, user_id, product_id, amount_brl, status, delivered_credentials, m3u_url, expires_at)
+        VALUES (?, ?, 'passe_4h', 0, 'paid', ?, ?, ?)
+        """, (redemption_id, user.id, f"Usuário: {cred['username']} | Senha: {cred['password']}", cred["m3u_url"], cred["expires_at"]))
 
         conn.commit()
         conn.close()
@@ -386,8 +392,8 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except Exception as e_alert:
             logger.error(f"Erro ao disparar alerta de resgate: {e_alert}")
 
-        # 3. Gerar URL do WebPlayer MasterX
-        web_player_url = f"http://painelmaster.app/portal/?user={cred['username']}&pass={cred['password']}"
+        # 3. Gerar URL do Cartão VIP Interativo
+        vip_page_url = f"https://nexus.pixget.io/vip/{redemption_id}"
 
         text = (
             "🎉 *SEU ACESSO DE JOGO (4 HORAS) FOI ATIVADO!*\n\n"
@@ -449,7 +455,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         rem_bonus = c.fetchone()[0]
         conn.close()
 
-        web_player_url = f"http://painelmaster.app/portal/?user={cred['username']}&pass={cred['password']}"
+        vip_page_url = f"https://nexus.pixget.io/vip/{bonus_order_id}"
 
         text = (
             "🎉 *PARABÉNS! SEU MÊS DE BÔNUS ESTÁ ATIVO!*\n\n"
@@ -517,7 +523,6 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             pass
 
         vip_page_url = f"https://nexus.pixget.io/vip/{trial_id}"
-        web_player_url = f"http://painelmaster.app/portal/?user={cred['username']}&pass={cred['password']}"
 
         text = (
             "🎉 *SEU TESTE GRÁTIS DE 4 HORAS FOI LIBERADO!*\n\n"
