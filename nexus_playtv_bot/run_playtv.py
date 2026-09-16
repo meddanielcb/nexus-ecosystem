@@ -6,6 +6,7 @@ import uuid
 import sqlite3
 import io
 import time
+import asyncio
 import qrcode
 from datetime import datetime, timedelta, timezone
 
@@ -182,6 +183,18 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=InlineKeyboardMarkup(get_main_keyboard()),
             parse_mode="Markdown"
         )
+
+    # Ativa o menu persistente inferior (barra de digitação) numa mensagem
+    # separada: o Telegram não permite combinar InlineKeyboardMarkup e
+    # ReplyKeyboardMarkup na mesma mensagem, então o teclado de navegação
+    # rápida é fixado aqui, após o menu principal.
+    try:
+        await update.message.reply_text(
+            "🔽 Use o menu de acesso rápido abaixo sempre que precisar.",
+            reply_markup=get_persistent_reply_keyboard()
+        )
+    except Exception as e_kb:
+        logger.error(f"Erro ao fixar menu persistente: {e_kb}")
 
 async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -1595,7 +1608,11 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         from tv_activator import activate_tv
 
-        res = activate_tv(
+        # activate_tv é síncrono e faz polling do 2Captcha por 45-60s.
+        # Executar em thread separada para não bloquear o event loop do
+        # Telegram (e travar o atendimento de outros usuários).
+        res = await asyncio.to_thread(
+            activate_tv,
             mac=mac_fmt,
             key=key_clean,
             playlist_url=m3u_url,
@@ -2123,7 +2140,11 @@ async def photo_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             parse_mode="Markdown"
         )
 
-        res = activate_tv(
+        # activate_tv é síncrono e faz polling do 2Captcha por 45-60s.
+        # Executar em thread separada para não bloquear o event loop do
+        # Telegram (e travar o atendimento de outros usuários).
+        res = await asyncio.to_thread(
+            activate_tv,
             mac=mac_found,
             key=key_found,
             playlist_url=m3u_url,

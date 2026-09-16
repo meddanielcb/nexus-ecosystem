@@ -121,28 +121,25 @@ def generate_iptv_access(duration_days: int = 30, is_trial: bool = False, userna
     """
     Gera as credenciais oficiais de acesso IPTV MasterX / StreamCore via API REST nativa.
     Servidor oficial: http://atmt.space
+
+    IMPORTANTE: não existe fallback local. Se a API MasterX falhar, o erro é
+    logado em detalhe e a exceção é repassada ao chamador (MasterXError ou a
+    exceção original), que deve tratar a falha de forma explícita (ex.: avisar
+    o cliente e não cobrar/entregar). Nunca fabricar credenciais fictícias
+    aqui — elas nunca funcionariam no painel real e enganariam o cliente.
     """
+    from masterx_api import create_masterx_line, MasterXError
     try:
-        from masterx_api import create_masterx_line
         return create_masterx_line(is_trial=is_trial, duration_days=duration_days, phone=phone)
+    except MasterXError:
+        logger.error(
+            f"Erro ao emitir linha via MasterX API (is_trial={is_trial}, duration_days={duration_days}, phone={phone})",
+            exc_info=True,
+        )
+        raise
     except Exception as e:
-        import logging
-        logging.error(f"Erro ao emitir linha via MasterX API: {e}")
-        # Fallback de segurança temporário caso a API oscile
-        suffix = uuid.uuid4().hex[:6].lower()
-        prefix = "trial" if is_trial else "nexus"
-        iptv_user = username or f"{prefix}_{suffix}"
-        iptv_pass = password or uuid.uuid4().hex[:8]
-        server_dns = "http://atmt.space"
-        m3u_link = f"{server_dns}/get.php?username={iptv_user}&password={iptv_pass}&type=m3u_plus&output=ts"
-        return {
-            "username": iptv_user,
-            "password": iptv_pass,
-            "server_url": server_dns,
-            "m3u_url": m3u_link,
-            "duration": f"{duration_days} Dias" if not is_trial else "4 Horas",
-            "expires_at": (datetime.now() + (timedelta(hours=4) if is_trial else timedelta(days=duration_days))).strftime("%Y-%m-%d %H:%M:%S"),
-            "partner_code": "00042",
-            "downloader_code": "3054398",
-            "web_player": "http://painelmaster.app/portal"
-        }
+        logger.error(
+            f"Erro inesperado ao emitir linha via MasterX API (is_trial={is_trial}, duration_days={duration_days}, phone={phone}): {e}",
+            exc_info=True,
+        )
+        raise MasterXError(f"Falha inesperada ao gerar acesso IPTV via MasterX: {e}") from e

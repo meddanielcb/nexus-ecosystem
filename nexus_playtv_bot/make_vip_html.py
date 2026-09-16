@@ -61,7 +61,7 @@ def generate_interactive_html(output_path, username, password, server_url, m3u_u
 <body>
 
 <div class="container">
-  <img src="/opt/data/nexus_playtv_bot/assets/nexus_playtv_banner.png" class="banner" alt="Nexus PlayTV">
+  <img src="/static/nexus_playtv_banner.png" class="banner" alt="Nexus PlayTV">
   <div class="header">
     <h1>NEXUS PLAYTV • ACESSO VIP</h1>
     <p>Plano: <b>{plan_name}</b> • Validade: {valid_until}</p>
