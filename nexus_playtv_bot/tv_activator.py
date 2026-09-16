@@ -21,6 +21,7 @@ APP_NAMES = {
     "ibo": "IBO Player",
     "ibopro": "IBO PRO TV",
     "smartone": "SmartOne IPTV",
+    "vizzion": "Vizzion Play",
 }
 
 
@@ -32,6 +33,8 @@ def detect_app(site: str, app_name: str) -> str:
     if site in APP_NAMES:
         return site
 
+    if "vizzion" in site or "vizzion" in app_name:
+        return "vizzion"
     if "funplays" in site:
         return "funplays"
     if "ibotv" in site or "iboprotv" in site or "pro tv" in app_name:
@@ -65,6 +68,17 @@ def activate_tv(mac: str, key: str, playlist_url: str, site: str = "", app_name:
             "app_label": _label(app),
             "message": "Este aplicativo (IBO PRO TV) exige codigo de ativacao pago no site ibotv.pro "
                        "e nao aceita injecao de lista. Instale outro player."
+        }
+
+    # Vizzion Play: aplicativo com login por Usuario e Senha na aba USER
+    if app == "vizzion":
+        return {
+            "success": False,
+            "app": app,
+            "app_label": _label(app),
+            "message": "O *Vizzion Play* no Android utiliza login direto por Usuário e Senha!\n\n"
+                       "👉 Na tela do app, selecione a aba **USER** e digite o seu Usuário e Senha fornecidos no seu plano/teste. "
+                       "A grade de canais e filmes conecta na hora sem precisar de ativação web."
         }
 
     # 1. Backend identificado com certeza

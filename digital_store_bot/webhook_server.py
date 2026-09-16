@@ -44,6 +44,152 @@ OFFICIAL_SERVER_URL = "http://atmt.space"
 OFFICIAL_WEB_PLAYER = "http://painelmaster.app/portal"
 DEAD_HOSTS = ("player.nexusplay.tv", "cdn.nexusplay.tv", "cdn-nexus.playtv.live")
 
+# ---------------------------------------------------------------------------
+# P0-5 - Validacao on-chain de pagamentos cripto (BlockBee envia callback via GET).
+# A BlockBee dispara o callback como GET sem o header x-ca-signature, portanto a
+# unica validacao confiavel e ler a blockchain diretamente e confirmar que o
+# destinatario da transferencia e o endereco do pedido. Isso impede spoofing.
+# ---------------------------------------------------------------------------
+EVM_RPC = {
+    "base": "https://mainnet.base.org",
+    "bep20": "https://bsc-dataseed.binance.org/",
+    "polygon": "https://polygon-rpc.com",
+    "erc20": "https://eth.llamarpc.com",
+    "eth": "https://eth.llamarpc.com",
+}
+EVM_DECIMALS = {"bep20": 18, "erc20": 6, "base": 6, "polygon": 6, "eth": 18}
+TRANSFER_TOPIC = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
+
+# Exploradores Blockscout (gratuitos, sem API key) para localizar o txid de entrada.
+BLOCKSCOUT_API = {
+    "base": "https://base.blockscout.com/api/v2",
+    "polygon": "https://polygon.blockscout.com/api/v2",
+    "erc20": "https://eth.blockscout.com/api/v2",
+    "eth": "https://eth.blockscout.com/api/v2",
+}
+
+
+def verify_evm_payment(chain: str, txid: str, expected_address: str, expected_value: float, tolerance: float = 0.02) -> bool:
+    """Confirma on-chain que txid transferiu >= expected_value para expected_address."""
+    rpc = EVM_RPC.get((chain or "").lower())
+    if not rpc or not txid or not expected_address:
+        return False
+    exp_addr = expected_address.lower()
+    try:
+        receipt = requests.post(rpc, json={
+            "jsonrpc": "2.0", "id": 1,
+            "method": "eth_getTransactionReceipt", "params": [txid]
+        }, timeout=10).json().get("result")
+        if not receipt or receipt.get("status") != "0x1":
+            return False
+
+        received = 0.0
+        for log in receipt.get("logs", []):
+            topics = log.get("topics") or []
+            if len(topics) >= 3 and topics[0].lower() == TRANSFER_TOPIC:
+                to_addr = "0x" + topics[2][-40:]
+                if to_addr.lower() == exp_addr:
+                    raw = int(log.get("data", "0x0"), 16)
+                    received += raw / (10 ** EVM_DECIMALS.get(chain.lower(), 18))
+
+        if received <= 0:
+            return False
+        return received >= (expected_value * (1 - tolerance))
+    except Exception as e:
+        print(f"Erro na verificacao on-chain ({chain}/{txid[:12]}...): {e}")
+        return False
+
+
+def poll_pending_crypto_orders():
+    """Watchdog: reconcilia pedidos cripto pendentes lendo a blockchain direto.
+
+    Cobre qualquer callback perdido (BlockBee offline, Caddy reiniciado, etc).
+    Roda em background a cada 60s e entrega apenas o que estiver confirmado on-chain.
+    """
+    while True:
+        try:
+            conn = sqlite3.connect(DB_PATH)
+            c = conn.cursor()
+            c.execute("""
+                SELECT order_id, payment_id, amount, payment_method, created_at
+                FROM orders
+                WHERE status = 'pending'
+                  AND payment_method LIKE 'crypto_%'
+                  AND payment_id LIKE '0x%'
+                  AND created_at >= datetime('now', '-3 hours')
+                ORDER BY created_at DESC LIMIT 25
+            """)
+            pendentes = c.fetchall()
+            conn.close()
+
+            for order_id, address, amount, method, _ in pendentes:
+                chain = (method or "").replace("crypto_", "").split("/")[0].strip()
+                if chain not in EVM_RPC:
+                    continue
+
+                txid = find_incoming_tx(chain, address, amount)
+                if txid and verify_evm_payment(chain, txid, address, float(amount or 0)):
+                    print(f"[WATCHDOG CRIPTO] Pagamento confirmado on-chain para {order_id} (tx {txid[:14]}...). Entregando...")
+                    deliver_order_async(order_id)
+        except Exception as e:
+            print(f"[WATCHDOG CRIPTO] Erro: {e}")
+        threading.Event().wait(60)
+
+
+def find_incoming_tx(chain: str, address: str, min_value: float) -> str:
+    """Localiza o txid da transferencia recebida no endereco do pedido.
+
+    1) Blockscout (gratuito, sem API key) para Base/Polygon/ETH.
+    2) Fallback: varredura de blocos via RPC publico.
+    """
+    chain = (chain or "").lower()
+    exp_addr = (address or "").lower()
+
+    # --- 1) Blockscout ---
+    api = BLOCKSCOUT_API.get(chain)
+    if api:
+        try:
+            r = requests.get(f"{api}/addresses/{address}/token-transfers",
+                             params={"filter": "to"}, timeout=15)
+            if r.status_code == 200:
+                for item in r.json().get("items", []):
+                    to_hash = ((item.get("to") or {}).get("hash") or "").lower()
+                    if to_hash != exp_addr:
+                        continue
+                    decimals = int((item.get("total") or {}).get("decimals") or EVM_DECIMALS.get(chain, 18))
+                    raw_val = int((item.get("total") or {}).get("value") or 0)
+                    amount = raw_val / (10 ** decimals)
+                    if amount >= min_value * 0.98:
+                        return item.get("transaction_hash")
+        except Exception as e:
+            print(f"[WATCHDOG CRIPTO] Blockscout falhou ({chain}): {e}")
+
+    # --- 2) Fallback via RPC ---
+    rpc = EVM_RPC.get(chain)
+    if not rpc:
+        return None
+    try:
+        blk_hex = requests.post(rpc, json={
+            "jsonrpc": "2.0", "id": 1, "method": "eth_blockNumber", "params": []
+        }, timeout=10).json().get("result")
+        latest = int(blk_hex, 16)
+
+        for offset in range(0, 600, 50):
+            blk_data = requests.post(rpc, json={
+                "jsonrpc": "2.0", "id": 1,
+                "method": "eth_getBlockByNumber", "params": [hex(latest - offset), True]
+            }, timeout=15).json().get("result")
+            if not blk_data:
+                continue
+            for tx in blk_data.get("transactions", []):
+                txid = tx["hash"]
+                if verify_evm_payment(chain, txid, exp_addr, min_value):
+                    return txid
+    except Exception as e:
+        print(f"[WATCHDOG CRIPTO] Erro ao varrer blocos: {e}")
+    return None
+
+
 
 def sanitize_server_url(url: str) -> str:
     """Substitui dominios mortos (NXDOMAIN) pelo servidor oficial."""
@@ -305,23 +451,21 @@ def deliver_playtv_order_async(order_id: str):
     conn.commit()
     conn.close()
 
-    # Enviar credenciais diretamente no chat do cliente no Nexus PlayTV com botões de 1 clique
+    # Enviar credenciais diretamente no chat do cliente no Nexus PlayTV
     vip_web_url = f"https://nexus.pixget.io/vip/{order_id}"
-    web_player_url = f"{OFFICIAL_WEB_PLAYER}/?user={access['username']}&pass={access['password']}"
 
     msg = (
         "🎉 *PAGAMENTO APROVADO! SEU ACESSO NEXUS PLAYTV ESTÁ ATIVO!*\n\n"
         f"📺 *Plano:* {product_id}\n"
         f"⏳ *Validade:* {access['duration']} (Até: {access['expires_at']})\n\n"
         "📱 *Toque no botão abaixo para abrir seu Cartão VIP Interativo:*\n"
-        "Nele você assiste em 1 clique sem senha e copia tudo direto com 1 toque!"
+        "Nele você tem todos os dados do seu acesso e instruções de instalação!"
     )
     
     url_msg = f"https://api.telegram.org/bot{PLAYTV_BOT_TOKEN}/sendMessage"
     keyboard = {
         "inline_keyboard": [
             [{"text": "✨ ABRIR CARTÃO VIP INTERATIVO", "url": vip_web_url}],
-            [{"text": "▶️ Assistir Agora no Navegador (Sem Senha)", "url": web_player_url}],
             [
                 {"text": "📱 Passo a Passo Smart TV", "callback_data": "how_to_install"},
                 {"text": "💬 Suporte VIP 24h", "callback_data": "support_faq"}
@@ -489,6 +633,69 @@ class WebhookHandler(BaseHTTPRequestHandler):
                 self.wfile.write(content)
                 return
 
+        elif path == "/api/webhooks/blockbee":
+            # A BlockBee dispara o callback como GET, com os dados na query string e
+            # SEM o header x-ca-signature. A validacao e feita lendo a blockchain:
+            # confirmamos que o txid realmente transferiu o valor para o endereco
+            # exato daquele pedido. Sem isso, nao existe confianca possivel.
+            qs = parse_qs(parsed.query)
+            order_id = (qs.get("order_id", [None])[0] or "").strip()
+            txid = (qs.get("txid_in", [None])[0] or "").strip()
+            address_in = (qs.get("address_in", [None])[0] or "").strip()
+            coin_field = (qs.get("coin", [None])[0] or "").strip()
+            pending_flag = str(qs.get("pending", ["1"])[0])
+            value_coin = qs.get("value_coin", qs.get("value", ["0"]))[0]
+
+            def _respond(code, payload):
+                self.send_response(code)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps(payload).encode('utf-8'))
+
+            if not order_id:
+                _respond(400, {"error": "order_id ausente"})
+                return
+
+            db_file = PLAYTV_DB_PATH if order_id.startswith("PLAYTV_") else DB_PATH
+            conn = sqlite3.connect(db_file)
+            c = conn.cursor()
+            c.execute("SELECT status, payment_id, amount FROM orders WHERE order_id = ?", (order_id,))
+            row = c.fetchone()
+            conn.close()
+
+            if not row:
+                _respond(404, {"error": "pedido nao encontrado"})
+                return
+
+            status, stored_address, amount = row
+            if status == "paid":
+                _respond(200, {"received": True, "status": "already_paid"})
+                return
+
+            # O endereco do callback TEM que ser o mesmo que emitimos para o pedido.
+            if not stored_address or (address_in or "").lower() != stored_address.lower():
+                print(f"BlockBee GET rejeitado: endereco divergente para {order_id}")
+                _respond(401, {"error": "endereco divergente"})
+                return
+
+            # Somente entrega quando confirmado on-chain.
+            chain = (coin_field or "").split("_")[0].strip().lower() or \
+                    (stored_address and "")
+            if not chain:
+                chain = "base"
+
+            confirmed = False
+            if txid:
+                confirmed = verify_evm_payment(chain, txid, stored_address, float(amount or 0))
+
+            if confirmed:
+                threading.Thread(target=deliver_order_async, args=(order_id,), daemon=True).start()
+                _respond(200, {"received": True, "status": "confirmed_onchain"})
+            else:
+                print(f"BlockBee GET: pagamento ainda nao confirmado on-chain ({order_id}, pending={pending_flag})")
+                _respond(200, {"received": True, "status": "awaiting_onchain_confirmation"})
+            return
+
         self.send_response(404)
         self.end_headers()
         self.wfile.write(b'Not Found')
@@ -655,6 +862,9 @@ class WebhookHandler(BaseHTTPRequestHandler):
 def run_server(port=8099):
     server = HTTPServer(('', port), WebhookHandler)
     print(f"Servidor Webhook Oficial rodando na porta {port}...")
+    # Watchdog de reconciliacao cripto: cobre callbacks perdidos de qualquer provedor.
+    threading.Thread(target=poll_pending_crypto_orders, daemon=True).start()
+    print("Watchdog de conciliacao cripto on-chain ativo (intervalo 60s).")
     server.serve_forever()
 
 if __name__ == "__main__":

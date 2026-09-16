@@ -399,12 +399,12 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"• Senha: `{cred['password']}`\n\n"
             f"🔗 *Lista M3U:*\n`{cred['m3u_url']}`\n\n"
             "✨ *COMO ASSISTIR AGORA:*\n"
-            "1️⃣ *No Computador/Celular:* Clique no botão **Assistir no Navegador** abaixo para abrir sem digitar senha!\n"
+            "1️⃣ *No Computador/Celular:* Abra seu Cartão VIP abaixo ou use o app parceiro no celular;\n"
             "2️⃣ *Na Smart TV:* Clique em **Ativar na Smart TV** e mande a foto da tela do seu app!"
             " (funciona com FunPlays, Magic PLAY, Power Play, EPIC PLAY, IBO Player e Smart IPTV)"
         )
         keyboard = [
-            [InlineKeyboardButton("▶️ Assistir no Navegador (WebPlayer)", url=web_player_url)],
+            [InlineKeyboardButton("✨ Abrir Cartão VIP", url=vip_page_url)],
             [InlineKeyboardButton("🚀 Ativar na Smart TV", callback_data="auto_activate_tv")],
             [InlineKeyboardButton("⬅️ Menu Principal", callback_data="main_menu")]
         ]
@@ -462,12 +462,10 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"⏳ *Validade:* 30 Dias (Até {cred['expires_at']})\n"
             f"🎟️ *Meses de bônus ainda na sua carteira:* {rem_bonus}\n\n"
             "📺 *Como Assistir:*\n"
-            "• Clique abaixo para assistir no navegador sem senha;\n"
-            "• Ou use na sua Smart TV Samsung, LG ou TV Box."
+            "• Use na sua Smart TV Samsung, LG ou TV Box clicando em Ativar na Smart TV abaixo."
         )
 
         kb = [
-            [InlineKeyboardButton("▶️ Assistir no Navegador (WebPlayer)", url=web_player_url)],
             [InlineKeyboardButton("📱 Ativar na Smart TV", callback_data="auto_activate_tv")],
             [InlineKeyboardButton("💼 Minha Conta / Carteira", callback_data="my_access")]
         ]
@@ -529,7 +527,6 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         keyboard = [
             [InlineKeyboardButton("✨ ABRIR CARTÃO VIP INTERATIVO", url=vip_page_url)],
-            [InlineKeyboardButton("▶️ Assistir Agora no Navegador", url=web_player_url)],
             [InlineKeyboardButton("📱 Passo a Passo Smart TV", callback_data="how_to_install")],
             [InlineKeyboardButton("📺 Gostei, quero Assinar!", callback_data="view_plans")]
         ]
