@@ -1648,12 +1648,25 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 parse_mode="Markdown"
             )
         else:
-            err_msg = res.get("message") or "Erro desconhecido"
+            err_msg = res.get("message") or "Servidor do aplicativo em manutenção"
+            app_req = session.get("app", "") or ""
+            app_site = "https://funplays.app" if app_req == "funplays" else ("https://iboplayer.com" if app_req == "ibo" else "o portal do aplicativo")
             await status_msg.edit_text(
-                f"❌ *Não foi possível ativar sua TV:*\n`{err_msg}`\n\n"
-                "Confira se o **Device ID** e o **Device Key** estão exatamente como aparecem na tela "
-                "do aplicativo e envie novamente no formato:\n"
-                "`a1:b2:c3:d4:e5:f6 123456`",
+                f"⚠️ *O servidor do aplicativo não respondeu à ativação automática.*\n\n"
+                f"Seus códigos digitados:\n"
+                f"• Device ID: `{mac_fmt}`\n"
+                f"• Device Key: `{key_clean}`\n\n"
+                f"👉 *Como você mesmo ativa em 1 minuto:*\n"
+                f"1. Abra o site: `{app_site}` no navegador do celular;\n"
+                f"2. Digite o Device ID e a Chave acima;\n"
+                f"3. No campo URL (M3U), cole sua lista:\n"
+                f"`{m3u_url}`\n"
+                f"4. Salve e reinicie o aplicativo na sua TV!\n\n"
+                f"💬 _Se preferir, chame o suporte abaixo que ativamos para você na hora:_ ",
+                reply_markup=InlineKeyboardMarkup([
+                    [InlineKeyboardButton("💬 Chamar Suporte Humano", callback_data="support_faq")],
+                    [InlineKeyboardButton("⬅️ Menu Principal", callback_data="main_menu")]
+                ]),
                 parse_mode="Markdown"
             )
         return
@@ -2153,9 +2166,17 @@ async def photo_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             playlist_name="Nexus PlayTV VIP",
         )
 
+        app_label = APP_NAMES.get(detected, "Smart TV")
+        portal_map = {
+            "funplays": "https://funplays.app",
+            "ibo": "https://iboplayer.com",
+            "magic": "https://magicplay.app"
+        }
+        portal_url = portal_map.get(detected, "o site do aplicativo na TV")
+
         if res.get("success"):
             AWAITING_TV_CODES.pop(user.id, None)
-            app_label = res.get("app_label") or "Smart TV"
+            app_label = res.get("app_label") or app_label
             try:
                 alert_playtv_sale(
                     plan_name=f"Ativação Smart TV ({app_label})",
@@ -2179,15 +2200,22 @@ async def photo_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 parse_mode="Markdown"
             )
         else:
-            err = res.get("message") or "Erro desconhecido"
+            err = res.get("message") or "Servidor do aplicativo em manutenção"
             await status_msg.edit_text(
-                f"❌ *Não foi possível ativar sua TV automaticamente:*\n`{err}`\n\n"
-                "Confira se os códigos na tela estão corretos e envie novamente no formato:\n"
-                "`a1:b2:c3:d4:e5:f6 123456`\n\n"
-                "Se preferir, nosso suporte finaliza a ativação manualmente em segundos.",
+                f"⚠️ *O servidor do {app_label} não respondeu à ativação automática.*\n\n"
+                f"Lemos os dados da sua TV com sucesso:\n"
+                f"• MAC / Device ID: `{mac_found}`\n"
+                f"• Chave / Device Key: `{key_found}`\n\n"
+                f"👉 *Como você mesmo ativa em 1 minuto pelo celular:*\n"
+                f"1. Abra o site oficial: `{portal_url}`\n"
+                f"2. Digite o MAC e a Chave informados acima;\n"
+                f"3. Cole a sua Lista VIP no campo URL (M3U):\n"
+                f"`{m3u_url}`\n"
+                f"4. Clique em Salvar e reinicie o aplicativo na sua TV!\n\n"
+                f"💬 *Se preferir, clique abaixo e nosso suporte humano ativa para você agora:*",
                 reply_markup=InlineKeyboardMarkup([
-                    [InlineKeyboardButton("💬 Falar com o Suporte", callback_data="support_faq")],
-                    [InlineKeyboardButton("⬅️ Menu Inicial", callback_data="main_menu")]
+                    [InlineKeyboardButton("💬 Chamar Suporte Humano", callback_data="support_faq")],
+                    [InlineKeyboardButton("⬅️ Menu Principal", callback_data="main_menu")]
                 ]),
                 parse_mode="Markdown"
             )
