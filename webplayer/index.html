@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#050607">
 <title>Nexus PlayTV • WebPlayer</title>
 <link rel="icon" href="/favicon.png" type="image/png">
-<link rel="stylesheet" href="./design/player.css?v=3.4">
+<link rel="stylesheet" href="./design/player.css?v=3.5">
 </head>
 <body>
 
@@ -16,50 +16,41 @@
   <div class="login-card">
     <div class="login-identity"><div class="mark-stage"><img class="login-mark" src="./design/nexus.svg" alt="" width="64" height="70"></div><div class="login-wordmark">NEXUS<span>PLAYTV</span></div><p>Seu universo de entretenimento.</p></div>
     <div class="login-heading"><h1>Que bom ter você aqui.</h1><p class="sub">Entre na sua conta e dê o play.</p></div>
-    <!-- Toggle de Acesso: [ 📱 QR Code / TV ] [ ⌨ Usuário e Senha ] -->
-    <div class="login-tabs">
-      <button type="button" class="login-tab active" id="tabQr">📱 QR Code / TV</button>
-      <button type="button" class="login-tab" id="tabForm">⌨ Usuário e Senha</button>
+    
+    <div class="field">
+      <label for="inUser">Usuário</label>
+      <input id="inUser" type="text" autocomplete="username" placeholder="Seu usuário">
+    </div>
+    <div class="field">
+      <label for="inPass">Senha</label>
+      <div class="pass-wrapper">
+        <input id="inPass" type="password" autocomplete="current-password" placeholder="Sua senha">
+        <button type="button" id="btnTogglePass" class="btn-toggle-pass" aria-label="Mostrar ou ocultar senha">
+          <svg class="icon-eye-off" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+            <line x1="1" y1="1" x2="23" y2="23"></line>
+          </svg>
+          <svg class="icon-eye" style="display:none;" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <button class="btn" id="btnLogin">Conectar <span aria-hidden="true">↗</span></button>
+
+    <!-- QR Code Integrado e Compacto na mesma tela -->
+    <div class="login-qr-inline" id="loginQrInline">
+      <div class="qr-inline-box">
+        <img id="qrCodeImg" alt="QR Code" class="qr-inline-img">
+      </div>
+      <div class="qr-inline-info">
+        <span class="qr-inline-title">ACESSO RÁPIDO NA TV</span>
+        <p class="qr-inline-sub">Aponte a câmera do celular para entrar direto sem digitar</p>
+        <div class="qr-inline-pin">PIN: <strong id="qrPinCode">----</strong></div>
+      </div>
     </div>
 
-    <!-- Painel 1: QR Code Dinâmico Instantâneo (Padrão TV / Sofá) -->
-    <div class="login-pane active" id="paneQr">
-      <div class="qr-container">
-        <div class="qr-box" id="qrBox">
-          <img id="qrCodeImg" alt="QR Code de Acesso" class="qr-code-img">
-        </div>
-        <div class="qr-pin-display">
-          <span class="qr-pin-label">CÓDIGO DE PAREAMENTO</span>
-          <div class="qr-pin-code" id="qrPinCode">----</div>
-        </div>
-      </div>
-      <p class="qr-instruct">Aponte a câmera do seu celular para entrar instantaneamente na TV sem precisar digitar no controle.</p>
-    </div>
-
-    <!-- Painel 2: Formulário Manual Clássico -->
-    <div class="login-pane" id="paneForm">
-      <div class="field">
-        <label for="inUser">Usuário</label>
-        <input id="inUser" type="text" autocomplete="username" placeholder="Seu usuário">
-      </div>
-      <div class="field">
-        <label for="inPass">Senha</label>
-        <div class="pass-wrapper">
-          <input id="inPass" type="password" autocomplete="current-password" placeholder="Sua senha">
-          <button type="button" id="btnTogglePass" class="btn-toggle-pass" aria-label="Mostrar ou ocultar senha">
-            <svg class="icon-eye-off" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-              <line x1="1" y1="1" x2="23" y2="23"></line>
-            </svg>
-            <svg class="icon-eye" style="display:none;" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path>
-              <circle cx="12" cy="12" r="3"></circle>
-            </svg>
-          </button>
-        </div>
-      </div>
-      <button class="btn" id="btnLogin">Conectar <span aria-hidden="true">↗</span></button>
-    </div>
     <p class="login-err" id="loginErr" role="alert"></p>
     <p class="login-foot">Recebeu um link de acesso rápido? Ele já loga sozinho.<br>Suporte: Nexus PlayTV</p>
   </div>
@@ -125,17 +116,12 @@
       <h2>Canais ao vivo.</h2>
       <input class="side-search" id="searchInput" aria-label="Buscar canal" placeholder="Buscar canal…">
       <div class="cat-select-row">
-        <div class="custom-cat-dropdown" id="customCatDropdown">
-          <button type="button" class="cat-dropdown-trigger" id="catDropdownTrigger" aria-haspopup="listbox" aria-expanded="false" title="Selecionar Categoria">
-            <span class="cat-current-label" id="catCurrentLabel">Todas as categorias</span>
-            <svg class="cat-dropdown-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-          </button>
-          <div class="cat-dropdown-menu" id="catDropdownMenu" role="listbox">
-            <div class="cat-item active" data-id="">Todas as categorias</div>
-          </div>
-        </div>
+        <button type="button" class="cat-dropdown-trigger" id="catDropdownTrigger" title="Alternar Categorias e Canais" aria-label="Ver todas as categorias">
+          <span class="cat-current-label" id="catCurrentLabel">Todas as categorias</span>
+          <svg class="cat-dropdown-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
         <select class="cat-select" id="catSelect" style="display:none;" aria-label="Categoria de canais"><option value="">Todas as categorias</option></select>
         <button type="button" class="btn-toggle-compact" id="btnToggleChannels" title="Recolher / Expandir lista de canais" aria-label="Alternar altura dos canais">
           <svg class="toggle-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -162,7 +148,7 @@
 <script src="https://cdn.jsdelivr.net/npm/mpegts.js@1.7.3/dist/mpegts.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
 <script src="./design/qrcode.min.js"></script>
-<script src="/app.js?v=3.4"></script>
-<script src="./design/motion.js?v=3.4"></script>
+<script src="/app.js?v=3.5"></script>
+<script src="./design/motion.js?v=3.5"></script>
 </body>
 </html>
