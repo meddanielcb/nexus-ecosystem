@@ -75,7 +75,7 @@ def create_pixget_invoice(amount_brl: float, customer_cpf: str, description: str
         err_msg = res.get("error") or r.text
         raise Exception(f"PixGet ({r.status_code}): {err_msg}")
 
-BLOCKBEE_API_KEY = os.getenv("BLOCKBEE_API_KEY", "U8ukQhhdEhxT9nfuCCOJCSVVTVHJvzTL4F5Ykl8QwUB5ONEJ5XBAiMqfz5XbwiXW")
+BLOCKBEE_API_KEY = os.getenv("BLOCKBEE_API_KEY", "")
 
 def get_network_fee_estimate(coin: str) -> float:
     """Consulta a taxa estimada de encaminhamento na API do BlockBee em USD"""

@@ -14,6 +14,11 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from db import DB_PATH
 from services import purchase_on_demand_adapter
 from notifier import alert_sale, alert_system
+import sys
+sys.path.append("/opt/nexus_repo/nexus_playtv_bot")
+sys.path.append("/opt/data/nexus_repo/nexus_playtv_bot")
+from masterx_api import create_masterx_line, MasterXError, MasterXTrialLimitReached
+from checkout_api import create_checkout, get_checkout_status, CheckoutError
 
 # Carregar Chave Pública do BlockBee para validação RSA
 BLOCKBEE_PUBKEY = None
@@ -575,6 +580,15 @@ class WebhookHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.end_headers()
 
+    def do_OPTIONS(self):
+        # Suporte a preflight CORS para navegadores
+        self.send_response(204)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+        self.send_header('Access-Control-Max-Age', '86400')
+        self.end_headers()
+
     def do_GET(self):
         parsed = urlparse(self.path)
         path = parsed.path
@@ -696,6 +710,36 @@ class WebhookHandler(BaseHTTPRequestHandler):
                 _respond(200, {"received": True, "status": "awaiting_onchain_confirmation"})
             return
 
+        elif path.startswith("/api/checkout/status"):
+            # Consulta de status de um pedido via /api/checkout/status/<id> ou /api/checkout/status?order_id=<id>
+            order_id = ""
+            if path.startswith("/api/checkout/status/"):
+                order_id = path[len("/api/checkout/status/"):].split("?")[0].strip()
+            elif "?" in path:
+                from urllib.parse import parse_qs, urlparse
+                qs = parse_qs(urlparse(path).query)
+                order_id = qs.get("order_id", [""])[0].strip()
+
+
+            def _respond_checkout(code, payload):
+                body = json.dumps(payload).encode('utf-8')
+                self.send_response(code)
+                self.send_header('Content-Type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.send_header('Content-Length', str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
+            try:
+                result = get_checkout_status(order_id)
+                _respond_checkout(200, result)
+            except CheckoutError as e:
+                _respond_checkout(e.status, {"error": str(e)})
+            except Exception as e:
+                print(f"[CHECKOUT API] Erro ao consultar status: {e}")
+                _respond_checkout(500, {"error": "erro interno ao consultar status"})
+            return
+
         self.send_response(404)
         self.end_headers()
         self.wfile.write(b'Not Found')
@@ -703,7 +747,73 @@ class WebhookHandler(BaseHTTPRequestHandler):
         length = int(self.headers.get('Content-Length', 0))
         raw_body = self.rfile.read(length)
         parsed_path = urlparse(self.path).path
+
         
+        if parsed_path == "/api/trial/create":
+            def _respond_trial(code, payload):
+                body = json.dumps(payload).encode('utf-8')
+                self.send_response(code)
+                self.send_header('Content-Type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.send_header('Content-Length', str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
+            try:
+                # Gera teste de 4 horas diretamente no painel oficial do fornecedor
+                cred = create_masterx_line(is_trial=True, duration_days=0)
+                # Formatar resposta completa para o cliente usar na Smart TV
+                dns = "http://atmt.space"
+                res_payload = {
+                    "ok": True,
+                    "type": "trial",
+                    "duration": "4 Horas",
+                    "username": cred.get("username"),
+                    "password": cred.get("password"),
+                    "server_url": dns,
+                    "m3u_url": cred.get("m3u_url") or f"{dns}/get.php?username={cred.get('username')}&password={cred.get('password')}&type=m3u_plus&output=ts",
+                    "instructions": [
+                        "1. Baixe um dos apps na sua Smart TV (ex: XCIPTV, Smarters Pro, IBO Player, FunPlays)",
+                        "2. Escolha 'Entrar com Xtream Codes API'",
+                        f"3. Servidor/DNS: {dns}",
+                        f"4. Usuário: {cred.get('username')}",
+                        f"5. Senha: {cred.get('password')}"
+                    ]
+                }
+                _respond_trial(200, res_payload)
+            except MasterXTrialLimitReached as limit_err:
+                _respond_trial(429, {"ok": False, "error": "Capacidade de testes esgotada momentaneamente nos servidores. Tente novamente em alguns minutos."})
+            except Exception as trial_err:
+                print(f"[TRIAL API] Erro ao gerar teste: {trial_err}")
+                _respond_trial(500, {"ok": False, "error": "Falha ao gerar credencial de teste. Tente novamente em instantes."})
+            return
+
+        if parsed_path == "/api/checkout/create":
+            def _respond_checkout(code, payload):
+                body = json.dumps(payload).encode('utf-8')
+                self.send_response(code)
+                self.send_header('Content-Type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.send_header('Content-Length', str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
+            try:
+                data = json.loads(raw_body.decode('utf-8')) if raw_body else {}
+            except Exception:
+                _respond_checkout(400, {"error": "JSON invalido no corpo da requisicao"})
+                return
+
+            try:
+                result = create_checkout(data)
+                _respond_checkout(200, result)
+            except CheckoutError as e:
+                _respond_checkout(e.status, {"error": str(e)})
+            except Exception as e:
+                print(f"[CHECKOUT API] Erro interno ao criar checkout: {e}")
+                _respond_checkout(500, {"error": "erro interno ao criar checkout"})
+            return
+
         if parsed_path == "/api/webhooks/pixget":
             delivery_id = self.headers.get("X-Pixget-Delivery")
             
