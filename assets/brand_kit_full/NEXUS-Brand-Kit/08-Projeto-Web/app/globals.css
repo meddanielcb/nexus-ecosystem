@@ -253,3 +253,35 @@ body{font-family:'Space Grotesk',sans-serif;background:#050607}button,input,sele
 @keyframes barFill{from{width:0}to{width:var(--w)}}
 .lat-foot{font-size:12.5px;color:#7d8f74;margin:16px 0 0;line-height:1.55}
 @media(prefers-reduced-motion:reduce){.net-packet,.core-ring,.core-orbit,.core-sat,.lat-bar,.dot-live,.net-node circle:last-child{animation:none!important}.lat-bar{width:var(--w)}}
+
+/* ===== LOGO CELLS (todos os logos com proporcao correta, sem esticar) ===== */
+.logo-cell{display:inline-flex;align-items:center;justify-content:center;width:126px;height:44px;flex:0 0 auto}
+.logo-cell img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;filter:none;opacity:1;display:block}
+.brand-row .logo-cell,.platform-row .logo-cell{width:138px;height:46px}
+.ribbon-label+.marquee .logo-cell{height:38px}
+.sport-brands .logo-cell{width:104px;height:34px;padding:5px 8px;border-radius:7px;background:rgba(5,6,7,.62);backdrop-filter:blur(6px)}
+.sport-brands .logo-cell img{max-height:22px}
+
+/* ===== MARQUEE DE MARCAS (rolagem discreta e continua) ===== */
+.channel-ribbon{overflow:hidden}
+.marquee{position:relative;flex:1 1 auto;min-width:0;overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
+.marquee-track{display:flex;width:max-content;animation:marqueeRoll 42s linear infinite}
+.marquee-group{display:flex;align-items:center;gap:30px;padding-right:30px}
+.marquee-group .logo-cell img{opacity:.58;transition:opacity .25s ease,transform .25s ease}
+.marquee-group .logo-cell:hover img{opacity:1}
+.marquee:hover .marquee-track{animation-play-state:paused}
+@keyframes marqueeRoll{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
+@media(prefers-reduced-motion:reduce){.marquee-track{animation:none}.marquee-group .logo-cell img{opacity:.8}}
+@media(max-width:700px){.logo-cell{width:104px;height:38px}.marquee-group{gap:20px;padding-right:20px}}
+
+/* ===== TRATAMENTO CINEMATOGRAFICO DAS FOTOS DE ESPORTE ===== */
+.sport-background{filter:brightness(.52) saturate(.78) contrast(1.16);object-position:50% 38%;transform:scale(1.06)}
+.sport-overlay{background:linear-gradient(180deg,rgba(5,6,7,.42) 0%,rgba(5,6,7,.68) 42%,rgba(5,6,7,.94) 78%,#050607 100%)}
+.sport-feature::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(120% 90% at 82% 12%,rgba(183,255,60,.14),transparent 58%)}
+.sport-text h3{text-shadow:0 4px 26px rgba(0,0,0,.85)}
+.sport-text .sport-brands{margin-bottom:14px}
+.sport-feature{background:#050607}
+.hero-cinema video,.hero-cinema img{filter:brightness(.6) saturate(.9) contrast(1.08)}
