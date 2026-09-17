@@ -94,7 +94,7 @@ def generate_interactive_html(output_path, username, password, server_url, m3u_u
 
     <div class="field-box">
       <div class="field-info">
-        <div class="field-label">CÓDIGO PARCEIRO (MASTERX)</div>
+        <div class="field-label">CÓDIGO PARCEIRO</div>
         <div class="field-val" id="code_val">00042</div>
       </div>
       <button class="btn-copy" onclick="copyText('00042', 'Código')">📋 Copiar</button>
@@ -125,8 +125,8 @@ def generate_interactive_html(output_path, username, password, server_url, m3u_u
     </div>
 
     <div class="tv-guide">
-      <h4>⚡ Dica para Smart TV Samsung / LG / Android:</h4>
-      <p>Nos apps <b>MasterX</b> ou <b>XCIPTV</b>, basta digitar <b>00042</b> no código, seguido do seu Usuário e Senha. Nos demais apps (FunPlays, IBO, etc.), use o Servidor acima.</p>
+      <h4>⚡ Dica para Smart TV Samsung / LG:</h4>
+      <p>Nos apps como <b>XCIPTV</b> ou parceiros com código, digite <b>00042</b>, seguido de Usuário e Senha. Em apps como <b>FunPlays</b> ou <b>IBO Player</b>, use o Servidor, Usuário e Senha acima ou ative por foto.</p>
     </div>
   </div>
 
