@@ -66,6 +66,11 @@ O ecossistema **Nexus PlayTV** está sendo estruturado para ser uma operação a
 │ • Smart TV Pairing via PIN de 6 dígitos e QR Code                           │
 │ • Proxy interno de mídia (elimina bloqueios CORS e traffic shaping)         │
 │ • Contador de tempo e gatilho de compra embutido para testes grátis         │
+│ • [PROJETO MONETIZAÇÃO & RETENÇÃO - BACKLOG]:                               │
+│   - Guia "Jogos de Hoje" com sintonia direta em 1 clique (brasões/horários) │
+│   - Espaços para Publicidade/Patrocínio (Pre-roll buffer, banners rodapé)   │
+│   - Botão de Suporte IA / Atendimento direto via WhatsApp integrado          │
+│   - Urgência de renovação/upgrade para contas de teste grátis               │
 └─────────────────────────────────────────────────────────────────────────────┘
                                       │
                                       ▼
@@ -94,7 +99,18 @@ O ecossistema **Nexus PlayTV** está sendo estruturado para ser uma operação a
 * **CORS & HLS Proxy:** Reverse proxy local em Nginx repassando streams `.m3u8` e `.ts` com headers otimizados (`X-Accel-Buffering: no`).
 * **Segurança:** Sem armazenamento de senhas em texto puro nos cookies; sessões assinadas com `STREAM_SESSION_SECRET` (AES-256-GCM).
 
-### 3. Blindagem de Dados & Regra de Ouro Financeira
+### 3. Engine de Monetização, AdTech & Mídia Proprietária (VALE OURO)
+* **Pre-Roll de Carregamento Inteligente (Buffer Monetizado):**
+  - Nos 2 a 3 segundos naturais de handshake/buffer inicial do stream HLS, exibição de vinheta/banner em alta resolução de 5s.
+  - Anunciantes de alto valor: iGaming/Casas de Apostas (Bet365, Blaze, etc. via RevShare/CPA), infoprodutos e ecossistema proprietário (Nutra, Pixget).
+* **Overlay L-Band Não-Intrusivo (Rodapé do Guia/Menu):**
+  - Banner discreto no terço inferior da tela exibido durante a navegação pelo catálogo de canais com CTA rastreável via link de afiliado.
+* **Espaço Patrocinado no Guia de Jogos do Dia:**
+  - "Jogos de Hoje — Oferecimento [Nome do Patrocinador]" com destaque do logo no topo do card.
+* **Atendimento & Suporte IA Integrado:**
+  - Botão flutuante discreto com suporte direto ao WhatsApp com IA e escalonamento humano.
+
+### 4. Blindagem de Dados & Regra de Ouro Financeira
 * **Privacidade 1337 LLC:** Nenhum cabeçalho HTTP ou resposta de API conterá menções a IPs residenciais, nomes pessoais ou chaves não-oficiais.
 * **Aprovações Financeiras:** Nenhuma nova contratação ou débito na Wallet Njalla ocorre sem prévia confirmação e validação do proprietário (Daniel).
 
