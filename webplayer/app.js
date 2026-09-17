@@ -361,9 +361,55 @@
     });
   }
 
+  // Dropdown Customizado de Categorias (Renderizado diretamente na interface)
+  const catDropdown = document.getElementById("customCatDropdown");
+  const catTrigger = document.getElementById("catDropdownTrigger");
+  const catMenu = document.getElementById("catDropdownMenu");
+  const catLabel = document.getElementById("catCurrentLabel");
+
+  function toggleCatDropdown(open) {
+    if (!catDropdown) return;
+    const isOpen = open !== undefined ? open : !catDropdown.classList.contains("open");
+    catDropdown.classList.toggle("open", isOpen);
+    if (catTrigger) catTrigger.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  }
+
+  if (catTrigger) {
+    catTrigger.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleCatDropdown();
+      resetAutoRetractTimer();
+    });
+  }
+
+  document.addEventListener("click", (e) => {
+    if (catDropdown && !catDropdown.contains(e.target)) {
+      toggleCatDropdown(false);
+    }
+  });
+
   function renderCategories(cats) {
     els.catSelect.innerHTML = `<option value="">Todas as categorias</option>` +
       cats.map(c => `<option value="${c.category_id}">${(c.category_name || "").replace(/</g, "&lt;")}</option>`).join("");
+
+    if (catMenu) {
+      catMenu.innerHTML = `<div class="cat-item active" data-id="">Todas as categorias</div>` +
+        cats.map(c => `<div class="cat-item" data-id="${c.category_id}">${(c.category_name || "").replace(/</g, "&lt;")}</div>`).join("");
+
+      catMenu.querySelectorAll(".cat-item").forEach(item => {
+        item.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const id = item.getAttribute("data-id");
+          els.catSelect.value = id;
+          catMenu.querySelectorAll(".cat-item").forEach(i => i.classList.remove("active"));
+          item.classList.add("active");
+          if (catLabel) catLabel.textContent = item.textContent;
+          toggleCatDropdown(false);
+          renderChannelList(allStreams);
+          resetAutoRetractTimer();
+        });
+      });
+    }
   }
 
   // ---------------- Fluxo de sessão ----------------
@@ -533,11 +579,46 @@
   const btnToggleChannels = document.getElementById("btnToggleChannels");
   const sidebar = document.getElementById("sidebar");
 
+  // Timer de Auto-Recolhimento (após 2s de inatividade na lista expandida)
+  let autoRetractTimer = null;
+
+  function resetAutoRetractTimer() {
+    if (autoRetractTimer) {
+      clearTimeout(autoRetractTimer);
+      autoRetractTimer = null;
+    }
+    // Se a lista estiver EXPANDIDA (não tem channels-retracted)
+    if (sidebar && !sidebar.classList.contains("channels-retracted")) {
+      autoRetractTimer = setTimeout(() => {
+        // Não recolhe se o dropdown de categorias ainda estiver aberto
+        if (catDropdown && catDropdown.classList.contains("open")) {
+          resetAutoRetractTimer();
+          return;
+        }
+        sidebar.classList.add("channels-retracted");
+        if (btnToggleChannels) {
+          btnToggleChannels.setAttribute("aria-expanded", "false");
+          btnToggleChannels.title = "Expandir lista de canais";
+        }
+      }, 2000); // 2 segundos sem interação
+    }
+  }
+
+  // Interações na barra lateral reiniciam o timer de 2s
+  if (sidebar) {
+    ["mousemove", "scroll", "keydown", "touchstart", "click"].forEach(evt => {
+      sidebar.addEventListener(evt, resetAutoRetractTimer, { passive: true });
+    });
+  }
+
   if (btnToggleChannels && sidebar) {
     btnToggleChannels.addEventListener("click", () => {
       const isRetracted = sidebar.classList.toggle("channels-retracted");
       btnToggleChannels.setAttribute("aria-expanded", isRetracted ? "false" : "true");
       btnToggleChannels.title = isRetracted ? "Expandir lista de canais" : "Recolher lista para ver anúncio";
+      if (!isRetracted) {
+        resetAutoRetractTimer();
+      }
     });
 
     els.searchInput.addEventListener("focus", () => {
@@ -546,6 +627,7 @@
         btnToggleChannels.setAttribute("aria-expanded", "true");
         btnToggleChannels.title = "Recolher lista para ver anúncio";
       }
+      resetAutoRetractTimer();
     });
   }
 

@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#050607">
 <title>Nexus PlayTV • WebPlayer</title>
 <link rel="icon" href="/favicon.png" type="image/png">
-<link rel="stylesheet" href="./design/player.css?v=3.2">
+<link rel="stylesheet" href="./design/player.css?v=3.3">
 </head>
 <body>
 
@@ -102,7 +102,18 @@
       <h2>Canais ao vivo.</h2>
       <input class="side-search" id="searchInput" aria-label="Buscar canal" placeholder="Buscar canal…">
       <div class="cat-select-row">
-        <select class="cat-select" id="catSelect" aria-label="Categoria de canais"><option value="">Todas as categorias</option></select>
+        <div class="custom-cat-dropdown" id="customCatDropdown">
+          <button type="button" class="cat-dropdown-trigger" id="catDropdownTrigger" aria-haspopup="listbox" aria-expanded="false" title="Selecionar Categoria">
+            <span class="cat-current-label" id="catCurrentLabel">Todas as categorias</span>
+            <svg class="cat-dropdown-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div class="cat-dropdown-menu" id="catDropdownMenu" role="listbox">
+            <div class="cat-item active" data-id="">Todas as categorias</div>
+          </div>
+        </div>
+        <select class="cat-select" id="catSelect" style="display:none;" aria-label="Categoria de canais"><option value="">Todas as categorias</option></select>
         <button type="button" class="btn-toggle-compact" id="btnToggleChannels" title="Recolher / Expandir lista de canais" aria-label="Alternar altura dos canais">
           <svg class="toggle-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="18 15 12 9 6 15"></polyline>
@@ -127,7 +138,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/mpegts.js@1.7.3/dist/mpegts.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
-<script src="/app.js?v=3.2"></script>
-<script src="./design/motion.js?v=3.2"></script>
+<script src="/app.js?v=3.3"></script>
+<script src="./design/motion.js?v=3.3"></script>
 </body>
 </html>
