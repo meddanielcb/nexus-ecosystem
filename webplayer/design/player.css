@@ -49,13 +49,18 @@ aside.sidebar.collapsed{margin-right:-340px;display:none}.list-kicker,.login-kic
 .sidebar.channels-retracted .toggle-icon{transform:rotate(180deg)}
 .sidebar:not(.channels-retracted) .toggle-icon{transform:rotate(0deg)}
 
-/* Comportamento da lista: retraída para cima (compacta) ou expandida full */
-.sidebar.channels-retracted .list{max-height:220px;min-height:180px;flex-shrink:0;overflow-y:auto;border-bottom:1px solid rgba(255,255,255,.08);transition:max-height .3s cubic-bezier(.16,1,.3,1)}
-.sidebar:not(.channels-retracted) .list{flex:1;max-height:none;transition:max-height .3s cubic-bezier(.16,1,.3,1)}
-.sidebar:not(.channels-retracted) .ad-vertical-billboard{display:none}
+/* Comportamento da lista: RETRAÍDA = lista 100% oculta (só banner)
+   EXPANDIDA = lista ocupa tudo e passa POR CIMA do banner */
+aside.sidebar{position:relative}
+.sidebar.channels-retracted .list{display:none!important}
+.sidebar:not(.channels-retracted) .list{flex:1;min-height:0;max-height:none;overflow-y:auto;position:relative;z-index:3;background:#0b0e0e}
+.sidebar:not(.channels-retracted) .ad-vertical-billboard{position:absolute;left:12px;right:12px;bottom:12px;height:320px;min-height:0;margin:0;z-index:1}
 
 /* Banner Vertical de Anúncio (Retângulo Vertical na parte inferior da sidebar) */
 .ad-vertical-billboard{flex:1;min-height:260px;margin:12px;display:flex;flex-direction:column;position:relative;background:#080b0d;border:1px dashed rgba(255,255,255,.08);border-radius:16px;overflow:hidden;box-shadow:inset 0 2px 10px rgba(0,0,0,.5)}
+.ad-billboard-img-link{width:100%;height:100%;display:block;border-radius:15px;overflow:hidden;position:relative;box-shadow:0 12px 30px rgba(0,0,0,.8),0 0 20px rgba(0,229,255,.15);border:1px solid rgba(0,229,255,.3);opacity:0;transform:translateY(8px);transition:opacity .6s cubic-bezier(.16,1,.3,1),transform .6s ease;pointer-events:none}
+.ad-billboard-img-link.visible{opacity:1;transform:translateY(0);pointer-events:auto}
+.ad-billboard-img-link img{width:100%;height:100%;object-fit:cover;display:block}
 .ad-billboard-inner{flex:1;display:flex;flex-direction:column;justify-content:space-between;padding:18px 16px;background:linear-gradient(175deg,rgba(16,24,30,.92) 0%,rgba(8,12,15,.98) 100%);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(0,229,255,.3);border-radius:15px;box-shadow:0 12px 30px rgba(0,0,0,.8),0 0 24px rgba(0,229,255,.1);opacity:0;transform:translateY(8px);transition:opacity .6s cubic-bezier(.16,1,.3,1),transform .6s ease;pointer-events:none}
 .ad-billboard-inner.visible{opacity:1;transform:translateY(0);pointer-events:auto}
 .ad-bb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}

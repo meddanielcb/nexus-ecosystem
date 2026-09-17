@@ -482,6 +482,7 @@
       title: "Receba PIX no Automático",
       desc: "Venda seus planos com confirmação bancária em 1 segundo e dinheiro direto na sua conta.",
       features: ["Confirmação bancária em 1s", "Webhook instantâneo e seguro", "Zero taxas escondidas"],
+      image_billboard: "./design/ads/pixget_billboard.webp",
       price: "Taxa Zero",
       url: "https://pixget.app",
       cta: "Conhecer ↗"
@@ -532,6 +533,39 @@
     if (adTimer) { clearTimeout(adTimer); adTimer = null; }
   }
 
+  const elBillboardInner = document.getElementById("adBillboardInner");
+  const elBillboardImgLink = document.getElementById("adBbImgLink");
+  const elBillboardImg = document.getElementById("adBbImg");
+
+  function updateBillboardContent(ad) {
+    if (!ad) return;
+    if (ad.image_billboard && elBillboardImg && elBillboardImgLink) {
+      elBillboardImg.src = ad.image_billboard;
+      elBillboardImgLink.href = ad.url;
+      elBillboardImgLink.style.display = "block";
+      if (elBillboardInner) elBillboardInner.style.display = "none";
+    } else {
+      if (elBillboardImgLink) elBillboardImgLink.style.display = "none";
+      if (elBillboardInner) elBillboardInner.style.display = "flex";
+      const bbTag = document.getElementById("adBbTag");
+      const bbBrand = document.getElementById("adBbBrand");
+      const bbTitle = document.getElementById("adBbTitle");
+      const bbDesc = document.getElementById("adBbDesc");
+      const bbFeatures = document.getElementById("adBbFeatures");
+      const bbPrice = document.getElementById("adBbPrice");
+      const bbBtn = document.getElementById("adBbBtn");
+      if (bbTag) bbTag.textContent = ad.tag || "OFERTA EXCLUSIVA";
+      if (bbBrand) bbBrand.textContent = ad.brand;
+      if (bbTitle) bbTitle.textContent = ad.title;
+      if (bbDesc) bbDesc.textContent = ad.desc;
+      if (bbPrice) bbPrice.innerHTML = `${ad.price}<small>/mês</small>`;
+      if (bbBtn) { bbBtn.href = ad.url; bbBtn.textContent = ad.cta; }
+      if (bbFeatures && ad.features) {
+        bbFeatures.innerHTML = ad.features.map(f => `<li><span class="feat-dot">⚡</span> ${f}</li>`).join("");
+      }
+    }
+  }
+
   function rotateCampaign() {
     currentAdIndex = (currentAdIndex + 1) % AD_CAMPAIGNS.length;
     const ad = AD_CAMPAIGNS[currentAdIndex];
@@ -539,23 +573,8 @@
     const badgeBrand = document.getElementById("adBadgeBrand");
     if (badgeBrand) badgeBrand.textContent = ad.brand;
     if (elAdBadge) elAdBadge.href = ad.url;
-    // Atualiza Billboard Vertical (na parte inferior da barra lateral)
-    const bbTag = document.getElementById("adBbTag");
-    const bbBrand = document.getElementById("adBbBrand");
-    const bbTitle = document.getElementById("adBbTitle");
-    const bbDesc = document.getElementById("adBbDesc");
-    const bbFeatures = document.getElementById("adBbFeatures");
-    const bbPrice = document.getElementById("adBbPrice");
-    const bbBtn = document.getElementById("adBbBtn");
-    if (bbTag) bbTag.textContent = ad.tag || "OFERTA EXCLUSIVA";
-    if (bbBrand) bbBrand.textContent = ad.brand;
-    if (bbTitle) bbTitle.textContent = ad.title;
-    if (bbDesc) bbDesc.textContent = ad.desc;
-    if (bbPrice) bbPrice.innerHTML = `${ad.price}<small>/mês</small>`;
-    if (bbBtn) { bbBtn.href = ad.url; bbBtn.textContent = ad.cta; }
-    if (bbFeatures && ad.features) {
-      bbFeatures.innerHTML = ad.features.map(f => `<li><span class="feat-dot">⚡</span> ${f}</li>`).join("");
-    }
+    // Atualiza Billboard Vertical
+    updateBillboardContent(ad);
   }
 
   if (elBtnAdLtClose) {
@@ -565,27 +584,41 @@
     });
   }
 
-  const elBillboardInner = document.getElementById("adBillboardInner");
-
   if (elBtnTestAd) {
     elBtnTestAd.addEventListener("click", () => {
       rotateCampaign();
       showLowerThird(AD_CAMPAIGNS[currentAdIndex], 12000);
-      if (elBillboardInner) elBillboardInner.classList.add("visible");
+      showBillboard();
     });
+  }
+
+  function showBillboard() {
+    const ad = AD_CAMPAIGNS[currentAdIndex];
+    if (ad && ad.image_billboard && elBillboardImgLink) {
+      elBillboardImgLink.classList.add("visible");
+      if (elBillboardInner) elBillboardInner.classList.remove("visible");
+    } else if (elBillboardInner) {
+      elBillboardInner.classList.add("visible");
+      if (elBillboardImgLink) elBillboardImgLink.classList.remove("visible");
+    }
+  }
+
+  function hideBillboard() {
+    if (elBillboardInner) elBillboardInner.classList.remove("visible");
+    if (elBillboardImgLink) elBillboardImgLink.classList.remove("visible");
   }
 
   // Loop Periódico de Anúncios na Parte Inferior: 10s visível, 20s apagado
   function startPeriodicBillboardLoop() {
     function cycle() {
       rotateCampaign();
-      if (elBillboardInner) elBillboardInner.classList.add("visible");
+      showBillboard();
       setTimeout(() => {
-        if (elBillboardInner) elBillboardInner.classList.remove("visible");
+        hideBillboard();
         setTimeout(cycle, 20000); // 20 segundos apagado (apenas preto)
       }, 10000); // 10 segundos visível
     }
-    setTimeout(cycle, 2000);
+    setTimeout(cycle, 1500);
   }
   startPeriodicBillboardLoop();
 
