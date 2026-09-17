@@ -1,0 +1,157 @@
+{
+  "status": "Ativos autênticos de terceiros. Não fazem parte da propriedade visual NEXUS; a origem não equivale a licença de uso comercial ou parceria.",
+  "assets": [
+    {
+      "name": "Flamengo",
+      "file": "Times/flamengo-normal.png",
+      "image_url": "https://a.espncdn.com/i/teamlogos/soccer/500/819.png",
+      "source": "ESPN team API / ESPN CDN",
+      "variant": "normal",
+      "retrieved": "2026-09-17"
+    },
+    {
+      "name": "Flamengo",
+      "file": "Times/flamengo-fundo-escuro.png",
+      "image_url": "https://a.espncdn.com/i/teamlogos/soccer/500-dark/819.png",
+      "source": "ESPN team API / ESPN CDN",
+      "variant": "fundo-escuro",
+      "retrieved": "2026-09-17"
+    },
+    {
+      "name": "Palmeiras",
+      "file": "Times/palmeiras-normal.png",
+      "image_url": "https://a.espncdn.com/i/teamlogos/soccer/500/2029.png",
+      "source": "ESPN team API / ESPN CDN",
+      "variant": "normal",
+      "retrieved": "2026-09-17"
+    },
+    {
+      "name": "Palmeiras",
+      "file": "Times/palmeiras-fundo-escuro.png",
+      "image_url": "https://a.espncdn.com/i/teamlogos/soccer/500-dark/2029.png",
+      "source": "ESPN team API / ESPN CDN",
+      "variant": "fundo-escuro",
+      "retrieved": "2026-09-17"
+    },
+    {
+      "name": "Real Madrid",
+      "file": "Times/real-madrid-normal.png",
+      "image_url": "https://a.espncdn.com/i/teamlogos/soccer/500/86.png",
+      "source": "ESPN team API / ESPN CDN",
+      "variant": "normal",
+      "retrieved": "2026-09-17"
+    },
+    {
+      "name": "Real Madrid",
+      "file": "Times/real-madrid-fundo-escuro.png",
+      "image_url": "https://a.espncdn.com/i/teamlogos/soccer/500-dark/86.png",
+      "source": "ESPN team API / ESPN CDN",
+      "variant": "fundo-escuro",
+      "retrieved": "2026-09-17"
+    },
+    {
+      "name": "Barcelona",
+      "file": "Times/barcelona-normal.png",
+      "image_url": "https://a.espncdn.com/i/teamlogos/soccer/500/83.png",
+      "source": "ESPN team API / ESPN CDN",
+      "variant": "normal",
+      "retrieved": "2026-09-17"
+    },
+    {
+      "name": "Barcelona",
+      "file": "Times/barcelona-fundo-escuro.png",
+      "image_url": "https://a.espncdn.com/i/teamlogos/soccer/500-dark/83.png",
+      "source": "ESPN team API / ESPN CDN",
+      "variant": "fundo-escuro",
+      "retrieved": "2026-09-17"
+    },
+    {
+      "name": "Los Angeles Lakers",
+      "file": "Times/lakers-normal.png",
+      "image_url": "https://a.espncdn.com/i/teamlogos/nba/500/lal.png",
+      "source": "ESPN team API / ESPN CDN",
+      "variant": "normal",
+      "retrieved": "2026-09-17"
+    },
+    {
+      "name": "Los Angeles Lakers",
+      "file": "Times/lakers-fundo-escuro.png",
+      "image_url": "https://a.espncdn.com/i/teamlogos/nba/500-dark/lal.png",
+      "source": "ESPN team API / ESPN CDN",
+      "variant": "fundo-escuro",
+      "retrieved": "2026-09-17"
+    },
+    {
+      "name": "Golden State Warriors",
+      "file": "Times/warriors-normal.png",
+      "image_url": "https://a.espncdn.com/i/teamlogos/nba/500/gs.png",
+      "source": "ESPN team API / ESPN CDN",
+      "variant": "normal",
+      "retrieved": "2026-09-17"
+    },
+    {
+      "name": "Golden State Warriors",
+      "file": "Times/warriors-fundo-escuro.png",
+      "image_url": "https://a.espncdn.com/i/teamlogos/nba/500-dark/gs.png",
+      "source": "ESPN team API / ESPN CDN",
+      "variant": "fundo-escuro",
+      "retrieved": "2026-09-17"
+    },
+    {
+      "name": "Netflix",
+      "file": "Plataformas-e-Canais/netflix.svg",
+      "source_url": "https://www.netflix.com/br/",
+      "retrieved": "2026-09-16",
+      "variant": "Arquivo de origem utilizado no projeto"
+    },
+    {
+      "name": "Disney+",
+      "file": "Plataformas-e-Canais/disney.svg",
+      "source_url": "https://a.espncdn.com/redesign/assets/img/logos/disneyplus/disneyplus-Logo-Dark.svg",
+      "retrieved": "2026-09-16",
+      "variant": "Arquivo de origem utilizado no projeto"
+    },
+    {
+      "name": "Prime Video",
+      "file": "Plataformas-e-Canais/prime.png",
+      "source_url": "https://m.media-amazon.com/images/G/01/digital/video/web/logo-min-remaster.png",
+      "retrieved": "2026-09-16",
+      "variant": "Arquivo de origem utilizado no projeto"
+    },
+    {
+      "name": "HBO",
+      "file": "Plataformas-e-Canais/hbo.svg",
+      "source_url": "https://mondrian.claro.com.br/channels/default/hbo.svg",
+      "retrieved": "2026-09-16",
+      "variant": "Arquivo de origem utilizado no projeto"
+    },
+    {
+      "name": "Premiere",
+      "file": "Plataformas-e-Canais/premiere.svg",
+      "source_url": "https://mondrian.claro.com.br/channels/default/premiere.svg",
+      "retrieved": "2026-09-16",
+      "variant": "Arquivo de origem utilizado no projeto"
+    },
+    {
+      "name": "SporTV",
+      "file": "Plataformas-e-Canais/sportv.svg",
+      "source_url": "https://mondrian.claro.com.br/channels/default/sportv.svg",
+      "retrieved": "2026-09-16",
+      "variant": "Arquivo de origem utilizado no projeto"
+    },
+    {
+      "name": "ESPN",
+      "file": "Plataformas-e-Canais/espn.png",
+      "source_url": "https://a1.espncdn.com/combiner/i?img=%2Fi%2Fespn%2Fespn_logos%2Fespn_red.png",
+      "retrieved": "2026-09-16",
+      "variant": "Arquivo de origem utilizado no projeto"
+    },
+    {
+      "name": "UFC",
+      "file": "Plataformas-e-Canais/ufc.svg",
+      "source_url": "https://www.ufc.com/themes/custom/ufc/assets/svg/sprite-ui.svg",
+      "retrieved": "2026-09-16",
+      "variant": "Arquivo de origem utilizado no projeto"
+    }
+  ]
+}

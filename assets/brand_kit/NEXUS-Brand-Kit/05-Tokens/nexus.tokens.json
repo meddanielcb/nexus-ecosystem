@@ -1,0 +1,51 @@
+{
+  "brand": "NEXUS PlayTV",
+  "version": "1.0",
+  "date": "2026-09-17",
+  "colors": {
+    "primary": "#B7FF3C",
+    "background": "#050607",
+    "appBackground": "#080B09",
+    "surface": "#101315",
+    "text": "#F5F7F4",
+    "muted": "#A8B0AA",
+    "border": "#FFFFFF20",
+    "success": "#60D394",
+    "error": "#FF6B6B",
+    "lightSurface": "#F5F7F4"
+  },
+  "fonts": {
+    "interface": "Space Grotesk",
+    "display": "Barlow Condensed"
+  },
+  "typeScale": {
+    "body": "16px",
+    "label": "14px",
+    "metadata": "12px",
+    "heroDesktop": "clamp(64px,7.5vw,112px)",
+    "heroMobile": "clamp(42px,12vw,64px)"
+  },
+  "radius": {
+    "button": "8px",
+    "card": "16px",
+    "modal": "16px"
+  },
+  "motion": {
+    "button": "140ms",
+    "panel": "220ms",
+    "orbitSlot": "18s",
+    "parallaxMax": "32px",
+    "reducedMotion": "disable decorative animation"
+  },
+  "spacing": [
+    4,
+    8,
+    12,
+    16,
+    24,
+    32,
+    48,
+    64,
+    96
+  ]
+}

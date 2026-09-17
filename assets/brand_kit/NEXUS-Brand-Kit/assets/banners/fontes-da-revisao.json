@@ -1,0 +1,38 @@
+{
+  "reuse_status": "Authentic branded and promotional/editorial assets. No commercial reuse license or provider affiliation established. Logos may be trademarked; artwork/photos remain subject to rights of their owners. Wednesday and Dune sourced through secondary hosts; all others official brand/provider/editorial source. Last of Us is promotional poster via secondary host IMDb; no license established.",
+  "sources": {
+    "netflix.svg": "https://www.netflix.com/br/",
+    "netflix-symbol.svg": "https://www.netflix.com/br/",
+    "disney.svg": "https://a.espncdn.com/redesign/assets/img/logos/disneyplus/disneyplus-Logo-Dark.svg",
+    "espn.png": "https://a1.espncdn.com/combiner/i?img=%2Fi%2Fespn%2Fespn_logos%2Fespn_red.png",
+    "premiere.svg": "https://mondrian.claro.com.br/channels/default/premiere.svg",
+    "sportv.svg": "https://mondrian.claro.com.br/channels/default/sportv.svg",
+    "hbo.svg": "https://mondrian.claro.com.br/channels/default/hbo.svg",
+    "ufc.svg": "https://www.ufc.com/themes/custom/ufc/assets/svg/sprite-ui.svg",
+    "prime.png": "https://m.media-amazon.com/images/G/01/digital/video/web/logo-min-remaster.png",
+    "mandalorian.png": "https://press.disney.co.uk/news/disney%2B-debuts-trailer-%26-key-art-for-upcoming-season-3-of-star-wars-the-mandalorian",
+    "wednesday.jpg": "https://www.thetrainline.com/en-us/via/europe/where-was-netflixs-wednesday-filmed",
+    "dune.jpg": "https://www.imdb.com/title/tt15239678/mediaviewer/rm1391346433",
+    "soccer.jpg": "https://www.espn.com.br/futebol/artigo/_/id/14918686/por-que-flamengo-nao-vai-receber-premiacao-por-titulo-do-carioca",
+    "ufc-action.jpg": "https://www.ufc.com/news/bigger-picture-ufc-313-pereira-vs-ankalaev",
+    "ufc-pereira.png": "https://www.ufc.com/athlete/alex-pereira",
+    "last-of-us.jpg": "https://www.imdb.com/title/tt3581920/",
+    "stranger-things.jpg": "https://www.netflix.com/title/80057281",
+    "stranger-title.png": "https://www.netflix.com/title/80057281",
+    "f1.jpg": "https://formula1vegasprix.com/press/news/26857-las-vegas-grand-prix-f1s-first-walking-race-for-fans",
+    "basketball.jpg": "https://www.espn.com/nba/"
+  },
+  "vision_livingroom": {
+    "file": "public/media/vision.webp",
+    "origin": "Generated with imagegen for this design revision",
+    "description": "Illustrative room, Smart TV and smartphone; not a functional product screenshot"
+  },
+  "local_fonts": {
+    "files": "public/fonts/nexus-font-*.ttf",
+    "families": [
+      "Barlow Condensed",
+      "Space Grotesk"
+    ],
+    "source": "Google Fonts"
+  }
+}

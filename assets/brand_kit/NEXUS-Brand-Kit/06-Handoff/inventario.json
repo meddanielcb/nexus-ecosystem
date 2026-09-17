@@ -1,0 +1,4140 @@
+[
+  {
+    "file": "01-Logos-SVG/nexus-horizontal-branco.svg",
+    "bytes": 3856,
+    "sha256": "22e3dc0882b05e2fe15aabd99d9f5c7b45278a74974c7a6d86ab4d9bc717c009"
+  },
+  {
+    "file": "01-Logos-SVG/nexus-horizontal-fundo-claro.svg",
+    "bytes": 3903,
+    "sha256": "4d6f740faed9613a3f2960e1f3d79d95304d3194aa0f69b89cba3b819f1538f9"
+  },
+  {
+    "file": "01-Logos-SVG/nexus-horizontal-fundo-escuro.svg",
+    "bytes": 3903,
+    "sha256": "d1bfdf6f3bbb7a4aae5bd55cb618d166436d724f00304e65e650c44c311946c3"
+  },
+  {
+    "file": "01-Logos-SVG/nexus-horizontal-fundo-verde.svg",
+    "bytes": 3903,
+    "sha256": "ee74b7ce8f6ebb4647d480e351c3eab5062ff6bfa9af684338b597c99ab8ef1a"
+  },
+  {
+    "file": "01-Logos-SVG/nexus-horizontal-preto.svg",
+    "bytes": 3856,
+    "sha256": "99fb8250be2230232c83381a5b9f62d918855d9b90ae27b9e43d2f92eeed0395"
+  },
+  {
+    "file": "01-Logos-SVG/nexus-horizontal-principal.svg",
+    "bytes": 3856,
+    "sha256": "77a42917aae70c8fdef5bbe924fe8a247a16b10d0fb1324e3c169770c82420a8"
+  },
+  {
+    "file": "01-Logos-SVG/nexus-horizontal-verde.svg",
+    "bytes": 3856,
+    "sha256": "f6c42d52793273423afae5b3e013ef0ebd70eaa66eacb2704b4fa2e9abc2f3ba"
+  },
+  {
+    "file": "01-Logos-SVG/nexus-simbolo-branco.svg",
+    "bytes": 282,
+    "sha256": "6acc67c9010da5adbdab971fd8814fbc5685b5e795fca563bcf3d563a5f81c13"
+  },
+  {
+    "file": "01-Logos-SVG/nexus-simbolo-fundo-claro.svg",
+    "bytes": 329,
+    "sha256": "34b92b4f13ffc004c52bad0411aeabc21bd057a466fd166d59a9664a7b1a7cb8"
+  },
+  {
+    "file": "01-Logos-SVG/nexus-simbolo-fundo-escuro.svg",
+    "bytes": 329,
+    "sha256": "d5eac4d1b0cf26c3f992aa634da348efc2f4c642d55b3e6b4671f33c046f6828"
+  },
+  {
+    "file": "01-Logos-SVG/nexus-simbolo-fundo-verde.svg",
+    "bytes": 329,
+    "sha256": "de097dd2e86272a0e482606bf3d677d32f925e9a2381f4f7d23569690cca19bc"
+  },
+  {
+    "file": "01-Logos-SVG/nexus-simbolo-preto.svg",
+    "bytes": 282,
+    "sha256": "cbdf7e3e09fac8c4f9c77793928aa6e3d63f58e1934a415c942934aa8a08f133"
+  },
+  {
+    "file": "01-Logos-SVG/nexus-simbolo-principal.svg",
+    "bytes": 282,
+    "sha256": "ff25a58cd3b9b1af1052a46f0a7122a96d3af6e2d7d9c5947544f5abfa72067e"
+  },
+  {
+    "file": "01-Logos-SVG/nexus-simbolo-verde.svg",
+    "bytes": 282,
+    "sha256": "ff25a58cd3b9b1af1052a46f0a7122a96d3af6e2d7d9c5947544f5abfa72067e"
+  },
+  {
+    "file": "01-Logos-SVG/nexus-vertical-branco.svg",
+    "bytes": 3696,
+    "sha256": "f57045b0918f5b722db202618fdd3cdc0bbea4c7a8023794794c3e53441ab870"
+  },
+  {
+    "file": "01-Logos-SVG/nexus-vertical-fundo-claro.svg",
+    "bytes": 3743,
+    "sha256": "1045def44b404e1d438fc120d242c9a4064308ef5d8be28ecd09eace469eb9ab"
+  },
+  {
+    "file": "01-Logos-SVG/nexus-vertical-fundo-escuro.svg",
+    "bytes": 3743,
+    "sha256": "dcbc42bc5a6d964cd4b2656cb43dcd019a2ba78b3a33c5f62d038d625170bac9"
+  },
+  {
+    "file": "01-Logos-SVG/nexus-vertical-fundo-verde.svg",
+    "bytes": 3743,
+    "sha256": "a874a74cc550013a12887c7476f0fba3e532ccf998eac29d52a2a56740a29a22"
+  },
+  {
+    "file": "01-Logos-SVG/nexus-vertical-preto.svg",
+    "bytes": 3696,
+    "sha256": "35254f8a7317759eea57a280018937549eece49965c5890e622af72ea014026e"
+  },
+  {
+    "file": "01-Logos-SVG/nexus-vertical-principal.svg",
+    "bytes": 3696,
+    "sha256": "07d54ec132a79cb61728b2a67e107a8850bd11da4ca09412427bbe50d1b17b7e"
+  },
+  {
+    "file": "01-Logos-SVG/nexus-vertical-verde.svg",
+    "bytes": 3696,
+    "sha256": "296d388c82cf424f6da1c9182e549ba2625776b45b375f41f584932a009568c6"
+  },
+  {
+    "file": "02-Logos-PNG/nexus-horizontal-branco-1280w.png",
+    "bytes": 26790,
+    "sha256": "25874131b3174e929b39f24b826aca47b220cff19986a90e335310924c5aa7f0",
+    "width": 1280,
+    "height": 447
+  },
+  {
+    "file": "02-Logos-PNG/nexus-horizontal-branco-2560w.png",
+    "bytes": 59008,
+    "sha256": "a2e51f8c706f8e6ca5c82fe33de6cf846211a24297682819051ff7f5f78cc8f6",
+    "width": 2560,
+    "height": 894
+  },
+  {
+    "file": "02-Logos-PNG/nexus-horizontal-branco-320w.png",
+    "bytes": 6952,
+    "sha256": "3f2a3e39f1a216d0cf7702f3088a3699233ab2ba1338877191ae4505cb332f25",
+    "width": 320,
+    "height": 112
+  },
+  {
+    "file": "02-Logos-PNG/nexus-horizontal-branco-640w.png",
+    "bytes": 13663,
+    "sha256": "2b2cf234fd58b930a09e7cc63d1ff5c5f897aa96ac3edc136a2d78f83f2eb3b5",
+    "width": 640,
+    "height": 223
+  },
+  {
+    "file": "02-Logos-PNG/nexus-horizontal-fundo-claro-1280w.png",
+    "bytes": 29961,
+    "sha256": "31930898b774055052c8b717099864e95abed9f6df614dec619b18199d243b15",
+    "width": 1280,
+    "height": 447
+  },
+  {
+    "file": "02-Logos-PNG/nexus-horizontal-fundo-claro-2560w.png",
+    "bytes": 65369,
+    "sha256": "60e1f647ef46f52de531df7dbf291415f1ab8e48c616b64b06ddd0be15e37af8",
+    "width": 2560,
+    "height": 894
+  },
+  {
+    "file": "02-Logos-PNG/nexus-horizontal-fundo-claro-320w.png",
+    "bytes": 7683,
+    "sha256": "fbf4d59abf3ac4e0648a8f52c6036a644bcd22898818c3411ae4a0263f744a6d",
+    "width": 320,
+    "height": 112
+  },
+  {
+    "file": "02-Logos-PNG/nexus-horizontal-fundo-claro-640w.png",
+    "bytes": 15068,
+    "sha256": "a44a7e2a5f3250dbcdf64715c89f619bac9f4ff3a897efca0f9fead8ed716837",
+    "width": 640,
+    "height": 223
+  },
+  {
+    "file": "02-Logos-PNG/nexus-horizontal-fundo-escuro-1280w.png",
+    "bytes": 30031,
+    "sha256": "86cd536129eaa62ba6c975251a763384f1ab83bf044ed5b28381370862b43f8e",
+    "width": 1280,
+    "height": 447
+  },
+  {
+    "file": "02-Logos-PNG/nexus-horizontal-fundo-escuro-2560w.png",
+    "bytes": 65417,
+    "sha256": "b524f3221702ce8062c36d57b90a1782ddd5fd20243ab15faec89b1621463172",
+    "width": 2560,
+    "height": 894
+  },
+  {
+    "file": "02-Logos-PNG/nexus-horizontal-fundo-escuro-320w.png",
+    "bytes": 7801,
+    "sha256": "2fd16c56fa24c495bf8be9fc73302230f13d9bd1a7a4a9948b22919163fd51f2",
+    "width": 320,
+    "height": 112
+  },
+  {
+    "file": "02-Logos-PNG/nexus-horizontal-fundo-escuro-640w.png",
+    "bytes": 15145,
+    "sha256": "4ca802d04166beb6826454ed557823539cba0a7ed7d2d01b472525e2577f6b49",
+    "width": 640,
+    "height": 223
+  },
+  {
+    "file": "02-Logos-PNG/nexus-horizontal-fundo-verde-1280w.png",
+    "bytes": 28961,
+    "sha256": "0744d236791b5f0717198a14890f89bad32f5da28a472aa5fc03cf224e8e91ff",
+    "width": 1280,
+    "height": 447
+  },
+  {
+    "file": "02-Logos-PNG/nexus-horizontal-fundo-verde-2560w.png",
+    "bytes": 63509,
+    "sha256": "c2ee80fe29f0b9a5fcd0d596a49659df3b4e6c444935c9a0d624031d1ac8a0aa",
+    "width": 2560,
+    "height": 894
+  },
+  {
+    "file": "02-Logos-PNG/nexus-horizontal-fundo-verde-320w.png",
+    "bytes": 7434,
+    "sha256": "7d0ca089fe625e4f627a2d2820fd6105184964e4ee92ba649c0156ab46144e24",
+    "width": 320,
+    "height": 112
+  },
+  {
+    "file": "02-Logos-PNG/nexus-horizontal-fundo-verde-640w.png",
+    "bytes": 14515,
+    "sha256": "4e911bfe1b647555942ca311d1b442a259551df14406bd5b46545d7ab48509d3",
+    "width": 640,
+    "height": 223
+  },
+  {
+    "file": "02-Logos-PNG/nexus-horizontal-preto-1280w.png",
+    "bytes": 26927,
+    "sha256": "5e66101aed5543d5ed393db957e821fee3dc4580a42a5268d238d349ddd49dbc",
+    "width": 1280,
+    "height": 447
+  },
+  {
+    "file": "02-Logos-PNG/nexus-horizontal-preto-2560w.png",
+    "bytes": 59094,
+    "sha256": "84bb90862f8bef1c2d5c56e67db0a73cf1350a0544a37bbf67ccd03cba0cec7f",
+    "width": 2560,
+    "height": 894
+  },
+  {
+    "file": "02-Logos-PNG/nexus-horizontal-preto-320w.png",
+    "bytes": 6888,
+    "sha256": "7675f1a3577687f1d7903f9c052b7ac11865cea92c21755c58d07920be687101",
+    "width": 320,
+    "height": 112
+  },
+  {
+    "file": "02-Logos-PNG/nexus-horizontal-preto-640w.png",
+    "bytes": 13635,
+    "sha256": "dd8bf6698907f7ed5f43924e9aac039923dc8df0675b0ae9b722a5745a551376",
+    "width": 640,
+    "height": 223
+  },
+  {
+    "file": "02-Logos-PNG/nexus-horizontal-principal-1280w.png",
+    "bytes": 27098,
+    "sha256": "855598da3af1a286900a9c3fe50f459d954a5837d138438e493b81cc50fceda4",
+    "width": 1280,
+    "height": 447
+  },
+  {
+    "file": "02-Logos-PNG/nexus-horizontal-principal-2560w.png",
+    "bytes": 59354,
+    "sha256": "23357b8ed786ae166f243b2a0d9461845751ca46cb2b5cac7d2a158e80b04b24",
+    "width": 2560,
+    "height": 894
+  },
+  {
+    "file": "02-Logos-PNG/nexus-horizontal-principal-320w.png",
+    "bytes": 6982,
+    "sha256": "4fb6e7ac65368d7c6ae7f9c49aa46fbdddcfca25c5e1fa8704c886dfe19a2ca0",
+    "width": 320,
+    "height": 112
+  },
+  {
+    "file": "02-Logos-PNG/nexus-horizontal-principal-640w.png",
+    "bytes": 13799,
+    "sha256": "fec6f50398bb5ce311c8643c0a442d43e275a7ee68bb87cf67ba68f2702e9e84",
+    "width": 640,
+    "height": 223
+  },
+  {
+    "file": "02-Logos-PNG/nexus-horizontal-verde-1280w.png",
+    "bytes": 26299,
+    "sha256": "346cd41ff1907d1570d990e131a8f33c19b48d120340d2997e1cbafd03a55a7d",
+    "width": 1280,
+    "height": 447
+  },
+  {
+    "file": "02-Logos-PNG/nexus-horizontal-verde-2560w.png",
+    "bytes": 57964,
+    "sha256": "7fd365bc5bb0dfe48bd8a8e6b197b7105e382c324d715844eca989ce9dd13e18",
+    "width": 2560,
+    "height": 894
+  },
+  {
+    "file": "02-Logos-PNG/nexus-horizontal-verde-320w.png",
+    "bytes": 6723,
+    "sha256": "8e5f6046474a060a3be00aee8ad2dcd524c358d1da2d309e731b01a7bb06a04e",
+    "width": 320,
+    "height": 112
+  },
+  {
+    "file": "02-Logos-PNG/nexus-horizontal-verde-640w.png",
+    "bytes": 13280,
+    "sha256": "86c33b242ad32e510681cb55dee3019206e239d72a48dea3de449a99d9dbc785",
+    "width": 640,
+    "height": 223
+  },
+  {
+    "file": "02-Logos-PNG/nexus-simbolo-branco-1024w.png",
+    "bytes": 14822,
+    "sha256": "af1f617870d638c1537c8eba38fc738bfa1d9f29fd2a3b66a790d3feed30f55e",
+    "width": 1024,
+    "height": 1024
+  },
+  {
+    "file": "02-Logos-PNG/nexus-simbolo-branco-256w.png",
+    "bytes": 2860,
+    "sha256": "3b92b38fb4874e8f916bdbca10736a487519fac02c1cfa7f7c47abb24cb63e0f",
+    "width": 256,
+    "height": 256
+  },
+  {
+    "file": "02-Logos-PNG/nexus-simbolo-branco-512w.png",
+    "bytes": 6093,
+    "sha256": "6ed32d6c691a71b1eceb1dce82c941f37c2f4875ee927d16205a430615ffc05c",
+    "width": 512,
+    "height": 512
+  },
+  {
+    "file": "02-Logos-PNG/nexus-simbolo-fundo-claro-1024w.png",
+    "bytes": 15715,
+    "sha256": "ae838213f04b91e763c3420837ac75da6ca5e328c38732861f30aaaa6bb80de7",
+    "width": 1024,
+    "height": 1024
+  },
+  {
+    "file": "02-Logos-PNG/nexus-simbolo-fundo-claro-256w.png",
+    "bytes": 3045,
+    "sha256": "b4c259880102ffe28bc5d9b7d5b25fbe25cc08de64b3beb638c2b10520e2c44c",
+    "width": 256,
+    "height": 256
+  },
+  {
+    "file": "02-Logos-PNG/nexus-simbolo-fundo-claro-512w.png",
+    "bytes": 6525,
+    "sha256": "39ce95b93f51cfe90b6e407ae0330c0fcb3b035f19580ca8c185c07c6dcff796",
+    "width": 512,
+    "height": 512
+  },
+  {
+    "file": "02-Logos-PNG/nexus-simbolo-fundo-escuro-1024w.png",
+    "bytes": 15595,
+    "sha256": "4ebdf8a504d5f2bb3f593bdbdbb2eae23c5ee8a85b8ac65791030ce66c5c363a",
+    "width": 1024,
+    "height": 1024
+  },
+  {
+    "file": "02-Logos-PNG/nexus-simbolo-fundo-escuro-256w.png",
+    "bytes": 2955,
+    "sha256": "8ddffd5e42ff4d4ed06232eaa4144f6c93919a0c03c62972b1d4873aad3b0db2",
+    "width": 256,
+    "height": 256
+  },
+  {
+    "file": "02-Logos-PNG/nexus-simbolo-fundo-escuro-512w.png",
+    "bytes": 6417,
+    "sha256": "8daf88e99349e55c05fe0c8e4cd318450262eec980288f785d9e695927f12ce3",
+    "width": 512,
+    "height": 512
+  },
+  {
+    "file": "02-Logos-PNG/nexus-simbolo-fundo-verde-1024w.png",
+    "bytes": 15587,
+    "sha256": "d2e527a1b778bdc447177d9ae6209aee6ac3e97ef5ed8cc5a39ac65e9d33ca27",
+    "width": 1024,
+    "height": 1024
+  },
+  {
+    "file": "02-Logos-PNG/nexus-simbolo-fundo-verde-256w.png",
+    "bytes": 2945,
+    "sha256": "baacec2c5e3c776fe9d477d4d139cfcd2572c5419e4b0f48dc78b0b0985d63e6",
+    "width": 256,
+    "height": 256
+  },
+  {
+    "file": "02-Logos-PNG/nexus-simbolo-fundo-verde-512w.png",
+    "bytes": 6430,
+    "sha256": "725f64cd8b5a12856f5230a6abe62a9389aec2c659e06a5b7f7648fb3b50fae2",
+    "width": 512,
+    "height": 512
+  },
+  {
+    "file": "02-Logos-PNG/nexus-simbolo-preto-1024w.png",
+    "bytes": 14768,
+    "sha256": "1fa4cd6202cd3544491303325f8e59241142d32d0745567ac5ee40c386649300",
+    "width": 1024,
+    "height": 1024
+  },
+  {
+    "file": "02-Logos-PNG/nexus-simbolo-preto-256w.png",
+    "bytes": 2868,
+    "sha256": "f02af585a9fcd6114df598f489633853b4da2adda8a03a0a59d031739643a58c",
+    "width": 256,
+    "height": 256
+  },
+  {
+    "file": "02-Logos-PNG/nexus-simbolo-preto-512w.png",
+    "bytes": 6091,
+    "sha256": "51ab790a0d8b79710389bec3d40b5cf831f3fdda088e705ad13747df0b1f3ab0",
+    "width": 512,
+    "height": 512
+  },
+  {
+    "file": "02-Logos-PNG/nexus-simbolo-principal-1024w.png",
+    "bytes": 14649,
+    "sha256": "31795e128aae6105cd79bd357712746393decda2aef0ac8a99ce7ecfc55ed2d1",
+    "width": 1024,
+    "height": 1024
+  },
+  {
+    "file": "02-Logos-PNG/nexus-simbolo-principal-256w.png",
+    "bytes": 2831,
+    "sha256": "5470ea9a3c2d142e2d8a6d42f0276dae8ad3cbc1996309837cb1ddc98fe05e25",
+    "width": 256,
+    "height": 256
+  },
+  {
+    "file": "02-Logos-PNG/nexus-simbolo-principal-512w.png",
+    "bytes": 6075,
+    "sha256": "c661726af79ccfbaad027f894c6c75094a9b544f550b1487ed88b45d485e9750",
+    "width": 512,
+    "height": 512
+  },
+  {
+    "file": "02-Logos-PNG/nexus-simbolo-verde-1024w.png",
+    "bytes": 14649,
+    "sha256": "31795e128aae6105cd79bd357712746393decda2aef0ac8a99ce7ecfc55ed2d1",
+    "width": 1024,
+    "height": 1024
+  },
+  {
+    "file": "02-Logos-PNG/nexus-simbolo-verde-256w.png",
+    "bytes": 2831,
+    "sha256": "5470ea9a3c2d142e2d8a6d42f0276dae8ad3cbc1996309837cb1ddc98fe05e25",
+    "width": 256,
+    "height": 256
+  },
+  {
+    "file": "02-Logos-PNG/nexus-simbolo-verde-512w.png",
+    "bytes": 6075,
+    "sha256": "c661726af79ccfbaad027f894c6c75094a9b544f550b1487ed88b45d485e9750",
+    "width": 512,
+    "height": 512
+  },
+  {
+    "file": "02-Logos-PNG/nexus-vertical-branco-1024w.png",
+    "bytes": 28171,
+    "sha256": "69ce22932058ff059c775dae5c79c2cba894e27d15ba1abc0e0d05f9d93ec219",
+    "width": 1024,
+    "height": 884
+  },
+  {
+    "file": "02-Logos-PNG/nexus-vertical-branco-256w.png",
+    "bytes": 6739,
+    "sha256": "a236989117bd5cc5fad37b88a72d461ef9d3c819d679239c804695678dea1029",
+    "width": 256,
+    "height": 221
+  },
+  {
+    "file": "02-Logos-PNG/nexus-vertical-branco-512w.png",
+    "bytes": 13304,
+    "sha256": "2a9bf6ae8b85040957b896ff4122559ffa1eb40afad9183f8eb9301bde687864",
+    "width": 512,
+    "height": 442
+  },
+  {
+    "file": "02-Logos-PNG/nexus-vertical-fundo-claro-1024w.png",
+    "bytes": 31123,
+    "sha256": "7a5a9b7f8b47a471c08f76a36a5b7bc4b0b3262855a910c1807351845f3f0829",
+    "width": 1024,
+    "height": 884
+  },
+  {
+    "file": "02-Logos-PNG/nexus-vertical-fundo-claro-256w.png",
+    "bytes": 7493,
+    "sha256": "18dd7071398d4c51c7f97fe1b498f42e2481b5b1965d7b7428fe10e0d9fa84fb",
+    "width": 256,
+    "height": 221
+  },
+  {
+    "file": "02-Logos-PNG/nexus-vertical-fundo-claro-512w.png",
+    "bytes": 14825,
+    "sha256": "6a07d314985d1b9f772cf320cf9f6c483b25ef6d87e39787e266d74f0fb390d2",
+    "width": 512,
+    "height": 442
+  },
+  {
+    "file": "02-Logos-PNG/nexus-vertical-fundo-escuro-1024w.png",
+    "bytes": 30819,
+    "sha256": "582e948c942911ba7535fbfcfe497dd673a46c8c2a92e9576fe26fea759e74fa",
+    "width": 1024,
+    "height": 884
+  },
+  {
+    "file": "02-Logos-PNG/nexus-vertical-fundo-escuro-256w.png",
+    "bytes": 7400,
+    "sha256": "d9ae90c77f96ab11674da61547dd56ad415f12546d525d3354a351c2ea1e23fc",
+    "width": 256,
+    "height": 221
+  },
+  {
+    "file": "02-Logos-PNG/nexus-vertical-fundo-escuro-512w.png",
+    "bytes": 14630,
+    "sha256": "390b3aa2b26abfe77b4ddd9df5d7119d134cc37698371c4f0befefc87ac52f04",
+    "width": 512,
+    "height": 442
+  },
+  {
+    "file": "02-Logos-PNG/nexus-vertical-fundo-verde-1024w.png",
+    "bytes": 30128,
+    "sha256": "5d6282ae84d4f6ee558b5e4167ceec791b0d1f87602aa12dbaab83a112a0988b",
+    "width": 1024,
+    "height": 884
+  },
+  {
+    "file": "02-Logos-PNG/nexus-vertical-fundo-verde-256w.png",
+    "bytes": 7242,
+    "sha256": "1251e29e9778c8fa6024bfcc42000469abb416e6860d2359f6630d4782b883d2",
+    "width": 256,
+    "height": 221
+  },
+  {
+    "file": "02-Logos-PNG/nexus-vertical-fundo-verde-512w.png",
+    "bytes": 14331,
+    "sha256": "80765ccf5e70883cc4acc0307e845cc3cfc79fb0e9b082210582aa793183861f",
+    "width": 512,
+    "height": 442
+  },
+  {
+    "file": "02-Logos-PNG/nexus-vertical-preto-1024w.png",
+    "bytes": 28204,
+    "sha256": "41cef8b8b8bdb458cc247a8eceaff0bcb62c143ece09cacf2e48440f86c03ddd",
+    "width": 1024,
+    "height": 884
+  },
+  {
+    "file": "02-Logos-PNG/nexus-vertical-preto-256w.png",
+    "bytes": 6678,
+    "sha256": "b505ce38ef1e7eb904166ff23b71bbb929ed3c9a98a29e8b2461a99cacae281e",
+    "width": 256,
+    "height": 221
+  },
+  {
+    "file": "02-Logos-PNG/nexus-vertical-preto-512w.png",
+    "bytes": 13203,
+    "sha256": "87e04029581c7f181b85e4ffd8a36bf029fdc1eefc9d2ca43476d3bfdd219c29",
+    "width": 512,
+    "height": 442
+  },
+  {
+    "file": "02-Logos-PNG/nexus-vertical-principal-1024w.png",
+    "bytes": 28138,
+    "sha256": "8effedfa12a76035b8a864c448a68c050cfd63f08ffc4cff94abee1c7f72960b",
+    "width": 1024,
+    "height": 884
+  },
+  {
+    "file": "02-Logos-PNG/nexus-vertical-principal-256w.png",
+    "bytes": 6765,
+    "sha256": "1ad342822be4ef443de7842a0c827bd8dca2636d6db65162a3cae1894a0c5cf8",
+    "width": 256,
+    "height": 221
+  },
+  {
+    "file": "02-Logos-PNG/nexus-vertical-principal-512w.png",
+    "bytes": 13389,
+    "sha256": "70b17b6f4ee001cef461eafb604b8fba4ee4799cbbf2756ba08967ab27e80df1",
+    "width": 512,
+    "height": 442
+  },
+  {
+    "file": "02-Logos-PNG/nexus-vertical-verde-1024w.png",
+    "bytes": 27744,
+    "sha256": "2a7a6d9de954232a03c8bbce6312ecd8af0a97a4240640c2a8f1ef47b89ff306",
+    "width": 1024,
+    "height": 884
+  },
+  {
+    "file": "02-Logos-PNG/nexus-vertical-verde-256w.png",
+    "bytes": 6501,
+    "sha256": "99149639277d2a248e44a09b46fabf4be0026c413c0dd651faedf2e0f99f6fee",
+    "width": 256,
+    "height": 221
+  },
+  {
+    "file": "02-Logos-PNG/nexus-vertical-verde-512w.png",
+    "bytes": 13042,
+    "sha256": "6f0b07d7beb67a53b3dd1f332b645f8378e894f9ec04b3f88618d4f0bf3a232d",
+    "width": 512,
+    "height": 442
+  },
+  {
+    "file": "03-Icones-Favicon/apple-touch-icon.png",
+    "bytes": 2283,
+    "sha256": "cc09250349a92ecad4c62143cd22fb491f99b6df28fa4ecf24a85ed838582321",
+    "width": 180,
+    "height": 180
+  },
+  {
+    "file": "03-Icones-Favicon/favicon.ico",
+    "bytes": 10504,
+    "sha256": "b380e1533c61143a37d0092733e3fc31f13ca374b14dbac1cd0434326ef1a13b"
+  },
+  {
+    "file": "03-Icones-Favicon/favicon.svg",
+    "bytes": 329,
+    "sha256": "d5eac4d1b0cf26c3f992aa634da348efc2f4c642d55b3e6b4671f33c046f6828"
+  },
+  {
+    "file": "03-Icones-Favicon/manifest.example.webmanifest",
+    "bytes": 487,
+    "sha256": "833531c338c949990d95695d27c60bf9cf2e305941ab8210b01df673ee0a85b8"
+  },
+  {
+    "file": "03-Icones-Favicon/nexus-icon-1024.png",
+    "bytes": 15595,
+    "sha256": "4ebdf8a504d5f2bb3f593bdbdbb2eae23c5ee8a85b8ac65791030ce66c5c363a",
+    "width": 1024,
+    "height": 1024
+  },
+  {
+    "file": "03-Icones-Favicon/nexus-icon-128.png",
+    "bytes": 1774,
+    "sha256": "5f060b15e9aa9fc8d273ca52b94ac0ff7c92bcce7da38012cc9f874122f94591",
+    "width": 128,
+    "height": 128
+  },
+  {
+    "file": "03-Icones-Favicon/nexus-icon-16.png",
+    "bytes": 363,
+    "sha256": "f9b3ad6a3ed80736175554829034ccfa52d6833d79a5facc2167143683839854",
+    "width": 16,
+    "height": 16
+  },
+  {
+    "file": "03-Icones-Favicon/nexus-icon-180.png",
+    "bytes": 2283,
+    "sha256": "cc09250349a92ecad4c62143cd22fb491f99b6df28fa4ecf24a85ed838582321",
+    "width": 180,
+    "height": 180
+  },
+  {
+    "file": "03-Icones-Favicon/nexus-icon-192.png",
+    "bytes": 2423,
+    "sha256": "dbfc28389c08b41bbd2445da589d4946d53f8a4a5f991627a0fe36e92c166ff1",
+    "width": 192,
+    "height": 192
+  },
+  {
+    "file": "03-Icones-Favicon/nexus-icon-256.png",
+    "bytes": 2955,
+    "sha256": "8ddffd5e42ff4d4ed06232eaa4144f6c93919a0c03c62972b1d4873aad3b0db2",
+    "width": 256,
+    "height": 256
+  },
+  {
+    "file": "03-Icones-Favicon/nexus-icon-32.png",
+    "bytes": 625,
+    "sha256": "8d9411d077107eac50cb652a4561ad8946af198f08e7972dde2746ca0b07acd4",
+    "width": 32,
+    "height": 32
+  },
+  {
+    "file": "03-Icones-Favicon/nexus-icon-48.png",
+    "bytes": 862,
+    "sha256": "543295f24c80a0d703847bb12ff0cfbc715e3bb61d49e05ba7129de6680d44bc",
+    "width": 48,
+    "height": 48
+  },
+  {
+    "file": "03-Icones-Favicon/nexus-icon-512.png",
+    "bytes": 6417,
+    "sha256": "8daf88e99349e55c05fe0c8e4cd318450262eec980288f785d9e695927f12ce3",
+    "width": 512,
+    "height": 512
+  },
+  {
+    "file": "03-Icones-Favicon/nexus-icon-64.png",
+    "bytes": 1159,
+    "sha256": "f588841a3efdef4f38e797c99e41b69670c39fe8d75a3be6ab0f2c784aad5892",
+    "width": 64,
+    "height": 64
+  },
+  {
+    "file": "04-Fontes/BarlowCondensed-Bold.ttf",
+    "bytes": 87120,
+    "sha256": "7dde307fa887fc65ff5830cfada77a7decc5dae8d3c816c9d39ba3f1af1c4ed7"
+  },
+  {
+    "file": "04-Fontes/BarlowCondensed-ExtraBold.ttf",
+    "bytes": 87556,
+    "sha256": "73bc9e17231e9073780d3c81574c7253cecd5645c93544df1a935054b39a364f"
+  },
+  {
+    "file": "04-Fontes/BarlowCondensed-SemiBold.ttf",
+    "bytes": 86636,
+    "sha256": "0d85af813fc3ed87db0c6265515689b2eef5cbaf7aab17922528dfc95a2cd73f"
+  },
+  {
+    "file": "04-Fontes/OFL-barlowcondensed.txt",
+    "bytes": 4377,
+    "sha256": "186d750eb496a4c17a76385f82be6aea2ac1cf2de074a811d63786cf374ea73f"
+  },
+  {
+    "file": "04-Fontes/OFL-spacegrotesk.txt",
+    "bytes": 4495,
+    "sha256": "564ce565c371c5e5bbf286006565a7c9aa55a9f56e7ca58d56e05d649dd61a72"
+  },
+  {
+    "file": "04-Fontes/SpaceGrotesk-Bold.ttf",
+    "bytes": 69308,
+    "sha256": "3e756954468ff1cb302dae0414262e72f76a67d87bef3fa1f3226cd0fb9b2d85"
+  },
+  {
+    "file": "04-Fontes/SpaceGrotesk-Medium.ttf",
+    "bytes": 69416,
+    "sha256": "3e699ead1876244fa392243054ddefe7cf631b488438828a8a100731a22ab995"
+  },
+  {
+    "file": "04-Fontes/SpaceGrotesk-Regular.ttf",
+    "bytes": 69360,
+    "sha256": "ec926d5065eaca49a48f96e312bbae0bbc5733c24215cf5dfabbdccee926fef7"
+  },
+  {
+    "file": "04-Fontes/SpaceGrotesk-SemiBold.ttf",
+    "bytes": 69356,
+    "sha256": "6c0346b8d297ebdc225832833e03e884a26ad99d265ecd3924d46e1ba285ea87"
+  },
+  {
+    "file": "05-Tokens/fonts.css",
+    "bytes": 1135,
+    "sha256": "93f319f69e70523ba02b2ef1d70fe52a6e20cc6a0700127cc01be19d328a0831"
+  },
+  {
+    "file": "05-Tokens/nexus.css",
+    "bytes": 687,
+    "sha256": "05a3285e02b74d8a162a1890d90784edaf577ef9343bf6463879d3def3ca68fe"
+  },
+  {
+    "file": "05-Tokens/nexus.tokens.json",
+    "bytes": 956,
+    "sha256": "c504d72020911271d8150b80858d441407d0ffa7ac690246d47c91c527722137"
+  },
+  {
+    "file": "06-Handoff/PARA-O-AGENTE.md",
+    "bytes": 5783,
+    "sha256": "379b8d598ba3acbe07d1b918b19b24758c10512a7403257107f66ee6b313bff3"
+  },
+  {
+    "file": "07-Marcas-e-Escudos/INDICE-TIMES.md",
+    "bytes": 1470,
+    "sha256": "6353a730bef415d210808156141f3665319e9c3c3020ba497278adaae9178940"
+  },
+  {
+    "file": "07-Marcas-e-Escudos/LEIA-ME.md",
+    "bytes": 1335,
+    "sha256": "238f02772f7e5b437e6618995b55199a1cbe9706f407133d434859ddbaf1de69"
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Plataformas-e-Canais/disney.png",
+    "bytes": 44220,
+    "sha256": "c472145e0eb56887ae9dae0eead289ff24868f7d29c188f5e6d39635a9522689",
+    "width": 1000,
+    "height": 533
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Plataformas-e-Canais/disney.svg",
+    "bytes": 5172,
+    "sha256": "794beeae5d3436ecf384f8f5c23c67ecfbd1ff918b0a4788f4c19a34305eef03"
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Plataformas-e-Canais/espn.png",
+    "bytes": 12897,
+    "sha256": "665009756043f49069492d44f26d24ffad2c0ecd1c1f96e73db90f778946ccca",
+    "width": 1296,
+    "height": 729
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Plataformas-e-Canais/hbo.png",
+    "bytes": 19239,
+    "sha256": "b02aee42eb5bd50ab661e25ef854589d1b654637cee5634f2777e7427b0d5f8d",
+    "width": 1000,
+    "height": 417
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Plataformas-e-Canais/hbo.svg",
+    "bytes": 1733,
+    "sha256": "c0ba018df077678f59eb9b18eecf9187849333ea245f71405037b61716574076"
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Plataformas-e-Canais/netflix.png",
+    "bytes": 14483,
+    "sha256": "0dc3e1a0af7b0cd4e08cc4ff11972486fb30c27f7627363f24321cd27d51471e",
+    "width": 1000,
+    "height": 270
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Plataformas-e-Canais/netflix.svg",
+    "bytes": 824,
+    "sha256": "0e841a5119aa45c3749829a86fd7755cffb61c4dbbe0e1cb24e543d09cdd2ada"
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Plataformas-e-Canais/premiere.png",
+    "bytes": 12251,
+    "sha256": "d1f6602de515b9d2bf15b797746a53498c4f8e2d570f440b434eb7564c341c4c",
+    "width": 1000,
+    "height": 159
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Plataformas-e-Canais/premiere.svg",
+    "bytes": 6057,
+    "sha256": "9bb3ee7632fd6051e169231c90655c653422bd2047f0fce6ff237667b16985ff"
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Plataformas-e-Canais/prime.png",
+    "bytes": 2036,
+    "sha256": "3a23bbb495d359596d90f6cfffae773cde66062dde7aa50979afc9619addd95d",
+    "width": 320,
+    "height": 62
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Plataformas-e-Canais/sportv.png",
+    "bytes": 22495,
+    "sha256": "66154959ff644c827aca1f2381b289b1f884812c866f5013fad46ef1c2a1d906",
+    "width": 1000,
+    "height": 264
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Plataformas-e-Canais/sportv.svg",
+    "bytes": 2162,
+    "sha256": "1426b2b672e33b6bb64bcf64afb470af71b3cfd2becf68ddc9a6ee442c9740fe"
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Plataformas-e-Canais/ufc.png",
+    "bytes": 16784,
+    "sha256": "cfce4aa6fa9c5b7c5af07769ea7e54528845d3069157afc25bd1c77fc121923b",
+    "width": 1000,
+    "height": 349
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Plataformas-e-Canais/ufc.svg",
+    "bytes": 724,
+    "sha256": "ff00f516812f49603274fe765676f64d1c5699158677552353eb001e08b25774"
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Alemanha/bayer-leverkusen-fundo-escuro.png",
+    "bytes": 68738,
+    "sha256": "609a686a47f20092383650ee70309169ec016568a5a3e705098fc9d5226cedd6",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Alemanha/bayer-leverkusen-normal.png",
+    "bytes": 68738,
+    "sha256": "e0be43c3d770332d031309e661f127e22bc8202a1211993c467193444481cb4b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Alemanha/bayern-munich-fundo-escuro.png",
+    "bytes": 93000,
+    "sha256": "97d9c68c3fbc44834e836b6b82afab725e450d0a7c5f5d6a328f4888297511ed",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Alemanha/bayern-munich-normal.png",
+    "bytes": 93000,
+    "sha256": "97d9c68c3fbc44834e836b6b82afab725e450d0a7c5f5d6a328f4888297511ed",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Alemanha/borussia-dortmund-fundo-escuro.png",
+    "bytes": 45044,
+    "sha256": "4d6e2fed029d1f30457400c3b221c149a8d76490cdde43a208df32bbf790739d",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Alemanha/borussia-dortmund-normal.png",
+    "bytes": 45044,
+    "sha256": "bd11d3d9f17caf5352cb44234961b89b8794a453b2fa9c355586b68a828facd8",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Alemanha/eintracht-frankfurt-fundo-escuro.png",
+    "bytes": 79536,
+    "sha256": "a6643fc1ff88d2d171012fc5d549b5c7a01964f769d23541d118501d310ddacc",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Alemanha/eintracht-frankfurt-normal.png",
+    "bytes": 79536,
+    "sha256": "8ed093c2fc6ef46b7cc8e8ac58b0dd7f8fccbae719cba7514dffe7c40507f16c",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Alemanha/rb-leipzig-fundo-escuro.png",
+    "bytes": 62907,
+    "sha256": "fb4c77d7d3212591c6fe5ff1544b16cf885d1d0521200759a3a62d7facc25ed4",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Alemanha/rb-leipzig-normal.png",
+    "bytes": 62907,
+    "sha256": "0734f241fe3b1a5c94bd4beb659c186cbb6fcf01592ac00ecbfb2d5bd29ab0c3",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Alemanha/vfb-stuttgart-fundo-escuro.png",
+    "bytes": 54812,
+    "sha256": "8a32c1caf1e7ebbd41e52ad28d3781002a789ab12826479b6abbbe78ec77c86b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Alemanha/vfb-stuttgart-normal.png",
+    "bytes": 54812,
+    "sha256": "8a32c1caf1e7ebbd41e52ad28d3781002a789ab12826479b6abbbe78ec77c86b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/america-mineiro-fundo-escuro.png",
+    "bytes": 60986,
+    "sha256": "f1968d257e1a3d9475c8571112ed74df82207911866b7aae8a3b615e955397be",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/america-mineiro-normal.png",
+    "bytes": 53676,
+    "sha256": "6ffb248615b4f74b30542c7fad2caaedbb8546006facfa31efaf73e58c0cb4e7",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/athletic-fundo-escuro.png",
+    "bytes": 67661,
+    "sha256": "69212385e3ce35c4552740e85208cbe7c00e91641299696690697caa711c2cf0",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/athletic-normal.png",
+    "bytes": 67661,
+    "sha256": "69212385e3ce35c4552740e85208cbe7c00e91641299696690697caa711c2cf0",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/athletico-pr-fundo-escuro.png",
+    "bytes": 92193,
+    "sha256": "b80f24a9b83f0101ae36541eb8012e4ba1c576881f6b67a259d7bf01c504eac6",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/athletico-pr-normal.png",
+    "bytes": 47716,
+    "sha256": "a74511ad022b00409cf2fa3a36d8f17240865243cacb0fca14d2cc48f145bf43",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/atletico-goianiense-fundo-escuro.png",
+    "bytes": 35415,
+    "sha256": "65df697fd8f6c68529549b21a70e9949a9f82d883dad774e39a101bd9cb56fac",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/atletico-goianiense-normal.png",
+    "bytes": 35415,
+    "sha256": "65df697fd8f6c68529549b21a70e9949a9f82d883dad774e39a101bd9cb56fac",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/atletico-mg-fundo-escuro.png",
+    "bytes": 57344,
+    "sha256": "29e55e2557a10f7cd6b5b9ed2a32707a871fbda7fbe4408d27ed7ed673f17f37",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/atletico-mg-normal.png",
+    "bytes": 57344,
+    "sha256": "29e55e2557a10f7cd6b5b9ed2a32707a871fbda7fbe4408d27ed7ed673f17f37",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/avai-fundo-escuro.png",
+    "bytes": 24953,
+    "sha256": "42a76f40c3de2834eef00644dfb4e8d0abe4bfd680e2c251248171b44b5e6ed9",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/avai-normal.png",
+    "bytes": 24953,
+    "sha256": "42a76f40c3de2834eef00644dfb4e8d0abe4bfd680e2c251248171b44b5e6ed9",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/bahia-fundo-escuro.png",
+    "bytes": 232813,
+    "sha256": "21fd57c4580b5305966584a2ecd196cba36abbaf19c7c440f53030bc94ddeab9",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/bahia-normal.png",
+    "bytes": 232813,
+    "sha256": "21fd57c4580b5305966584a2ecd196cba36abbaf19c7c440f53030bc94ddeab9",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/botafogo-fundo-escuro.png",
+    "bytes": 34260,
+    "sha256": "bbf0e6f6b09609aac248f8552738c622dff600dfa68d6623c329a849e2ed4b29",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/botafogo-normal.png",
+    "bytes": 30766,
+    "sha256": "e4e9257c2b559f5e10e507e52221cd2b31e12a07cd46b8ba4b8e696342b78d2c",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/botafogo-sp-fundo-escuro.png",
+    "bytes": 32831,
+    "sha256": "849f7e92c54f2640acc81335ef99c35c9d47ebf4cd5e5e01ce1580e23d50eda7",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/botafogo-sp-normal.png",
+    "bytes": 32831,
+    "sha256": "849f7e92c54f2640acc81335ef99c35c9d47ebf4cd5e5e01ce1580e23d50eda7",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/ceara-fundo-escuro.png",
+    "bytes": 84756,
+    "sha256": "2fb3c463fb90841708baa742d8a0918893fedbd112659579f7152a0c6684286b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/ceara-normal.png",
+    "bytes": 84756,
+    "sha256": "2fb3c463fb90841708baa742d8a0918893fedbd112659579f7152a0c6684286b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/chapecoense-fundo-escuro.png",
+    "bytes": 179844,
+    "sha256": "2b10588b38d37a2afe1db516b37e3a417da39fcad142ade02f65456cc389d70e",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/chapecoense-normal.png",
+    "bytes": 179844,
+    "sha256": "2b10588b38d37a2afe1db516b37e3a417da39fcad142ade02f65456cc389d70e",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/corinthians-fundo-escuro.png",
+    "bytes": 126702,
+    "sha256": "f947c5fae7c0adb290cd769a7f9a8f4e6cc23e0f3eb3e518f3083771bc660cb2",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/corinthians-normal.png",
+    "bytes": 126702,
+    "sha256": "baf1bb2e42286ca76bf35d953e89f64d47640386dc6e360f8c6eee3ea0d482cd",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/coritiba-fundo-escuro.png",
+    "bytes": 247929,
+    "sha256": "7b257bc9a11e9fc9af90062577a96dbb54bda7009d9d73b02a27cdcff124344a",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/coritiba-normal.png",
+    "bytes": 247929,
+    "sha256": "7b257bc9a11e9fc9af90062577a96dbb54bda7009d9d73b02a27cdcff124344a",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/crb-fundo-escuro.png",
+    "bytes": 49583,
+    "sha256": "655d76ceec40095fc28b19df76bee6adeaf5ebd9785b1033cffd7ffe0f58f601",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/crb-normal.png",
+    "bytes": 49583,
+    "sha256": "655d76ceec40095fc28b19df76bee6adeaf5ebd9785b1033cffd7ffe0f58f601",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/criciuma-fundo-escuro.png",
+    "bytes": 42295,
+    "sha256": "57b5be862146e9ef4c126ae68502689c4fd9d13be988c8f9706579653129bdf6",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/criciuma-normal.png",
+    "bytes": 42295,
+    "sha256": "57b5be862146e9ef4c126ae68502689c4fd9d13be988c8f9706579653129bdf6",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/cruzeiro-fundo-escuro.png",
+    "bytes": 62724,
+    "sha256": "83ea69b941b800c4f32774798e1194ed3b1025acb935e0deade5d4416d59b1a2",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/cruzeiro-normal.png",
+    "bytes": 62724,
+    "sha256": "83ea69b941b800c4f32774798e1194ed3b1025acb935e0deade5d4416d59b1a2",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/cuiaba-fundo-escuro.png",
+    "bytes": 171682,
+    "sha256": "a024266d0ca6cd9208eb477c2ff242429b8af7e6d106e719782fc9288d7dafa9",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/cuiaba-normal.png",
+    "bytes": 171682,
+    "sha256": "a024266d0ca6cd9208eb477c2ff242429b8af7e6d106e719782fc9288d7dafa9",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/flamengo-fundo-escuro.png",
+    "bytes": 29869,
+    "sha256": "0b46ca645c16977ebd4da7b9c7b411b1cf125d369b9ffbc651b1ed1f6ab2928e",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/flamengo-normal.png",
+    "bytes": 29869,
+    "sha256": "0b46ca645c16977ebd4da7b9c7b411b1cf125d369b9ffbc651b1ed1f6ab2928e",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/fluminense-fundo-escuro.png",
+    "bytes": 124170,
+    "sha256": "5fabe8039ab05c952540b24067acd62dd7933bfeb3211cccfc6b2822c9030293",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/fluminense-normal.png",
+    "bytes": 124170,
+    "sha256": "ef20f396606f8c0a6a5f30dd4fddc8ed899aa64326e11da216ef9b2674c7bfb3",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/fortaleza-fundo-escuro.png",
+    "bytes": 52697,
+    "sha256": "e6f962e3edde6f743794115ed483664f28db184bc67584cd922e5eefdf881005",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/fortaleza-normal.png",
+    "bytes": 52697,
+    "sha256": "e6f962e3edde6f743794115ed483664f28db184bc67584cd922e5eefdf881005",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/goias-fundo-escuro.png",
+    "bytes": 117587,
+    "sha256": "77a315ef8def4c7dc18d3a2cb5acc1e7f6622b7fb088b06021e57024fb6ab7e1",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/goias-normal.png",
+    "bytes": 117587,
+    "sha256": "d503e457c3ca457ce91beb900252ef3de52979709e955399c2caefc4338475de",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/gremio-fundo-escuro.png",
+    "bytes": 70326,
+    "sha256": "f8df1d11ce813c3fd28f0be638a564bdd0a6c67a153e3d0a77d8d38e4421ea24",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/gremio-normal.png",
+    "bytes": 70326,
+    "sha256": "f8df1d11ce813c3fd28f0be638a564bdd0a6c67a153e3d0a77d8d38e4421ea24",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/internacional-fundo-escuro.png",
+    "bytes": 60849,
+    "sha256": "62e65071c93a7307ed2c5669f4fe5a1297d405c058b532a6294de780df09cfe7",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/internacional-normal.png",
+    "bytes": 60849,
+    "sha256": "62e65071c93a7307ed2c5669f4fe5a1297d405c058b532a6294de780df09cfe7",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/juventude-fundo-escuro.png",
+    "bytes": 87997,
+    "sha256": "457e3ae47ca1a8f3577c5b20ceb43cfed261099993d7b69dabf6d470a4d23b0a",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/juventude-normal.png",
+    "bytes": 87997,
+    "sha256": "457e3ae47ca1a8f3577c5b20ceb43cfed261099993d7b69dabf6d470a4d23b0a",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/londrina-fundo-escuro.png",
+    "bytes": 84652,
+    "sha256": "7ee337df1f44c25b036028c42abc3755bca75f05660e8716adbc4368daa595b4",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/londrina-normal.png",
+    "bytes": 84652,
+    "sha256": "7ee337df1f44c25b036028c42abc3755bca75f05660e8716adbc4368daa595b4",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/mirassol-fundo-escuro.png",
+    "bytes": 169165,
+    "sha256": "de8f2f7a022da99bbcf78f7dd818bd7d503da08a18681190ac1254139d128a5a",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/mirassol-normal.png",
+    "bytes": 104786,
+    "sha256": "7380306144df78c15d4d1b2ddc57bd7585b9b80ef057471d57070ee38952e163",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/nautico-fundo-escuro.png",
+    "bytes": 299485,
+    "sha256": "a6515b3e416324b3d6dd8b30ccc68f0de08ad6802643289b94f67efea4f3a65a",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/nautico-normal.png",
+    "bytes": 299485,
+    "sha256": "a6515b3e416324b3d6dd8b30ccc68f0de08ad6802643289b94f67efea4f3a65a",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/novorizontino-fundo-escuro.png",
+    "bytes": 155929,
+    "sha256": "8d77d616e5394d8f43d48cca3beeb73c4f960e25cd7e67bfa1fb3f41af87d0a7",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/novorizontino-normal.png",
+    "bytes": 155929,
+    "sha256": "8d77d616e5394d8f43d48cca3beeb73c4f960e25cd7e67bfa1fb3f41af87d0a7",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/operario-pr-fundo-escuro.png",
+    "bytes": 113539,
+    "sha256": "f2eee694f834752d642379f3efed65833fe518d3d63d70268e468fd71bf5e5de",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/operario-pr-normal.png",
+    "bytes": 113539,
+    "sha256": "f2eee694f834752d642379f3efed65833fe518d3d63d70268e468fd71bf5e5de",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/palmeiras-fundo-escuro.png",
+    "bytes": 110140,
+    "sha256": "c6dd22b07be603cadbe9924acaf568edb614d26aa6b2b5a6a6ef4f8653f87c7d",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/palmeiras-normal.png",
+    "bytes": 110140,
+    "sha256": "c6dd22b07be603cadbe9924acaf568edb614d26aa6b2b5a6a6ef4f8653f87c7d",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/ponte-preta-fundo-escuro.png",
+    "bytes": 51699,
+    "sha256": "fecb12a929e759aab96f6cdccea1086db9713497f232a54e46f27418e834691b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/ponte-preta-normal.png",
+    "bytes": 51699,
+    "sha256": "fecb12a929e759aab96f6cdccea1086db9713497f232a54e46f27418e834691b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/red-bull-bragantino-fundo-escuro.png",
+    "bytes": 99308,
+    "sha256": "388c6be03414040caea3a0a2ae86d303cd070e2164ebe3028059e14c776c8caf",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/red-bull-bragantino-normal.png",
+    "bytes": 99308,
+    "sha256": "388c6be03414040caea3a0a2ae86d303cd070e2164ebe3028059e14c776c8caf",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/remo-fundo-escuro.png",
+    "bytes": 74914,
+    "sha256": "8320c75dd2d17c07603e0f417008da5065be24b93e22dddc475dc540cc137e53",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/remo-normal.png",
+    "bytes": 74914,
+    "sha256": "8320c75dd2d17c07603e0f417008da5065be24b93e22dddc475dc540cc137e53",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/santos-fundo-escuro.png",
+    "bytes": 47059,
+    "sha256": "df2d2e4213d5839ceb0a914d356f545e022339aaf9ebbaee9c8af5621477c389",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/santos-normal.png",
+    "bytes": 40362,
+    "sha256": "d6c5b41dfe8b3ab348ba85b265767c54d0618a7ed522b401da50874e92b6f2a8",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/sao-bernardo-fundo-escuro.png",
+    "bytes": 101974,
+    "sha256": "efa87179bc21ab1977005fdbe19dacec316b5dfcf8f12f73249c48e1ae6d3f37",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/sao-bernardo-normal.png",
+    "bytes": 101974,
+    "sha256": "efa87179bc21ab1977005fdbe19dacec316b5dfcf8f12f73249c48e1ae6d3f37",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/sao-paulo-fundo-escuro.png",
+    "bytes": 23855,
+    "sha256": "6524cadabce3d5ce640d96ffa3cdc5906e13999e8abd722a684d588277e5c59d",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/sao-paulo-normal.png",
+    "bytes": 23855,
+    "sha256": "6524cadabce3d5ce640d96ffa3cdc5906e13999e8abd722a684d588277e5c59d",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/sport-fundo-escuro.png",
+    "bytes": 78980,
+    "sha256": "724fc7bce61dc3bb87d5f19a4f1cdd28d8ad59dea3e61656afd393b7586bdf91",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/sport-normal.png",
+    "bytes": 78980,
+    "sha256": "724fc7bce61dc3bb87d5f19a4f1cdd28d8ad59dea3e61656afd393b7586bdf91",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/vasco-da-gama-fundo-escuro.png",
+    "bytes": 65144,
+    "sha256": "043b229f28f9781c2e9cd5be9fbf76b6318c200d114c8def457eee05d8dd61be",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/vasco-da-gama-normal.png",
+    "bytes": 65144,
+    "sha256": "043b229f28f9781c2e9cd5be9fbf76b6318c200d114c8def457eee05d8dd61be",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/vila-nova-fundo-escuro.png",
+    "bytes": 65776,
+    "sha256": "353d11cd27d1159c541ac17c1ca863fe83d2012064573d1be910cd1b3a714aa8",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/vila-nova-normal.png",
+    "bytes": 65776,
+    "sha256": "353d11cd27d1159c541ac17c1ca863fe83d2012064573d1be910cd1b3a714aa8",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/vitoria-fundo-escuro.png",
+    "bytes": 41604,
+    "sha256": "43368904360459aa6d1e37756a121393f1a4c0fc3527a86910cf5a0362b647d1",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Brasil/vitoria-normal.png",
+    "bytes": 35095,
+    "sha256": "89f2c151a0ad82525b3375dc897828632e61b9d154bebce719a9fdf41b1648f1",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Escocia/celtic-fundo-escuro.png",
+    "bytes": 57742,
+    "sha256": "59bf2618f33a47d23d0094f1e282775d403652a728e50d4bc4174de7a623411e",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Escocia/celtic-normal.png",
+    "bytes": 57742,
+    "sha256": "59bf2618f33a47d23d0094f1e282775d403652a728e50d4bc4174de7a623411e",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Escocia/rangers-fundo-escuro.png",
+    "bytes": 88653,
+    "sha256": "1abf8b7ef05b0ff9fadbfd20bae0f6ba5b0a0447062eb042fe79371a33706e27",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Escocia/rangers-normal.png",
+    "bytes": 88653,
+    "sha256": "1abf8b7ef05b0ff9fadbfd20bae0f6ba5b0a0447062eb042fe79371a33706e27",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Espanha/athletic-club-fundo-escuro.png",
+    "bytes": 42036,
+    "sha256": "ce67012de7d0cef9323bb2afd7481258eee4c927ae1a4f2b9fd156ef66800eec",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Espanha/athletic-club-normal.png",
+    "bytes": 42036,
+    "sha256": "ce67012de7d0cef9323bb2afd7481258eee4c927ae1a4f2b9fd156ef66800eec",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Espanha/atletico-madrid-fundo-escuro.png",
+    "bytes": 34532,
+    "sha256": "00e98bfb76fe09a385afc20f73ae0f9ac076f9a22cc559d32cee30fd492f0f10",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Espanha/atletico-madrid-normal.png",
+    "bytes": 34532,
+    "sha256": "00e98bfb76fe09a385afc20f73ae0f9ac076f9a22cc559d32cee30fd492f0f10",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Espanha/barcelona-fundo-escuro.png",
+    "bytes": 25584,
+    "sha256": "9987e9acd8f542f74402f5a62ac2bcbb350c5ed2bf38831779d56a375ae76eb9",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Espanha/barcelona-normal.png",
+    "bytes": 25584,
+    "sha256": "9987e9acd8f542f74402f5a62ac2bcbb350c5ed2bf38831779d56a375ae76eb9",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Espanha/real-betis-fundo-escuro.png",
+    "bytes": 25867,
+    "sha256": "8a2e9a3db45280f3aa8be1737e140333493828c94c98283a5bcad458529369a6",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Espanha/real-betis-normal.png",
+    "bytes": 25867,
+    "sha256": "8a2e9a3db45280f3aa8be1737e140333493828c94c98283a5bcad458529369a6",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Espanha/real-madrid-fundo-escuro.png",
+    "bytes": 43601,
+    "sha256": "acdcaaf2c60c3cc65a270dac1bd59f3a2b52911b8c45510d4e7f86d47ed714ba",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Espanha/real-madrid-normal.png",
+    "bytes": 43601,
+    "sha256": "acdcaaf2c60c3cc65a270dac1bd59f3a2b52911b8c45510d4e7f86d47ed714ba",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Espanha/sevilla-fundo-escuro.png",
+    "bytes": 64740,
+    "sha256": "992624b39a65ae153e9754ba302596d234faafe95062ca5d9b3095ac56211988",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Espanha/sevilla-normal.png",
+    "bytes": 64740,
+    "sha256": "992624b39a65ae153e9754ba302596d234faafe95062ca5d9b3095ac56211988",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Espanha/valencia-fundo-escuro.png",
+    "bytes": 55062,
+    "sha256": "c5f78f58198ff162148a866ff6fbcb8b6e5ed0524e9a0216b62666a20b554399",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Espanha/valencia-normal.png",
+    "bytes": 66579,
+    "sha256": "4961f443b5d247b7a1ba5e2cc51bdea51633c4c0fe50a78f260e6f03b438b134",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Espanha/villarreal-fundo-escuro.png",
+    "bytes": 100657,
+    "sha256": "69c1768ac26ad66621c5133c1ad5788cec94fc3ab7ad5645c23db16c37617539",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Espanha/villarreal-normal.png",
+    "bytes": 100657,
+    "sha256": "69c1768ac26ad66621c5133c1ad5788cec94fc3ab7ad5645c23db16c37617539",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Franca/as-monaco-fundo-escuro.png",
+    "bytes": 19606,
+    "sha256": "bd23a74bdca89df5ed4876567478e5f08e82a4d6576e0252f16968f266300d64",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Franca/as-monaco-normal.png",
+    "bytes": 19606,
+    "sha256": "bd23a74bdca89df5ed4876567478e5f08e82a4d6576e0252f16968f266300d64",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Franca/lens-fundo-escuro.png",
+    "bytes": 41414,
+    "sha256": "4f4ba6f0e63826c16f62a4753e0874e54cc30077c62b8c19790cd4f4d01e0e20",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Franca/lens-normal.png",
+    "bytes": 41414,
+    "sha256": "4f4ba6f0e63826c16f62a4753e0874e54cc30077c62b8c19790cd4f4d01e0e20",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Franca/lille-fundo-escuro.png",
+    "bytes": 108528,
+    "sha256": "95e0ee084cb4f8cd14407aa8a75e0db932d4f0558cd3a1dfac72f293cca86e69",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Franca/lille-normal.png",
+    "bytes": 108528,
+    "sha256": "95e0ee084cb4f8cd14407aa8a75e0db932d4f0558cd3a1dfac72f293cca86e69",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Franca/lyon-fundo-escuro.png",
+    "bytes": 22304,
+    "sha256": "798721110c8dcb1d73b2199476a2fa2fa8dcf205aeab8ef7b13a6895a299686a",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Franca/lyon-normal.png",
+    "bytes": 22330,
+    "sha256": "8d19c1378008637e0f7a75c4a56bd82610c719ae3bfdcb7c1305edfe81710bcf",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Franca/marseille-fundo-escuro.png",
+    "bytes": 51919,
+    "sha256": "55fde2ea6f3e0524ae9226ccbf9240cf1cc6f49f6a402ed444b147558040428e",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Franca/marseille-normal.png",
+    "bytes": 51919,
+    "sha256": "55fde2ea6f3e0524ae9226ccbf9240cf1cc6f49f6a402ed444b147558040428e",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Franca/nice-fundo-escuro.png",
+    "bytes": 140613,
+    "sha256": "0627bf3866b012606a59c95a6622669c1eedc3f996d87ef3ffd08f9957ec5ab9",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Franca/nice-normal.png",
+    "bytes": 140613,
+    "sha256": "4d799a2e63732e66bb9e447fa8f036440c48091621ca2e97c001c14eaa758fe8",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Franca/paris-fc-fundo-escuro.png",
+    "bytes": 109705,
+    "sha256": "f46a439b974261f722182dc7d9264461ce7e75e959eb2f9a8376b17ec844b27b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Franca/paris-fc-normal.png",
+    "bytes": 109705,
+    "sha256": "f46a439b974261f722182dc7d9264461ce7e75e959eb2f9a8376b17ec844b27b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Franca/paris-saint-germain-fundo-escuro.png",
+    "bytes": 59170,
+    "sha256": "d3c4321f76c2475d10dd76757e623367ab7549a9a55cdee7ced09cf6327d4f5b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Franca/paris-saint-germain-normal.png",
+    "bytes": 59170,
+    "sha256": "d3c4321f76c2475d10dd76757e623367ab7549a9a55cdee7ced09cf6327d4f5b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Holanda/ajax-amsterdam-fundo-escuro.png",
+    "bytes": 145869,
+    "sha256": "cc0f6f96fafba7ca9f451f67727f9395ee8141112e4fef37b231b99763d38d27",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Holanda/ajax-amsterdam-normal.png",
+    "bytes": 145869,
+    "sha256": "cc0f6f96fafba7ca9f451f67727f9395ee8141112e4fef37b231b99763d38d27",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Holanda/feyenoord-rotterdam-fundo-escuro.png",
+    "bytes": 61699,
+    "sha256": "d5d8fe372eb2d09045881a7e4bd802dcd727bb312ca060c97bf943ef0a9d9beb",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Holanda/feyenoord-rotterdam-normal.png",
+    "bytes": 61699,
+    "sha256": "d5d8fe372eb2d09045881a7e4bd802dcd727bb312ca060c97bf943ef0a9d9beb",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Holanda/psv-eindhoven-fundo-escuro.png",
+    "bytes": 60860,
+    "sha256": "ea19561d9ae97eb761ab39f5b400b3ce5f64db43f934a595183e4208030f2d0b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Holanda/psv-eindhoven-normal.png",
+    "bytes": 60860,
+    "sha256": "ea19561d9ae97eb761ab39f5b400b3ce5f64db43f934a595183e4208030f2d0b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Inglaterra/arsenal-fundo-escuro.png",
+    "bytes": 36280,
+    "sha256": "92f1bb35662ff56dde09e1f8084221a458357a6df390bc97b2ed6495f6e39f53",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Inglaterra/arsenal-normal.png",
+    "bytes": 36280,
+    "sha256": "92f1bb35662ff56dde09e1f8084221a458357a6df390bc97b2ed6495f6e39f53",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Inglaterra/aston-villa-fundo-escuro.png",
+    "bytes": 78018,
+    "sha256": "aad2e636ade60b485855deacfe74f831c8dcae46de72079c7f521b06c1b5865b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Inglaterra/aston-villa-normal.png",
+    "bytes": 78018,
+    "sha256": "aad2e636ade60b485855deacfe74f831c8dcae46de72079c7f521b06c1b5865b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Inglaterra/chelsea-fundo-escuro.png",
+    "bytes": 59969,
+    "sha256": "6f14d86b5e35074e91462c7ede6e822f6a6c9f6cb723cd04ea6b8d36f2fa5392",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Inglaterra/chelsea-normal.png",
+    "bytes": 59969,
+    "sha256": "6f14d86b5e35074e91462c7ede6e822f6a6c9f6cb723cd04ea6b8d36f2fa5392",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Inglaterra/everton-fundo-escuro.png",
+    "bytes": 146091,
+    "sha256": "45bb12ecfe313a12c46dec5c2a496e444617acf1ff26f56f4f21a3a2703a23c6",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Inglaterra/everton-normal.png",
+    "bytes": 146091,
+    "sha256": "eaedbe5e3b18ddef08c09d07fdca62bcac65165b7bb9af4780acce36841aee20",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Inglaterra/leeds-united-fundo-escuro.png",
+    "bytes": 237612,
+    "sha256": "464b5ba37e17ddb18e55dce62a8a111e07fb5e7c2731c31740377445bda8978f",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Inglaterra/leeds-united-normal.png",
+    "bytes": 237616,
+    "sha256": "69d5d4251e740fc8d525c3c967e817575b0ac2e2af7be03f23e40d494c383790",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Inglaterra/liverpool-fundo-escuro.png",
+    "bytes": 25833,
+    "sha256": "18dde0a60e6a5f0da1b646730b8151b7a692a555c2f73120b6581bf77f8cf438",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Inglaterra/liverpool-normal.png",
+    "bytes": 35827,
+    "sha256": "9f2c56faf3631eb32fb5cccd84d31827ba38fcd9dd3280f597b221711a8797de",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Inglaterra/manchester-city-fundo-escuro.png",
+    "bytes": 130387,
+    "sha256": "70e005bdab0ada41a153760398b4a2ef99f956bf9e72954686caa70da8c30c0b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Inglaterra/manchester-city-normal.png",
+    "bytes": 130387,
+    "sha256": "70e005bdab0ada41a153760398b4a2ef99f956bf9e72954686caa70da8c30c0b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Inglaterra/manchester-united-fundo-escuro.png",
+    "bytes": 73159,
+    "sha256": "03486cf5cf90d580d6132ab115cc747be7b2e3519fd6e08be56675cf5897f0b7",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Inglaterra/manchester-united-normal.png",
+    "bytes": 73159,
+    "sha256": "03486cf5cf90d580d6132ab115cc747be7b2e3519fd6e08be56675cf5897f0b7",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Inglaterra/newcastle-united-fundo-escuro.png",
+    "bytes": 203286,
+    "sha256": "814fb62f3b7884675cf2f57b3a16632213a3c0ebfd0c039627242722e2f93076",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Inglaterra/newcastle-united-normal.png",
+    "bytes": 189751,
+    "sha256": "5e926d9f8c18b1b20e2e86a830ad56d4a9094673f172c0f8fabf617917e1910d",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Inglaterra/nottingham-forest-fundo-escuro.png",
+    "bytes": 20043,
+    "sha256": "d45e164b8c585ae2d1fec7c9d07189e96b521bac28fd9bd8917ffd6ba6e64d83",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Inglaterra/nottingham-forest-normal.png",
+    "bytes": 20645,
+    "sha256": "766868d667069609a8904ba1ec6a66f09fccfe9fbad21300791bf778dd9ddaae",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Inglaterra/tottenham-hotspur-fundo-escuro.png",
+    "bytes": 25978,
+    "sha256": "1ae760bfa3c43b3764a778b20c46f3ae9239c63f64bd1f0eb8655e1b17802227",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Inglaterra/tottenham-hotspur-normal.png",
+    "bytes": 26224,
+    "sha256": "f66f956414b0fd99df6a7e29bed0bd8a849f11d41bd749a1e08ff8d032570d35",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Italia/ac-milan-fundo-escuro.png",
+    "bytes": 65777,
+    "sha256": "a8715ce51b97f4563878135a764dcbe7a33559a6e89f5c2bdd3c291c6ae29651",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Italia/ac-milan-normal.png",
+    "bytes": 65777,
+    "sha256": "32f172036837a0a4a7ef3aadd67f2f3d5cb9f697b698ff6c7722b42faa8ae42e",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Italia/as-roma-fundo-escuro.png",
+    "bytes": 80060,
+    "sha256": "7907a98312e95ab067c8c5a430e3b7617e81324694d60e7a26b91a63c45a2faa",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Italia/as-roma-normal.png",
+    "bytes": 76247,
+    "sha256": "5c8d62dad1ad929922adbb87877f582d8eb0d18c2b76e40facedc2eee65e9a2f",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Italia/atalanta-fundo-escuro.png",
+    "bytes": 19715,
+    "sha256": "1bc1eb1858bbac8d96900d43daf703cf3d51f49fdb227a25fa294d9547c7d63d",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Italia/atalanta-normal.png",
+    "bytes": 17663,
+    "sha256": "d3626b9d4f0fd313cc101ab5013c4d872713786d1ece24361329059ea37134f6",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Italia/bologna-fundo-escuro.png",
+    "bytes": 47840,
+    "sha256": "c66205fbb32ff86a136b01d2c3d1d8e3a6517d60f228c428493c501f79da99b3",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Italia/bologna-normal.png",
+    "bytes": 34384,
+    "sha256": "b7e9f6c4b3bec908c40315995fcf54dcc2d61997dd1daa2cc1263259f3aa231e",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Italia/fiorentina-fundo-escuro.png",
+    "bytes": 17390,
+    "sha256": "df0a545d8a7a51b6a8f7377c9fee771aea608ca0a98cad5fda114c2043a36b85",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Italia/fiorentina-normal.png",
+    "bytes": 17390,
+    "sha256": "df0a545d8a7a51b6a8f7377c9fee771aea608ca0a98cad5fda114c2043a36b85",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Italia/internazionale-fundo-escuro.png",
+    "bytes": 45217,
+    "sha256": "4d01b36b72abfe2f73e15669bf6b98c4e8b9273f2d4920862f2c0468de7759a6",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Italia/internazionale-normal.png",
+    "bytes": 43426,
+    "sha256": "3020e0fba5c9391d6e8fa119ad67b93f1ad2fa77a2939a5dd42320495fd477a4",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Italia/juventus-fundo-escuro.png",
+    "bytes": 8342,
+    "sha256": "774b2bddb199e6f83ffe3e5bc00d0f7fbfd638f679fa9e32b156ecfe1f0eb896",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Italia/juventus-normal.png",
+    "bytes": 8610,
+    "sha256": "6c190f73f8913b8d0c040e5773c377517a2e1e2e76b8145c87d73c3d2a9a87d3",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Italia/lazio-fundo-escuro.png",
+    "bytes": 46150,
+    "sha256": "e5cf45fe01817c4af38838aec9cfddc6b2990441de2cac4e62804ffda08dccf1",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Italia/lazio-normal.png",
+    "bytes": 47949,
+    "sha256": "774df8a00d798e0647dd8198ab0bdc27fda7daf3ca5ffbea0870f2b653d3cfe1",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Italia/napoli-fundo-escuro.png",
+    "bytes": 16309,
+    "sha256": "e871ac8b6d9cf7acd850bfcf8e22e20d6258f55a45cf97023d937c5bdb515b4f",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Italia/napoli-normal.png",
+    "bytes": 16309,
+    "sha256": "e871ac8b6d9cf7acd850bfcf8e22e20d6258f55a45cf97023d937c5bdb515b4f",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Portugal/benfica-fundo-escuro.png",
+    "bytes": 124801,
+    "sha256": "14458f14b5e115bfe8ed5540dd2ece5433bd9c1a6c645f83c9a7ea1f882b426e",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Portugal/benfica-normal.png",
+    "bytes": 124801,
+    "sha256": "14458f14b5e115bfe8ed5540dd2ece5433bd9c1a6c645f83c9a7ea1f882b426e",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Portugal/braga-fundo-escuro.png",
+    "bytes": 47081,
+    "sha256": "0b640c5a87c4859654db83b44e754e908d1bd29f903b1040b09c16c79f4a95b1",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Portugal/braga-normal.png",
+    "bytes": 41421,
+    "sha256": "a3b002c9a4a5c6f4acfd43b206b70b5ae16771a8fac2ddedb73f999cd1da21ef",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Portugal/fc-porto-fundo-escuro.png",
+    "bytes": 84938,
+    "sha256": "a53d1181c5130a74c97c82518e855bda7893ce85d15d575ec51a712df8976368",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Portugal/fc-porto-normal.png",
+    "bytes": 84938,
+    "sha256": "a53d1181c5130a74c97c82518e855bda7893ce85d15d575ec51a712df8976368",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Portugal/sporting-cp-fundo-escuro.png",
+    "bytes": 35988,
+    "sha256": "d08eef75995115cd9e5a8e24dd0a7aa0e45277aca44a91eac31c1a890d22e0f3",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Portugal/sporting-cp-normal.png",
+    "bytes": 30137,
+    "sha256": "86fe536a68f5f6aecf29bd039af1319562fbb7a9b574b64c1269ac28449626bb",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Turquia/besiktas-fundo-escuro.png",
+    "bytes": 42630,
+    "sha256": "db0c94a0952442560303bf859347ec8628b9dc1f3aa4c8fb63392266518d94b2",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Turquia/besiktas-normal.png",
+    "bytes": 42630,
+    "sha256": "db0c94a0952442560303bf859347ec8628b9dc1f3aa4c8fb63392266518d94b2",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Turquia/fenerbahce-normal.png",
+    "bytes": 82039,
+    "sha256": "a623d5d01f6edb1319536be793617ac6d7d4a9a2aa37acf3f3428afb9e6d5fa4",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Turquia/galatasaray-fundo-escuro.png",
+    "bytes": 55405,
+    "sha256": "603385608cc9ec22d3e1557f075c935ad14752e0d75aa40869cf27e77fb92c3b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/Turquia/galatasaray-normal.png",
+    "bytes": 55405,
+    "sha256": "603385608cc9ec22d3e1557f075c935ad14752e0d75aa40869cf27e77fb92c3b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/barcelona-fundo-escuro.png",
+    "bytes": 25584,
+    "sha256": "9987e9acd8f542f74402f5a62ac2bcbb350c5ed2bf38831779d56a375ae76eb9",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/barcelona-normal.png",
+    "bytes": 25584,
+    "sha256": "9987e9acd8f542f74402f5a62ac2bcbb350c5ed2bf38831779d56a375ae76eb9",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/flamengo-fundo-escuro.png",
+    "bytes": 29869,
+    "sha256": "0b46ca645c16977ebd4da7b9c7b411b1cf125d369b9ffbc651b1ed1f6ab2928e",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/flamengo-normal.png",
+    "bytes": 29869,
+    "sha256": "0b46ca645c16977ebd4da7b9c7b411b1cf125d369b9ffbc651b1ed1f6ab2928e",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/lakers-fundo-escuro.png",
+    "bytes": 64550,
+    "sha256": "44aa9bf96b542ca9cb579fd00a7e1c7ca1c2d24636b0f698b07fbb7b9193eb79",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/lakers-normal.png",
+    "bytes": 64550,
+    "sha256": "82fda3df51058c5aad8a52123868f43959017be0c39c886e9aefbb77e6c69c89",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/palmeiras-fundo-escuro.png",
+    "bytes": 110140,
+    "sha256": "c6dd22b07be603cadbe9924acaf568edb614d26aa6b2b5a6a6ef4f8653f87c7d",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/palmeiras-normal.png",
+    "bytes": 110140,
+    "sha256": "c6dd22b07be603cadbe9924acaf568edb614d26aa6b2b5a6a6ef4f8653f87c7d",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/real-madrid-fundo-escuro.png",
+    "bytes": 43601,
+    "sha256": "acdcaaf2c60c3cc65a270dac1bd59f3a2b52911b8c45510d4e7f86d47ed714ba",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/real-madrid-normal.png",
+    "bytes": 43601,
+    "sha256": "acdcaaf2c60c3cc65a270dac1bd59f3a2b52911b8c45510d4e7f86d47ed714ba",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/warriors-fundo-escuro.png",
+    "bytes": 82070,
+    "sha256": "02988a555373a7dbea3536ea37689c9e806c80d5405547db07f3e900113ada36",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/Times/warriors-normal.png",
+    "bytes": 82070,
+    "sha256": "b623681ece167224ad4f51aef1ffa5a6f9e072af1cf1d6a6c158fd796e8d33ab",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "07-Marcas-e-Escudos/escudos-fontes.json",
+    "bytes": 75666,
+    "sha256": "131d298665afbd56d8aa93459bd1c80d9f2b951471943c2dc791f3ce8f190286"
+  },
+  {
+    "file": "07-Marcas-e-Escudos/fontes.json",
+    "bytes": 5546,
+    "sha256": "236eb8d4cb0c86132c01e7613f901b050d22fba67fb993933f91a076fdd61654"
+  },
+  {
+    "file": "Catalogo-Visual.html",
+    "bytes": 50119,
+    "sha256": "db3e86163b8afe4be525eaa023881f8b7d2b328634c4cf2a134dcfc98af1f8dd"
+  },
+  {
+    "file": "LEIA-ME.md",
+    "bytes": 5783,
+    "sha256": "379b8d598ba3acbe07d1b918b19b24758c10512a7403257107f66ee6b313bff3"
+  },
+  {
+    "file": "Manual-NEXUS-PlayTV.pdf",
+    "bytes": 352840,
+    "sha256": "df62e3b566723348ffb7136e424ee767f002637aca56215b02deb1c18e1ad954"
+  },
+  {
+    "file": "assets/banners/LEIA-ME.md",
+    "bytes": 863,
+    "sha256": "3dc89c6b6e5f60570b094bfdd70c071cb4df6b039acba6c834cdd116ace36567"
+  },
+  {
+    "file": "assets/banners/basketball.webp",
+    "bytes": 62274,
+    "sha256": "b7712425436c036c10103f9c1107edf145fe446fde176da0b5a26502c40b33da",
+    "width": 1296,
+    "height": 729
+  },
+  {
+    "file": "assets/banners/cinema-wide.webp",
+    "bytes": 356268,
+    "sha256": "4d26c4db60bf700a8e3b4de22f3f19914af1dc8e45df09a7fe884f527bbad942",
+    "width": 972,
+    "height": 1450
+  },
+  {
+    "file": "assets/banners/dune.webp",
+    "bytes": 453668,
+    "sha256": "b136fd44519d1227da526ae40eaac8f410974c627a0c6610c9b7ec4ad30f1c2b",
+    "width": 1215,
+    "height": 1800
+  },
+  {
+    "file": "assets/banners/fontes-da-revisao.json",
+    "bytes": 2564,
+    "sha256": "287f20aec58857bcf54c248a2ab4ecd87f34265648c31883eb652f2f8d871653"
+  },
+  {
+    "file": "assets/banners/football.webp",
+    "bytes": 183062,
+    "sha256": "c4794e8ec3ff964265e545c0f17f1e1eeb6aacafaf92f3f5f16836278f13d31b",
+    "width": 1296,
+    "height": 729
+  },
+  {
+    "file": "assets/banners/last-of-us.webp",
+    "bytes": 351894,
+    "sha256": "da3fa53da61a8ef5ed77929baca2d9db579dfe2b88b1df94e35fa6fc8761bf45",
+    "width": 1216,
+    "height": 1800
+  },
+  {
+    "file": "assets/banners/mandalorian.webp",
+    "bytes": 356268,
+    "sha256": "4d26c4db60bf700a8e3b4de22f3f19914af1dc8e45df09a7fe884f527bbad942",
+    "width": 972,
+    "height": 1450
+  },
+  {
+    "file": "assets/banners/motorsport.webp",
+    "bytes": 41710,
+    "sha256": "790fe6c75b4cce2384d0359ff27dc27f2fef197eed804999b8657c4b58ab750c",
+    "width": 800,
+    "height": 526
+  },
+  {
+    "file": "assets/banners/stadium.webp",
+    "bytes": 151984,
+    "sha256": "7ac4ae146bf9c849a458cddd5224e6de40598991503fcb2afd9e8b7cff381b88",
+    "width": 1600,
+    "height": 533
+  },
+  {
+    "file": "assets/banners/stranger-things.webp",
+    "bytes": 295302,
+    "sha256": "ffdbca49b3b5fa4bb563ce980d2c8d9d603994779c4764db92b675903165ba84",
+    "width": 1500,
+    "height": 686
+  },
+  {
+    "file": "assets/banners/ufc.webp",
+    "bytes": 56112,
+    "sha256": "836c5f303e839f0f9c2c7737021018c44d9e6cdab6f861e622a45be0ddbd7b27",
+    "width": 594,
+    "height": 396
+  },
+  {
+    "file": "assets/banners/vision.webp",
+    "bytes": 37264,
+    "sha256": "222f736756dd45ee56b1bb32fb8e7f40779d5fe90519575015205946418418c9",
+    "width": 1254,
+    "height": 706
+  },
+  {
+    "file": "assets/banners/wednesday.webp",
+    "bytes": 259700,
+    "sha256": "b6d47e734f106b5fa93d34a462b0206eb0946fdfdae1499a950831647369f357",
+    "width": 1215,
+    "height": 1800
+  },
+  {
+    "file": "assets/branding/apple-touch-icon.png",
+    "bytes": 2283,
+    "sha256": "cc09250349a92ecad4c62143cd22fb491f99b6df28fa4ecf24a85ed838582321",
+    "width": 180,
+    "height": 180
+  },
+  {
+    "file": "assets/branding/favicon.ico",
+    "bytes": 10504,
+    "sha256": "b380e1533c61143a37d0092733e3fc31f13ca374b14dbac1cd0434326ef1a13b"
+  },
+  {
+    "file": "assets/branding/favicon.svg",
+    "bytes": 329,
+    "sha256": "d5eac4d1b0cf26c3f992aa634da348efc2f4c642d55b3e6b4671f33c046f6828"
+  },
+  {
+    "file": "assets/branding/manifest.example.webmanifest",
+    "bytes": 487,
+    "sha256": "833531c338c949990d95695d27c60bf9cf2e305941ab8210b01df673ee0a85b8"
+  },
+  {
+    "file": "assets/branding/nexus-horizontal-branco.svg",
+    "bytes": 3856,
+    "sha256": "22e3dc0882b05e2fe15aabd99d9f5c7b45278a74974c7a6d86ab4d9bc717c009"
+  },
+  {
+    "file": "assets/branding/nexus-horizontal-fundo-claro.svg",
+    "bytes": 3903,
+    "sha256": "4d6f740faed9613a3f2960e1f3d79d95304d3194aa0f69b89cba3b819f1538f9"
+  },
+  {
+    "file": "assets/branding/nexus-horizontal-fundo-escuro.svg",
+    "bytes": 3903,
+    "sha256": "d1bfdf6f3bbb7a4aae5bd55cb618d166436d724f00304e65e650c44c311946c3"
+  },
+  {
+    "file": "assets/branding/nexus-horizontal-fundo-verde.svg",
+    "bytes": 3903,
+    "sha256": "ee74b7ce8f6ebb4647d480e351c3eab5062ff6bfa9af684338b597c99ab8ef1a"
+  },
+  {
+    "file": "assets/branding/nexus-horizontal-preto.svg",
+    "bytes": 3856,
+    "sha256": "99fb8250be2230232c83381a5b9f62d918855d9b90ae27b9e43d2f92eeed0395"
+  },
+  {
+    "file": "assets/branding/nexus-horizontal-principal.svg",
+    "bytes": 3856,
+    "sha256": "77a42917aae70c8fdef5bbe924fe8a247a16b10d0fb1324e3c169770c82420a8"
+  },
+  {
+    "file": "assets/branding/nexus-horizontal-verde.svg",
+    "bytes": 3856,
+    "sha256": "f6c42d52793273423afae5b3e013ef0ebd70eaa66eacb2704b4fa2e9abc2f3ba"
+  },
+  {
+    "file": "assets/branding/nexus-icon-1024.png",
+    "bytes": 15595,
+    "sha256": "4ebdf8a504d5f2bb3f593bdbdbb2eae23c5ee8a85b8ac65791030ce66c5c363a",
+    "width": 1024,
+    "height": 1024
+  },
+  {
+    "file": "assets/branding/nexus-icon-128.png",
+    "bytes": 1774,
+    "sha256": "5f060b15e9aa9fc8d273ca52b94ac0ff7c92bcce7da38012cc9f874122f94591",
+    "width": 128,
+    "height": 128
+  },
+  {
+    "file": "assets/branding/nexus-icon-16.png",
+    "bytes": 363,
+    "sha256": "f9b3ad6a3ed80736175554829034ccfa52d6833d79a5facc2167143683839854",
+    "width": 16,
+    "height": 16
+  },
+  {
+    "file": "assets/branding/nexus-icon-180.png",
+    "bytes": 2283,
+    "sha256": "cc09250349a92ecad4c62143cd22fb491f99b6df28fa4ecf24a85ed838582321",
+    "width": 180,
+    "height": 180
+  },
+  {
+    "file": "assets/branding/nexus-icon-192.png",
+    "bytes": 2423,
+    "sha256": "dbfc28389c08b41bbd2445da589d4946d53f8a4a5f991627a0fe36e92c166ff1",
+    "width": 192,
+    "height": 192
+  },
+  {
+    "file": "assets/branding/nexus-icon-256.png",
+    "bytes": 2955,
+    "sha256": "8ddffd5e42ff4d4ed06232eaa4144f6c93919a0c03c62972b1d4873aad3b0db2",
+    "width": 256,
+    "height": 256
+  },
+  {
+    "file": "assets/branding/nexus-icon-32.png",
+    "bytes": 625,
+    "sha256": "8d9411d077107eac50cb652a4561ad8946af198f08e7972dde2746ca0b07acd4",
+    "width": 32,
+    "height": 32
+  },
+  {
+    "file": "assets/branding/nexus-icon-48.png",
+    "bytes": 862,
+    "sha256": "543295f24c80a0d703847bb12ff0cfbc715e3bb61d49e05ba7129de6680d44bc",
+    "width": 48,
+    "height": 48
+  },
+  {
+    "file": "assets/branding/nexus-icon-512.png",
+    "bytes": 6417,
+    "sha256": "8daf88e99349e55c05fe0c8e4cd318450262eec980288f785d9e695927f12ce3",
+    "width": 512,
+    "height": 512
+  },
+  {
+    "file": "assets/branding/nexus-icon-64.png",
+    "bytes": 1159,
+    "sha256": "f588841a3efdef4f38e797c99e41b69670c39fe8d75a3be6ab0f2c784aad5892",
+    "width": 64,
+    "height": 64
+  },
+  {
+    "file": "assets/branding/nexus-simbolo-branco.svg",
+    "bytes": 282,
+    "sha256": "6acc67c9010da5adbdab971fd8814fbc5685b5e795fca563bcf3d563a5f81c13"
+  },
+  {
+    "file": "assets/branding/nexus-simbolo-fundo-claro.svg",
+    "bytes": 329,
+    "sha256": "34b92b4f13ffc004c52bad0411aeabc21bd057a466fd166d59a9664a7b1a7cb8"
+  },
+  {
+    "file": "assets/branding/nexus-simbolo-fundo-escuro.svg",
+    "bytes": 329,
+    "sha256": "d5eac4d1b0cf26c3f992aa634da348efc2f4c642d55b3e6b4671f33c046f6828"
+  },
+  {
+    "file": "assets/branding/nexus-simbolo-fundo-verde.svg",
+    "bytes": 329,
+    "sha256": "de097dd2e86272a0e482606bf3d677d32f925e9a2381f4f7d23569690cca19bc"
+  },
+  {
+    "file": "assets/branding/nexus-simbolo-preto.svg",
+    "bytes": 282,
+    "sha256": "cbdf7e3e09fac8c4f9c77793928aa6e3d63f58e1934a415c942934aa8a08f133"
+  },
+  {
+    "file": "assets/branding/nexus-simbolo-principal.svg",
+    "bytes": 282,
+    "sha256": "ff25a58cd3b9b1af1052a46f0a7122a96d3af6e2d7d9c5947544f5abfa72067e"
+  },
+  {
+    "file": "assets/branding/nexus-simbolo-verde.svg",
+    "bytes": 282,
+    "sha256": "ff25a58cd3b9b1af1052a46f0a7122a96d3af6e2d7d9c5947544f5abfa72067e"
+  },
+  {
+    "file": "assets/branding/nexus-vertical-branco.svg",
+    "bytes": 3696,
+    "sha256": "f57045b0918f5b722db202618fdd3cdc0bbea4c7a8023794794c3e53441ab870"
+  },
+  {
+    "file": "assets/branding/nexus-vertical-fundo-claro.svg",
+    "bytes": 3743,
+    "sha256": "1045def44b404e1d438fc120d242c9a4064308ef5d8be28ecd09eace469eb9ab"
+  },
+  {
+    "file": "assets/branding/nexus-vertical-fundo-escuro.svg",
+    "bytes": 3743,
+    "sha256": "dcbc42bc5a6d964cd4b2656cb43dcd019a2ba78b3a33c5f62d038d625170bac9"
+  },
+  {
+    "file": "assets/branding/nexus-vertical-fundo-verde.svg",
+    "bytes": 3743,
+    "sha256": "a874a74cc550013a12887c7476f0fba3e532ccf998eac29d52a2a56740a29a22"
+  },
+  {
+    "file": "assets/branding/nexus-vertical-preto.svg",
+    "bytes": 3696,
+    "sha256": "35254f8a7317759eea57a280018937549eece49965c5890e622af72ea014026e"
+  },
+  {
+    "file": "assets/branding/nexus-vertical-principal.svg",
+    "bytes": 3696,
+    "sha256": "07d54ec132a79cb61728b2a67e107a8850bd11da4ca09412427bbe50d1b17b7e"
+  },
+  {
+    "file": "assets/branding/nexus-vertical-verde.svg",
+    "bytes": 3696,
+    "sha256": "296d388c82cf424f6da1c9182e549ba2625776b45b375f41f584932a009568c6"
+  },
+  {
+    "file": "assets/crests/Alemanha/bayer-leverkusen-fundo-escuro.png",
+    "bytes": 68738,
+    "sha256": "609a686a47f20092383650ee70309169ec016568a5a3e705098fc9d5226cedd6",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Alemanha/bayer-leverkusen-normal.png",
+    "bytes": 68738,
+    "sha256": "e0be43c3d770332d031309e661f127e22bc8202a1211993c467193444481cb4b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Alemanha/bayern-munich-fundo-escuro.png",
+    "bytes": 93000,
+    "sha256": "97d9c68c3fbc44834e836b6b82afab725e450d0a7c5f5d6a328f4888297511ed",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Alemanha/bayern-munich-normal.png",
+    "bytes": 93000,
+    "sha256": "97d9c68c3fbc44834e836b6b82afab725e450d0a7c5f5d6a328f4888297511ed",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Alemanha/borussia-dortmund-fundo-escuro.png",
+    "bytes": 45044,
+    "sha256": "4d6e2fed029d1f30457400c3b221c149a8d76490cdde43a208df32bbf790739d",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Alemanha/borussia-dortmund-normal.png",
+    "bytes": 45044,
+    "sha256": "bd11d3d9f17caf5352cb44234961b89b8794a453b2fa9c355586b68a828facd8",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Alemanha/eintracht-frankfurt-fundo-escuro.png",
+    "bytes": 79536,
+    "sha256": "a6643fc1ff88d2d171012fc5d549b5c7a01964f769d23541d118501d310ddacc",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Alemanha/eintracht-frankfurt-normal.png",
+    "bytes": 79536,
+    "sha256": "8ed093c2fc6ef46b7cc8e8ac58b0dd7f8fccbae719cba7514dffe7c40507f16c",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Alemanha/rb-leipzig-fundo-escuro.png",
+    "bytes": 62907,
+    "sha256": "fb4c77d7d3212591c6fe5ff1544b16cf885d1d0521200759a3a62d7facc25ed4",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Alemanha/rb-leipzig-normal.png",
+    "bytes": 62907,
+    "sha256": "0734f241fe3b1a5c94bd4beb659c186cbb6fcf01592ac00ecbfb2d5bd29ab0c3",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Alemanha/vfb-stuttgart-fundo-escuro.png",
+    "bytes": 54812,
+    "sha256": "8a32c1caf1e7ebbd41e52ad28d3781002a789ab12826479b6abbbe78ec77c86b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Alemanha/vfb-stuttgart-normal.png",
+    "bytes": 54812,
+    "sha256": "8a32c1caf1e7ebbd41e52ad28d3781002a789ab12826479b6abbbe78ec77c86b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/america-mineiro-fundo-escuro.png",
+    "bytes": 60986,
+    "sha256": "f1968d257e1a3d9475c8571112ed74df82207911866b7aae8a3b615e955397be",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/america-mineiro-normal.png",
+    "bytes": 53676,
+    "sha256": "6ffb248615b4f74b30542c7fad2caaedbb8546006facfa31efaf73e58c0cb4e7",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/athletic-fundo-escuro.png",
+    "bytes": 67661,
+    "sha256": "69212385e3ce35c4552740e85208cbe7c00e91641299696690697caa711c2cf0",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/athletic-normal.png",
+    "bytes": 67661,
+    "sha256": "69212385e3ce35c4552740e85208cbe7c00e91641299696690697caa711c2cf0",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/athletico-pr-fundo-escuro.png",
+    "bytes": 92193,
+    "sha256": "b80f24a9b83f0101ae36541eb8012e4ba1c576881f6b67a259d7bf01c504eac6",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/athletico-pr-normal.png",
+    "bytes": 47716,
+    "sha256": "a74511ad022b00409cf2fa3a36d8f17240865243cacb0fca14d2cc48f145bf43",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/atletico-goianiense-fundo-escuro.png",
+    "bytes": 35415,
+    "sha256": "65df697fd8f6c68529549b21a70e9949a9f82d883dad774e39a101bd9cb56fac",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/atletico-goianiense-normal.png",
+    "bytes": 35415,
+    "sha256": "65df697fd8f6c68529549b21a70e9949a9f82d883dad774e39a101bd9cb56fac",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/atletico-mg-fundo-escuro.png",
+    "bytes": 57344,
+    "sha256": "29e55e2557a10f7cd6b5b9ed2a32707a871fbda7fbe4408d27ed7ed673f17f37",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/atletico-mg-normal.png",
+    "bytes": 57344,
+    "sha256": "29e55e2557a10f7cd6b5b9ed2a32707a871fbda7fbe4408d27ed7ed673f17f37",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/avai-fundo-escuro.png",
+    "bytes": 24953,
+    "sha256": "42a76f40c3de2834eef00644dfb4e8d0abe4bfd680e2c251248171b44b5e6ed9",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/avai-normal.png",
+    "bytes": 24953,
+    "sha256": "42a76f40c3de2834eef00644dfb4e8d0abe4bfd680e2c251248171b44b5e6ed9",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/bahia-fundo-escuro.png",
+    "bytes": 232813,
+    "sha256": "21fd57c4580b5305966584a2ecd196cba36abbaf19c7c440f53030bc94ddeab9",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/bahia-normal.png",
+    "bytes": 232813,
+    "sha256": "21fd57c4580b5305966584a2ecd196cba36abbaf19c7c440f53030bc94ddeab9",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/botafogo-fundo-escuro.png",
+    "bytes": 34260,
+    "sha256": "bbf0e6f6b09609aac248f8552738c622dff600dfa68d6623c329a849e2ed4b29",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/botafogo-normal.png",
+    "bytes": 30766,
+    "sha256": "e4e9257c2b559f5e10e507e52221cd2b31e12a07cd46b8ba4b8e696342b78d2c",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/botafogo-sp-fundo-escuro.png",
+    "bytes": 32831,
+    "sha256": "849f7e92c54f2640acc81335ef99c35c9d47ebf4cd5e5e01ce1580e23d50eda7",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/botafogo-sp-normal.png",
+    "bytes": 32831,
+    "sha256": "849f7e92c54f2640acc81335ef99c35c9d47ebf4cd5e5e01ce1580e23d50eda7",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/ceara-fundo-escuro.png",
+    "bytes": 84756,
+    "sha256": "2fb3c463fb90841708baa742d8a0918893fedbd112659579f7152a0c6684286b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/ceara-normal.png",
+    "bytes": 84756,
+    "sha256": "2fb3c463fb90841708baa742d8a0918893fedbd112659579f7152a0c6684286b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/chapecoense-fundo-escuro.png",
+    "bytes": 179844,
+    "sha256": "2b10588b38d37a2afe1db516b37e3a417da39fcad142ade02f65456cc389d70e",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/chapecoense-normal.png",
+    "bytes": 179844,
+    "sha256": "2b10588b38d37a2afe1db516b37e3a417da39fcad142ade02f65456cc389d70e",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/corinthians-fundo-escuro.png",
+    "bytes": 126702,
+    "sha256": "f947c5fae7c0adb290cd769a7f9a8f4e6cc23e0f3eb3e518f3083771bc660cb2",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/corinthians-normal.png",
+    "bytes": 126702,
+    "sha256": "baf1bb2e42286ca76bf35d953e89f64d47640386dc6e360f8c6eee3ea0d482cd",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/coritiba-fundo-escuro.png",
+    "bytes": 247929,
+    "sha256": "7b257bc9a11e9fc9af90062577a96dbb54bda7009d9d73b02a27cdcff124344a",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/coritiba-normal.png",
+    "bytes": 247929,
+    "sha256": "7b257bc9a11e9fc9af90062577a96dbb54bda7009d9d73b02a27cdcff124344a",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/crb-fundo-escuro.png",
+    "bytes": 49583,
+    "sha256": "655d76ceec40095fc28b19df76bee6adeaf5ebd9785b1033cffd7ffe0f58f601",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/crb-normal.png",
+    "bytes": 49583,
+    "sha256": "655d76ceec40095fc28b19df76bee6adeaf5ebd9785b1033cffd7ffe0f58f601",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/criciuma-fundo-escuro.png",
+    "bytes": 42295,
+    "sha256": "57b5be862146e9ef4c126ae68502689c4fd9d13be988c8f9706579653129bdf6",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/criciuma-normal.png",
+    "bytes": 42295,
+    "sha256": "57b5be862146e9ef4c126ae68502689c4fd9d13be988c8f9706579653129bdf6",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/cruzeiro-fundo-escuro.png",
+    "bytes": 62724,
+    "sha256": "83ea69b941b800c4f32774798e1194ed3b1025acb935e0deade5d4416d59b1a2",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/cruzeiro-normal.png",
+    "bytes": 62724,
+    "sha256": "83ea69b941b800c4f32774798e1194ed3b1025acb935e0deade5d4416d59b1a2",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/cuiaba-fundo-escuro.png",
+    "bytes": 171682,
+    "sha256": "a024266d0ca6cd9208eb477c2ff242429b8af7e6d106e719782fc9288d7dafa9",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/cuiaba-normal.png",
+    "bytes": 171682,
+    "sha256": "a024266d0ca6cd9208eb477c2ff242429b8af7e6d106e719782fc9288d7dafa9",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/flamengo-fundo-escuro.png",
+    "bytes": 29869,
+    "sha256": "0b46ca645c16977ebd4da7b9c7b411b1cf125d369b9ffbc651b1ed1f6ab2928e",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/flamengo-normal.png",
+    "bytes": 29869,
+    "sha256": "0b46ca645c16977ebd4da7b9c7b411b1cf125d369b9ffbc651b1ed1f6ab2928e",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/fluminense-fundo-escuro.png",
+    "bytes": 124170,
+    "sha256": "5fabe8039ab05c952540b24067acd62dd7933bfeb3211cccfc6b2822c9030293",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/fluminense-normal.png",
+    "bytes": 124170,
+    "sha256": "ef20f396606f8c0a6a5f30dd4fddc8ed899aa64326e11da216ef9b2674c7bfb3",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/fortaleza-fundo-escuro.png",
+    "bytes": 52697,
+    "sha256": "e6f962e3edde6f743794115ed483664f28db184bc67584cd922e5eefdf881005",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/fortaleza-normal.png",
+    "bytes": 52697,
+    "sha256": "e6f962e3edde6f743794115ed483664f28db184bc67584cd922e5eefdf881005",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/goias-fundo-escuro.png",
+    "bytes": 117587,
+    "sha256": "77a315ef8def4c7dc18d3a2cb5acc1e7f6622b7fb088b06021e57024fb6ab7e1",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/goias-normal.png",
+    "bytes": 117587,
+    "sha256": "d503e457c3ca457ce91beb900252ef3de52979709e955399c2caefc4338475de",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/gremio-fundo-escuro.png",
+    "bytes": 70326,
+    "sha256": "f8df1d11ce813c3fd28f0be638a564bdd0a6c67a153e3d0a77d8d38e4421ea24",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/gremio-normal.png",
+    "bytes": 70326,
+    "sha256": "f8df1d11ce813c3fd28f0be638a564bdd0a6c67a153e3d0a77d8d38e4421ea24",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/internacional-fundo-escuro.png",
+    "bytes": 60849,
+    "sha256": "62e65071c93a7307ed2c5669f4fe5a1297d405c058b532a6294de780df09cfe7",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/internacional-normal.png",
+    "bytes": 60849,
+    "sha256": "62e65071c93a7307ed2c5669f4fe5a1297d405c058b532a6294de780df09cfe7",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/juventude-fundo-escuro.png",
+    "bytes": 87997,
+    "sha256": "457e3ae47ca1a8f3577c5b20ceb43cfed261099993d7b69dabf6d470a4d23b0a",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/juventude-normal.png",
+    "bytes": 87997,
+    "sha256": "457e3ae47ca1a8f3577c5b20ceb43cfed261099993d7b69dabf6d470a4d23b0a",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/londrina-fundo-escuro.png",
+    "bytes": 84652,
+    "sha256": "7ee337df1f44c25b036028c42abc3755bca75f05660e8716adbc4368daa595b4",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/londrina-normal.png",
+    "bytes": 84652,
+    "sha256": "7ee337df1f44c25b036028c42abc3755bca75f05660e8716adbc4368daa595b4",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/mirassol-fundo-escuro.png",
+    "bytes": 169165,
+    "sha256": "de8f2f7a022da99bbcf78f7dd818bd7d503da08a18681190ac1254139d128a5a",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/mirassol-normal.png",
+    "bytes": 104786,
+    "sha256": "7380306144df78c15d4d1b2ddc57bd7585b9b80ef057471d57070ee38952e163",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/nautico-fundo-escuro.png",
+    "bytes": 299485,
+    "sha256": "a6515b3e416324b3d6dd8b30ccc68f0de08ad6802643289b94f67efea4f3a65a",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/nautico-normal.png",
+    "bytes": 299485,
+    "sha256": "a6515b3e416324b3d6dd8b30ccc68f0de08ad6802643289b94f67efea4f3a65a",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/novorizontino-fundo-escuro.png",
+    "bytes": 155929,
+    "sha256": "8d77d616e5394d8f43d48cca3beeb73c4f960e25cd7e67bfa1fb3f41af87d0a7",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/novorizontino-normal.png",
+    "bytes": 155929,
+    "sha256": "8d77d616e5394d8f43d48cca3beeb73c4f960e25cd7e67bfa1fb3f41af87d0a7",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/operario-pr-fundo-escuro.png",
+    "bytes": 113539,
+    "sha256": "f2eee694f834752d642379f3efed65833fe518d3d63d70268e468fd71bf5e5de",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/operario-pr-normal.png",
+    "bytes": 113539,
+    "sha256": "f2eee694f834752d642379f3efed65833fe518d3d63d70268e468fd71bf5e5de",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/palmeiras-fundo-escuro.png",
+    "bytes": 110140,
+    "sha256": "c6dd22b07be603cadbe9924acaf568edb614d26aa6b2b5a6a6ef4f8653f87c7d",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/palmeiras-normal.png",
+    "bytes": 110140,
+    "sha256": "c6dd22b07be603cadbe9924acaf568edb614d26aa6b2b5a6a6ef4f8653f87c7d",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/ponte-preta-fundo-escuro.png",
+    "bytes": 51699,
+    "sha256": "fecb12a929e759aab96f6cdccea1086db9713497f232a54e46f27418e834691b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/ponte-preta-normal.png",
+    "bytes": 51699,
+    "sha256": "fecb12a929e759aab96f6cdccea1086db9713497f232a54e46f27418e834691b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/red-bull-bragantino-fundo-escuro.png",
+    "bytes": 99308,
+    "sha256": "388c6be03414040caea3a0a2ae86d303cd070e2164ebe3028059e14c776c8caf",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/red-bull-bragantino-normal.png",
+    "bytes": 99308,
+    "sha256": "388c6be03414040caea3a0a2ae86d303cd070e2164ebe3028059e14c776c8caf",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/remo-fundo-escuro.png",
+    "bytes": 74914,
+    "sha256": "8320c75dd2d17c07603e0f417008da5065be24b93e22dddc475dc540cc137e53",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/remo-normal.png",
+    "bytes": 74914,
+    "sha256": "8320c75dd2d17c07603e0f417008da5065be24b93e22dddc475dc540cc137e53",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/santos-fundo-escuro.png",
+    "bytes": 47059,
+    "sha256": "df2d2e4213d5839ceb0a914d356f545e022339aaf9ebbaee9c8af5621477c389",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/santos-normal.png",
+    "bytes": 40362,
+    "sha256": "d6c5b41dfe8b3ab348ba85b265767c54d0618a7ed522b401da50874e92b6f2a8",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/sao-bernardo-fundo-escuro.png",
+    "bytes": 101974,
+    "sha256": "efa87179bc21ab1977005fdbe19dacec316b5dfcf8f12f73249c48e1ae6d3f37",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/sao-bernardo-normal.png",
+    "bytes": 101974,
+    "sha256": "efa87179bc21ab1977005fdbe19dacec316b5dfcf8f12f73249c48e1ae6d3f37",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/sao-paulo-fundo-escuro.png",
+    "bytes": 23855,
+    "sha256": "6524cadabce3d5ce640d96ffa3cdc5906e13999e8abd722a684d588277e5c59d",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/sao-paulo-normal.png",
+    "bytes": 23855,
+    "sha256": "6524cadabce3d5ce640d96ffa3cdc5906e13999e8abd722a684d588277e5c59d",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/sport-fundo-escuro.png",
+    "bytes": 78980,
+    "sha256": "724fc7bce61dc3bb87d5f19a4f1cdd28d8ad59dea3e61656afd393b7586bdf91",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/sport-normal.png",
+    "bytes": 78980,
+    "sha256": "724fc7bce61dc3bb87d5f19a4f1cdd28d8ad59dea3e61656afd393b7586bdf91",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/vasco-da-gama-fundo-escuro.png",
+    "bytes": 65144,
+    "sha256": "043b229f28f9781c2e9cd5be9fbf76b6318c200d114c8def457eee05d8dd61be",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/vasco-da-gama-normal.png",
+    "bytes": 65144,
+    "sha256": "043b229f28f9781c2e9cd5be9fbf76b6318c200d114c8def457eee05d8dd61be",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/vila-nova-fundo-escuro.png",
+    "bytes": 65776,
+    "sha256": "353d11cd27d1159c541ac17c1ca863fe83d2012064573d1be910cd1b3a714aa8",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/vila-nova-normal.png",
+    "bytes": 65776,
+    "sha256": "353d11cd27d1159c541ac17c1ca863fe83d2012064573d1be910cd1b3a714aa8",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/vitoria-fundo-escuro.png",
+    "bytes": 41604,
+    "sha256": "43368904360459aa6d1e37756a121393f1a4c0fc3527a86910cf5a0362b647d1",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Brasil/vitoria-normal.png",
+    "bytes": 35095,
+    "sha256": "89f2c151a0ad82525b3375dc897828632e61b9d154bebce719a9fdf41b1648f1",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Escocia/celtic-fundo-escuro.png",
+    "bytes": 57742,
+    "sha256": "59bf2618f33a47d23d0094f1e282775d403652a728e50d4bc4174de7a623411e",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Escocia/celtic-normal.png",
+    "bytes": 57742,
+    "sha256": "59bf2618f33a47d23d0094f1e282775d403652a728e50d4bc4174de7a623411e",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Escocia/rangers-fundo-escuro.png",
+    "bytes": 88653,
+    "sha256": "1abf8b7ef05b0ff9fadbfd20bae0f6ba5b0a0447062eb042fe79371a33706e27",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Escocia/rangers-normal.png",
+    "bytes": 88653,
+    "sha256": "1abf8b7ef05b0ff9fadbfd20bae0f6ba5b0a0447062eb042fe79371a33706e27",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Espanha/athletic-club-fundo-escuro.png",
+    "bytes": 42036,
+    "sha256": "ce67012de7d0cef9323bb2afd7481258eee4c927ae1a4f2b9fd156ef66800eec",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Espanha/athletic-club-normal.png",
+    "bytes": 42036,
+    "sha256": "ce67012de7d0cef9323bb2afd7481258eee4c927ae1a4f2b9fd156ef66800eec",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Espanha/atletico-madrid-fundo-escuro.png",
+    "bytes": 34532,
+    "sha256": "00e98bfb76fe09a385afc20f73ae0f9ac076f9a22cc559d32cee30fd492f0f10",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Espanha/atletico-madrid-normal.png",
+    "bytes": 34532,
+    "sha256": "00e98bfb76fe09a385afc20f73ae0f9ac076f9a22cc559d32cee30fd492f0f10",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Espanha/barcelona-fundo-escuro.png",
+    "bytes": 25584,
+    "sha256": "9987e9acd8f542f74402f5a62ac2bcbb350c5ed2bf38831779d56a375ae76eb9",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Espanha/barcelona-normal.png",
+    "bytes": 25584,
+    "sha256": "9987e9acd8f542f74402f5a62ac2bcbb350c5ed2bf38831779d56a375ae76eb9",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Espanha/real-betis-fundo-escuro.png",
+    "bytes": 25867,
+    "sha256": "8a2e9a3db45280f3aa8be1737e140333493828c94c98283a5bcad458529369a6",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Espanha/real-betis-normal.png",
+    "bytes": 25867,
+    "sha256": "8a2e9a3db45280f3aa8be1737e140333493828c94c98283a5bcad458529369a6",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Espanha/real-madrid-fundo-escuro.png",
+    "bytes": 43601,
+    "sha256": "acdcaaf2c60c3cc65a270dac1bd59f3a2b52911b8c45510d4e7f86d47ed714ba",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Espanha/real-madrid-normal.png",
+    "bytes": 43601,
+    "sha256": "acdcaaf2c60c3cc65a270dac1bd59f3a2b52911b8c45510d4e7f86d47ed714ba",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Espanha/sevilla-fundo-escuro.png",
+    "bytes": 64740,
+    "sha256": "992624b39a65ae153e9754ba302596d234faafe95062ca5d9b3095ac56211988",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Espanha/sevilla-normal.png",
+    "bytes": 64740,
+    "sha256": "992624b39a65ae153e9754ba302596d234faafe95062ca5d9b3095ac56211988",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Espanha/valencia-fundo-escuro.png",
+    "bytes": 55062,
+    "sha256": "c5f78f58198ff162148a866ff6fbcb8b6e5ed0524e9a0216b62666a20b554399",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Espanha/valencia-normal.png",
+    "bytes": 66579,
+    "sha256": "4961f443b5d247b7a1ba5e2cc51bdea51633c4c0fe50a78f260e6f03b438b134",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Espanha/villarreal-fundo-escuro.png",
+    "bytes": 100657,
+    "sha256": "69c1768ac26ad66621c5133c1ad5788cec94fc3ab7ad5645c23db16c37617539",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Espanha/villarreal-normal.png",
+    "bytes": 100657,
+    "sha256": "69c1768ac26ad66621c5133c1ad5788cec94fc3ab7ad5645c23db16c37617539",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Franca/as-monaco-fundo-escuro.png",
+    "bytes": 19606,
+    "sha256": "bd23a74bdca89df5ed4876567478e5f08e82a4d6576e0252f16968f266300d64",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Franca/as-monaco-normal.png",
+    "bytes": 19606,
+    "sha256": "bd23a74bdca89df5ed4876567478e5f08e82a4d6576e0252f16968f266300d64",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Franca/lens-fundo-escuro.png",
+    "bytes": 41414,
+    "sha256": "4f4ba6f0e63826c16f62a4753e0874e54cc30077c62b8c19790cd4f4d01e0e20",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Franca/lens-normal.png",
+    "bytes": 41414,
+    "sha256": "4f4ba6f0e63826c16f62a4753e0874e54cc30077c62b8c19790cd4f4d01e0e20",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Franca/lille-fundo-escuro.png",
+    "bytes": 108528,
+    "sha256": "95e0ee084cb4f8cd14407aa8a75e0db932d4f0558cd3a1dfac72f293cca86e69",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Franca/lille-normal.png",
+    "bytes": 108528,
+    "sha256": "95e0ee084cb4f8cd14407aa8a75e0db932d4f0558cd3a1dfac72f293cca86e69",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Franca/lyon-fundo-escuro.png",
+    "bytes": 22304,
+    "sha256": "798721110c8dcb1d73b2199476a2fa2fa8dcf205aeab8ef7b13a6895a299686a",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Franca/lyon-normal.png",
+    "bytes": 22330,
+    "sha256": "8d19c1378008637e0f7a75c4a56bd82610c719ae3bfdcb7c1305edfe81710bcf",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Franca/marseille-fundo-escuro.png",
+    "bytes": 51919,
+    "sha256": "55fde2ea6f3e0524ae9226ccbf9240cf1cc6f49f6a402ed444b147558040428e",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Franca/marseille-normal.png",
+    "bytes": 51919,
+    "sha256": "55fde2ea6f3e0524ae9226ccbf9240cf1cc6f49f6a402ed444b147558040428e",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Franca/nice-fundo-escuro.png",
+    "bytes": 140613,
+    "sha256": "0627bf3866b012606a59c95a6622669c1eedc3f996d87ef3ffd08f9957ec5ab9",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Franca/nice-normal.png",
+    "bytes": 140613,
+    "sha256": "4d799a2e63732e66bb9e447fa8f036440c48091621ca2e97c001c14eaa758fe8",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Franca/paris-fc-fundo-escuro.png",
+    "bytes": 109705,
+    "sha256": "f46a439b974261f722182dc7d9264461ce7e75e959eb2f9a8376b17ec844b27b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Franca/paris-fc-normal.png",
+    "bytes": 109705,
+    "sha256": "f46a439b974261f722182dc7d9264461ce7e75e959eb2f9a8376b17ec844b27b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Franca/paris-saint-germain-fundo-escuro.png",
+    "bytes": 59170,
+    "sha256": "d3c4321f76c2475d10dd76757e623367ab7549a9a55cdee7ced09cf6327d4f5b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Franca/paris-saint-germain-normal.png",
+    "bytes": 59170,
+    "sha256": "d3c4321f76c2475d10dd76757e623367ab7549a9a55cdee7ced09cf6327d4f5b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Holanda/ajax-amsterdam-fundo-escuro.png",
+    "bytes": 145869,
+    "sha256": "cc0f6f96fafba7ca9f451f67727f9395ee8141112e4fef37b231b99763d38d27",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Holanda/ajax-amsterdam-normal.png",
+    "bytes": 145869,
+    "sha256": "cc0f6f96fafba7ca9f451f67727f9395ee8141112e4fef37b231b99763d38d27",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Holanda/feyenoord-rotterdam-fundo-escuro.png",
+    "bytes": 61699,
+    "sha256": "d5d8fe372eb2d09045881a7e4bd802dcd727bb312ca060c97bf943ef0a9d9beb",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Holanda/feyenoord-rotterdam-normal.png",
+    "bytes": 61699,
+    "sha256": "d5d8fe372eb2d09045881a7e4bd802dcd727bb312ca060c97bf943ef0a9d9beb",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Holanda/psv-eindhoven-fundo-escuro.png",
+    "bytes": 60860,
+    "sha256": "ea19561d9ae97eb761ab39f5b400b3ce5f64db43f934a595183e4208030f2d0b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Holanda/psv-eindhoven-normal.png",
+    "bytes": 60860,
+    "sha256": "ea19561d9ae97eb761ab39f5b400b3ce5f64db43f934a595183e4208030f2d0b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Inglaterra/arsenal-fundo-escuro.png",
+    "bytes": 36280,
+    "sha256": "92f1bb35662ff56dde09e1f8084221a458357a6df390bc97b2ed6495f6e39f53",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Inglaterra/arsenal-normal.png",
+    "bytes": 36280,
+    "sha256": "92f1bb35662ff56dde09e1f8084221a458357a6df390bc97b2ed6495f6e39f53",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Inglaterra/aston-villa-fundo-escuro.png",
+    "bytes": 78018,
+    "sha256": "aad2e636ade60b485855deacfe74f831c8dcae46de72079c7f521b06c1b5865b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Inglaterra/aston-villa-normal.png",
+    "bytes": 78018,
+    "sha256": "aad2e636ade60b485855deacfe74f831c8dcae46de72079c7f521b06c1b5865b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Inglaterra/chelsea-fundo-escuro.png",
+    "bytes": 59969,
+    "sha256": "6f14d86b5e35074e91462c7ede6e822f6a6c9f6cb723cd04ea6b8d36f2fa5392",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Inglaterra/chelsea-normal.png",
+    "bytes": 59969,
+    "sha256": "6f14d86b5e35074e91462c7ede6e822f6a6c9f6cb723cd04ea6b8d36f2fa5392",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Inglaterra/everton-fundo-escuro.png",
+    "bytes": 146091,
+    "sha256": "45bb12ecfe313a12c46dec5c2a496e444617acf1ff26f56f4f21a3a2703a23c6",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Inglaterra/everton-normal.png",
+    "bytes": 146091,
+    "sha256": "eaedbe5e3b18ddef08c09d07fdca62bcac65165b7bb9af4780acce36841aee20",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Inglaterra/leeds-united-fundo-escuro.png",
+    "bytes": 237612,
+    "sha256": "464b5ba37e17ddb18e55dce62a8a111e07fb5e7c2731c31740377445bda8978f",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Inglaterra/leeds-united-normal.png",
+    "bytes": 237616,
+    "sha256": "69d5d4251e740fc8d525c3c967e817575b0ac2e2af7be03f23e40d494c383790",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Inglaterra/liverpool-fundo-escuro.png",
+    "bytes": 25833,
+    "sha256": "18dde0a60e6a5f0da1b646730b8151b7a692a555c2f73120b6581bf77f8cf438",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Inglaterra/liverpool-normal.png",
+    "bytes": 35827,
+    "sha256": "9f2c56faf3631eb32fb5cccd84d31827ba38fcd9dd3280f597b221711a8797de",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Inglaterra/manchester-city-fundo-escuro.png",
+    "bytes": 130387,
+    "sha256": "70e005bdab0ada41a153760398b4a2ef99f956bf9e72954686caa70da8c30c0b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Inglaterra/manchester-city-normal.png",
+    "bytes": 130387,
+    "sha256": "70e005bdab0ada41a153760398b4a2ef99f956bf9e72954686caa70da8c30c0b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Inglaterra/manchester-united-fundo-escuro.png",
+    "bytes": 73159,
+    "sha256": "03486cf5cf90d580d6132ab115cc747be7b2e3519fd6e08be56675cf5897f0b7",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Inglaterra/manchester-united-normal.png",
+    "bytes": 73159,
+    "sha256": "03486cf5cf90d580d6132ab115cc747be7b2e3519fd6e08be56675cf5897f0b7",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Inglaterra/newcastle-united-fundo-escuro.png",
+    "bytes": 203286,
+    "sha256": "814fb62f3b7884675cf2f57b3a16632213a3c0ebfd0c039627242722e2f93076",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Inglaterra/newcastle-united-normal.png",
+    "bytes": 189751,
+    "sha256": "5e926d9f8c18b1b20e2e86a830ad56d4a9094673f172c0f8fabf617917e1910d",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Inglaterra/nottingham-forest-fundo-escuro.png",
+    "bytes": 20043,
+    "sha256": "d45e164b8c585ae2d1fec7c9d07189e96b521bac28fd9bd8917ffd6ba6e64d83",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Inglaterra/nottingham-forest-normal.png",
+    "bytes": 20645,
+    "sha256": "766868d667069609a8904ba1ec6a66f09fccfe9fbad21300791bf778dd9ddaae",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Inglaterra/tottenham-hotspur-fundo-escuro.png",
+    "bytes": 25978,
+    "sha256": "1ae760bfa3c43b3764a778b20c46f3ae9239c63f64bd1f0eb8655e1b17802227",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Inglaterra/tottenham-hotspur-normal.png",
+    "bytes": 26224,
+    "sha256": "f66f956414b0fd99df6a7e29bed0bd8a849f11d41bd749a1e08ff8d032570d35",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Italia/ac-milan-fundo-escuro.png",
+    "bytes": 65777,
+    "sha256": "a8715ce51b97f4563878135a764dcbe7a33559a6e89f5c2bdd3c291c6ae29651",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Italia/ac-milan-normal.png",
+    "bytes": 65777,
+    "sha256": "32f172036837a0a4a7ef3aadd67f2f3d5cb9f697b698ff6c7722b42faa8ae42e",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Italia/as-roma-fundo-escuro.png",
+    "bytes": 80060,
+    "sha256": "7907a98312e95ab067c8c5a430e3b7617e81324694d60e7a26b91a63c45a2faa",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Italia/as-roma-normal.png",
+    "bytes": 76247,
+    "sha256": "5c8d62dad1ad929922adbb87877f582d8eb0d18c2b76e40facedc2eee65e9a2f",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Italia/atalanta-fundo-escuro.png",
+    "bytes": 19715,
+    "sha256": "1bc1eb1858bbac8d96900d43daf703cf3d51f49fdb227a25fa294d9547c7d63d",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Italia/atalanta-normal.png",
+    "bytes": 17663,
+    "sha256": "d3626b9d4f0fd313cc101ab5013c4d872713786d1ece24361329059ea37134f6",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Italia/bologna-fundo-escuro.png",
+    "bytes": 47840,
+    "sha256": "c66205fbb32ff86a136b01d2c3d1d8e3a6517d60f228c428493c501f79da99b3",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Italia/bologna-normal.png",
+    "bytes": 34384,
+    "sha256": "b7e9f6c4b3bec908c40315995fcf54dcc2d61997dd1daa2cc1263259f3aa231e",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Italia/fiorentina-fundo-escuro.png",
+    "bytes": 17390,
+    "sha256": "df0a545d8a7a51b6a8f7377c9fee771aea608ca0a98cad5fda114c2043a36b85",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Italia/fiorentina-normal.png",
+    "bytes": 17390,
+    "sha256": "df0a545d8a7a51b6a8f7377c9fee771aea608ca0a98cad5fda114c2043a36b85",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Italia/internazionale-fundo-escuro.png",
+    "bytes": 45217,
+    "sha256": "4d01b36b72abfe2f73e15669bf6b98c4e8b9273f2d4920862f2c0468de7759a6",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Italia/internazionale-normal.png",
+    "bytes": 43426,
+    "sha256": "3020e0fba5c9391d6e8fa119ad67b93f1ad2fa77a2939a5dd42320495fd477a4",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Italia/juventus-fundo-escuro.png",
+    "bytes": 8342,
+    "sha256": "774b2bddb199e6f83ffe3e5bc00d0f7fbfd638f679fa9e32b156ecfe1f0eb896",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Italia/juventus-normal.png",
+    "bytes": 8610,
+    "sha256": "6c190f73f8913b8d0c040e5773c377517a2e1e2e76b8145c87d73c3d2a9a87d3",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Italia/lazio-fundo-escuro.png",
+    "bytes": 46150,
+    "sha256": "e5cf45fe01817c4af38838aec9cfddc6b2990441de2cac4e62804ffda08dccf1",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Italia/lazio-normal.png",
+    "bytes": 47949,
+    "sha256": "774df8a00d798e0647dd8198ab0bdc27fda7daf3ca5ffbea0870f2b653d3cfe1",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Italia/napoli-fundo-escuro.png",
+    "bytes": 16309,
+    "sha256": "e871ac8b6d9cf7acd850bfcf8e22e20d6258f55a45cf97023d937c5bdb515b4f",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Italia/napoli-normal.png",
+    "bytes": 16309,
+    "sha256": "e871ac8b6d9cf7acd850bfcf8e22e20d6258f55a45cf97023d937c5bdb515b4f",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Portugal/benfica-fundo-escuro.png",
+    "bytes": 124801,
+    "sha256": "14458f14b5e115bfe8ed5540dd2ece5433bd9c1a6c645f83c9a7ea1f882b426e",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Portugal/benfica-normal.png",
+    "bytes": 124801,
+    "sha256": "14458f14b5e115bfe8ed5540dd2ece5433bd9c1a6c645f83c9a7ea1f882b426e",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Portugal/braga-fundo-escuro.png",
+    "bytes": 47081,
+    "sha256": "0b640c5a87c4859654db83b44e754e908d1bd29f903b1040b09c16c79f4a95b1",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Portugal/braga-normal.png",
+    "bytes": 41421,
+    "sha256": "a3b002c9a4a5c6f4acfd43b206b70b5ae16771a8fac2ddedb73f999cd1da21ef",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Portugal/fc-porto-fundo-escuro.png",
+    "bytes": 84938,
+    "sha256": "a53d1181c5130a74c97c82518e855bda7893ce85d15d575ec51a712df8976368",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Portugal/fc-porto-normal.png",
+    "bytes": 84938,
+    "sha256": "a53d1181c5130a74c97c82518e855bda7893ce85d15d575ec51a712df8976368",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Portugal/sporting-cp-fundo-escuro.png",
+    "bytes": 35988,
+    "sha256": "d08eef75995115cd9e5a8e24dd0a7aa0e45277aca44a91eac31c1a890d22e0f3",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Portugal/sporting-cp-normal.png",
+    "bytes": 30137,
+    "sha256": "86fe536a68f5f6aecf29bd039af1319562fbb7a9b574b64c1269ac28449626bb",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Turquia/besiktas-fundo-escuro.png",
+    "bytes": 42630,
+    "sha256": "db0c94a0952442560303bf859347ec8628b9dc1f3aa4c8fb63392266518d94b2",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Turquia/besiktas-normal.png",
+    "bytes": 42630,
+    "sha256": "db0c94a0952442560303bf859347ec8628b9dc1f3aa4c8fb63392266518d94b2",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Turquia/fenerbahce-normal.png",
+    "bytes": 82039,
+    "sha256": "a623d5d01f6edb1319536be793617ac6d7d4a9a2aa37acf3f3428afb9e6d5fa4",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Turquia/galatasaray-fundo-escuro.png",
+    "bytes": 55405,
+    "sha256": "603385608cc9ec22d3e1557f075c935ad14752e0d75aa40869cf27e77fb92c3b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/Turquia/galatasaray-normal.png",
+    "bytes": 55405,
+    "sha256": "603385608cc9ec22d3e1557f075c935ad14752e0d75aa40869cf27e77fb92c3b",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/barcelona-fundo-escuro.png",
+    "bytes": 25584,
+    "sha256": "9987e9acd8f542f74402f5a62ac2bcbb350c5ed2bf38831779d56a375ae76eb9",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/barcelona-normal.png",
+    "bytes": 25584,
+    "sha256": "9987e9acd8f542f74402f5a62ac2bcbb350c5ed2bf38831779d56a375ae76eb9",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/flamengo-fundo-escuro.png",
+    "bytes": 29869,
+    "sha256": "0b46ca645c16977ebd4da7b9c7b411b1cf125d369b9ffbc651b1ed1f6ab2928e",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/flamengo-normal.png",
+    "bytes": 29869,
+    "sha256": "0b46ca645c16977ebd4da7b9c7b411b1cf125d369b9ffbc651b1ed1f6ab2928e",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/fontes.json",
+    "bytes": 75666,
+    "sha256": "131d298665afbd56d8aa93459bd1c80d9f2b951471943c2dc791f3ce8f190286"
+  },
+  {
+    "file": "assets/crests/lakers-fundo-escuro.png",
+    "bytes": 64550,
+    "sha256": "44aa9bf96b542ca9cb579fd00a7e1c7ca1c2d24636b0f698b07fbb7b9193eb79",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/lakers-normal.png",
+    "bytes": 64550,
+    "sha256": "82fda3df51058c5aad8a52123868f43959017be0c39c886e9aefbb77e6c69c89",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/palmeiras-fundo-escuro.png",
+    "bytes": 110140,
+    "sha256": "c6dd22b07be603cadbe9924acaf568edb614d26aa6b2b5a6a6ef4f8653f87c7d",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/palmeiras-normal.png",
+    "bytes": 110140,
+    "sha256": "c6dd22b07be603cadbe9924acaf568edb614d26aa6b2b5a6a6ef4f8653f87c7d",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/real-madrid-fundo-escuro.png",
+    "bytes": 43601,
+    "sha256": "acdcaaf2c60c3cc65a270dac1bd59f3a2b52911b8c45510d4e7f86d47ed714ba",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/real-madrid-normal.png",
+    "bytes": 43601,
+    "sha256": "acdcaaf2c60c3cc65a270dac1bd59f3a2b52911b8c45510d4e7f86d47ed714ba",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/warriors-fundo-escuro.png",
+    "bytes": 82070,
+    "sha256": "02988a555373a7dbea3536ea37689c9e806c80d5405547db07f3e900113ada36",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/crests/warriors-normal.png",
+    "bytes": 82070,
+    "sha256": "b623681ece167224ad4f51aef1ffa5a6f9e072af1cf1d6a6c158fd796e8d33ab",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/leagues/LEIA-ME.md",
+    "bytes": 562,
+    "sha256": "05395236c5d06eec9b23cc0622b32cd7194d46eb8155221e50e96074061776fd"
+  },
+  {
+    "file": "assets/leagues/brasileirao-1.png",
+    "bytes": 67883,
+    "sha256": "9b14a9e86ab645bcb22c5f2ccad96da8c784b3304dff9a59b781d94e4ce1df56",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/leagues/brasileirao-2.png",
+    "bytes": 67883,
+    "sha256": "9b14a9e86ab645bcb22c5f2ccad96da8c784b3304dff9a59b781d94e4ce1df56",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/leagues/champions-league-1.png",
+    "bytes": 30406,
+    "sha256": "638ba01ea2dc0679766a8a1c4152756108cadb6763b2f016c8ca5f5c9784ebc7",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/leagues/champions-league-2.png",
+    "bytes": 27077,
+    "sha256": "a603dfbec53840a728229e2c2c1848e77c096e5018256fe260fa7dafd559deca",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/leagues/fontes.json",
+    "bytes": 3781,
+    "sha256": "4727277ffe3818b1f0ab27af9fbfcc1ca3f5746838d23a0dd0dd9b39628864c3"
+  },
+  {
+    "file": "assets/leagues/formula-1-1.png",
+    "bytes": 13597,
+    "sha256": "d7ddb864a94143a810eb6ffdb3b7d4bf0052dc5669270fd804f58fdf51668fed",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/leagues/formula-1-2.png",
+    "bytes": 13597,
+    "sha256": "d7ddb864a94143a810eb6ffdb3b7d4bf0052dc5669270fd804f58fdf51668fed",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/leagues/libertadores-2.png",
+    "bytes": 70769,
+    "sha256": "a0627a6b7fade14d0bdda82efb0ce67337e90ba22ebadc6a9bce3417e85aea71",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/leagues/nba-1.png",
+    "bytes": 19058,
+    "sha256": "04b2b9dd2a0bda5310227001f9b48af3bb30ad9919d891a39ac723283e1ffbda",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/leagues/nba-2.png",
+    "bytes": 20222,
+    "sha256": "76503178939533a7d6c57a8a7f5c77fbd245c3ea5fe4458dc78f8a6cdfc057b2",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/leagues/premier-league-1.png",
+    "bytes": 23552,
+    "sha256": "42e2fdced44ff542fa734409667c733841a7bcb903b526c85d12aac78aff2464",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/leagues/premier-league-2.png",
+    "bytes": 56180,
+    "sha256": "3fbb077c9331046d0dc96c0bbcc12e3795bdbd9b43a6bbe3a18ab6b6aedc47bf",
+    "width": 500,
+    "height": 500
+  },
+  {
+    "file": "assets/leagues/ufc.svg",
+    "bytes": 724,
+    "sha256": "ff00f516812f49603274fe765676f64d1c5699158677552353eb001e08b25774"
+  },
+  {
+    "file": "assets/platforms/disney.png",
+    "bytes": 44220,
+    "sha256": "c472145e0eb56887ae9dae0eead289ff24868f7d29c188f5e6d39635a9522689",
+    "width": 1000,
+    "height": 533
+  },
+  {
+    "file": "assets/platforms/disney.svg",
+    "bytes": 5172,
+    "sha256": "794beeae5d3436ecf384f8f5c23c67ecfbd1ff918b0a4788f4c19a34305eef03"
+  },
+  {
+    "file": "assets/platforms/espn.png",
+    "bytes": 12897,
+    "sha256": "665009756043f49069492d44f26d24ffad2c0ecd1c1f96e73db90f778946ccca",
+    "width": 1296,
+    "height": 729
+  },
+  {
+    "file": "assets/platforms/fontes.json",
+    "bytes": 5546,
+    "sha256": "236eb8d4cb0c86132c01e7613f901b050d22fba67fb993933f91a076fdd61654"
+  },
+  {
+    "file": "assets/platforms/hbo.png",
+    "bytes": 19239,
+    "sha256": "b02aee42eb5bd50ab661e25ef854589d1b654637cee5634f2777e7427b0d5f8d",
+    "width": 1000,
+    "height": 417
+  },
+  {
+    "file": "assets/platforms/hbo.svg",
+    "bytes": 1733,
+    "sha256": "c0ba018df077678f59eb9b18eecf9187849333ea245f71405037b61716574076"
+  },
+  {
+    "file": "assets/platforms/netflix.png",
+    "bytes": 14483,
+    "sha256": "0dc3e1a0af7b0cd4e08cc4ff11972486fb30c27f7627363f24321cd27d51471e",
+    "width": 1000,
+    "height": 270
+  },
+  {
+    "file": "assets/platforms/netflix.svg",
+    "bytes": 824,
+    "sha256": "0e841a5119aa45c3749829a86fd7755cffb61c4dbbe0e1cb24e543d09cdd2ada"
+  },
+  {
+    "file": "assets/platforms/premiere.png",
+    "bytes": 12251,
+    "sha256": "d1f6602de515b9d2bf15b797746a53498c4f8e2d570f440b434eb7564c341c4c",
+    "width": 1000,
+    "height": 159
+  },
+  {
+    "file": "assets/platforms/premiere.svg",
+    "bytes": 6057,
+    "sha256": "9bb3ee7632fd6051e169231c90655c653422bd2047f0fce6ff237667b16985ff"
+  },
+  {
+    "file": "assets/platforms/prime.png",
+    "bytes": 2036,
+    "sha256": "3a23bbb495d359596d90f6cfffae773cde66062dde7aa50979afc9619addd95d",
+    "width": 320,
+    "height": 62
+  },
+  {
+    "file": "assets/platforms/sportv.png",
+    "bytes": 22495,
+    "sha256": "66154959ff644c827aca1f2381b289b1f884812c866f5013fad46ef1c2a1d906",
+    "width": 1000,
+    "height": 264
+  },
+  {
+    "file": "assets/platforms/sportv.svg",
+    "bytes": 2162,
+    "sha256": "1426b2b672e33b6bb64bcf64afb470af71b3cfd2becf68ddc9a6ee442c9740fe"
+  },
+  {
+    "file": "assets/platforms/ufc.png",
+    "bytes": 16784,
+    "sha256": "cfce4aa6fa9c5b7c5af07769ea7e54528845d3069157afc25bd1c77fc121923b",
+    "width": 1000,
+    "height": 349
+  },
+  {
+    "file": "assets/platforms/ufc.svg",
+    "bytes": 724,
+    "sha256": "ff00f516812f49603274fe765676f64d1c5699158677552353eb001e08b25774"
+  }
+]
