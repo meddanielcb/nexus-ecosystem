@@ -1,0 +1,89 @@
+{
+  "assets": [
+    {
+      "name": "formula-1",
+      "file": "assets/leagues/formula-1-1.png",
+      "source_url": "https://site.api.espn.com/apis/site/v2/sports/racing/f1/scoreboard",
+      "image_url": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/leagues/500/f1.png",
+      "retrieved": "2026-09-17"
+    },
+    {
+      "name": "formula-1",
+      "file": "assets/leagues/formula-1-2.png",
+      "source_url": "https://site.api.espn.com/apis/site/v2/sports/racing/f1/scoreboard",
+      "image_url": "http://a.espncdn.com/combiner/i?img=/i/teamlogos/leagues/500/f1.png",
+      "retrieved": "2026-09-17"
+    },
+    {
+      "name": "nba",
+      "file": "assets/leagues/nba-1.png",
+      "source_url": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard",
+      "image_url": "https://a.espncdn.com/i/teamlogos/leagues/500/nba.png",
+      "retrieved": "2026-09-17"
+    },
+    {
+      "name": "nba",
+      "file": "assets/leagues/nba-2.png",
+      "source_url": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard",
+      "image_url": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/leagues/500-dark/nba.png&w=500&h=500&transparent=true",
+      "retrieved": "2026-09-17"
+    },
+    {
+      "name": "libertadores",
+      "file": "assets/leagues/libertadores-2.png",
+      "source_url": "https://site.api.espn.com/apis/site/v2/sports/soccer/conmebol.libertadores/scoreboard",
+      "image_url": "https://a.espncdn.com/i/leaguelogos/soccer/500-dark/58.png",
+      "retrieved": "2026-09-17"
+    },
+    {
+      "name": "champions-league",
+      "file": "assets/leagues/champions-league-1.png",
+      "source_url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard",
+      "image_url": "https://a.espncdn.com/i/leaguelogos/soccer/500/2.png",
+      "retrieved": "2026-09-17"
+    },
+    {
+      "name": "champions-league",
+      "file": "assets/leagues/champions-league-2.png",
+      "source_url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard",
+      "image_url": "https://a.espncdn.com/i/leaguelogos/soccer/500-dark/2.png",
+      "retrieved": "2026-09-17"
+    },
+    {
+      "name": "brasileirao",
+      "file": "assets/leagues/brasileirao-1.png",
+      "source_url": "https://site.api.espn.com/apis/site/v2/sports/soccer/bra.1/scoreboard",
+      "image_url": "https://a.espncdn.com/i/leaguelogos/soccer/500/85.png",
+      "retrieved": "2026-09-17"
+    },
+    {
+      "name": "brasileirao",
+      "file": "assets/leagues/brasileirao-2.png",
+      "source_url": "https://site.api.espn.com/apis/site/v2/sports/soccer/bra.1/scoreboard",
+      "image_url": "https://a.espncdn.com/i/leaguelogos/soccer/500-dark/85.png",
+      "retrieved": "2026-09-17"
+    },
+    {
+      "name": "premier-league",
+      "file": "assets/leagues/premier-league-1.png",
+      "source_url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard",
+      "image_url": "https://a.espncdn.com/i/leaguelogos/soccer/500/23.png",
+      "retrieved": "2026-09-17"
+    },
+    {
+      "name": "premier-league",
+      "file": "assets/leagues/premier-league-2.png",
+      "source_url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard",
+      "image_url": "https://a.espncdn.com/i/leaguelogos/soccer/500-dark/23.png",
+      "retrieved": "2026-09-17"
+    },
+    {
+      "name": "UFC",
+      "file": "assets/leagues/ufc.svg",
+      "source_url": "https://www.ufc.com/themes/custom/ufc/assets/svg/sprite-ui.svg",
+      "retrieved": "2026-09-16"
+    }
+  ],
+  "errors": [],
+  "review_note": "Variação com patrocinador Bridgestone removida na revisão visual; mantida a assinatura limpa da Libertadores. Identidades de ligas devem ser reconfirmadas para campanhas específicas."
+}

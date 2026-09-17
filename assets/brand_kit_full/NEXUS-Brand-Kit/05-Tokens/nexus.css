@@ -1,0 +1,18 @@
+:root {
+  --nexus-primary: #B7FF3C;
+  --nexus-background: #050607;
+  --nexus-appBackground: #080B09;
+  --nexus-surface: #101315;
+  --nexus-text: #F5F7F4;
+  --nexus-muted: #A8B0AA;
+  --nexus-border: #FFFFFF20;
+  --nexus-success: #60D394;
+  --nexus-error: #FF6B6B;
+  --nexus-lightSurface: #F5F7F4;
+  --font-interface: "Space Grotesk", sans-serif;
+  --font-display: "Barlow Condensed", sans-serif;
+  --radius-button: 8px;
+  --radius-card: 16px;
+}
+body {font-family:var(--font-interface);background:var(--nexus-background);color:var(--nexus-text)}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
