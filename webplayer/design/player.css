@@ -20,25 +20,19 @@ aside.sidebar.collapsed{margin-right:-340px;display:none}.list-kicker,.login-kic
 /* ================= FORMATOS DE ANÚNCIOS (NEXUS ADS) ================= */
 
 /* Formato 1: Lower-Third Flutuante Transitório */
-.ad-lower-third{position:absolute;bottom:24px;left:50%;transform:translateX(-50%) translateY(40px);opacity:0;pointer-events:none;z-index:25;width:92%;max-width:620px;background:rgba(8,12,15,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(0,229,255,.4);border-radius:14px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 16px 40px rgba(0,0,0,.8),0 0 20px rgba(0,229,255,.15);transition:transform .45s cubic-bezier(.16,1,.3,1),opacity .4s ease}
+.ad-lower-third{position:absolute;bottom:24px;left:50%;transform:translateX(-50%) translateY(40px);opacity:0;pointer-events:none;z-index:25;width:92%;max-width:820px;background:transparent;border:none;padding:0;display:flex;align-items:center;justify-content:center;transition:transform .45s cubic-bezier(.16,1,.3,1),opacity .4s ease}
 .ad-lower-third.active{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:auto}
-.ad-lt-content{display:flex;align-items:center;gap:14px;min-width:0;flex:1}
-.ad-lt-icon{width:36px;height:36px;border-radius:10px;background:rgba(0,229,255,.12);border:1px solid rgba(0,229,255,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.ad-lt-text{display:flex;flex-direction:column;min-width:0;gap:2px}
-.ad-lt-kicker{font-size:10px;font-weight:700;letter-spacing:1.2px;color:#00E5FF;text-transform:uppercase;font-family:monospace}
-.ad-lt-title{font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ad-lt-cta{background:#00E5FF;color:#050607;font-weight:700;font-size:11px;padding:7px 14px;border-radius:8px;text-decoration:none;white-space:nowrap;transition:background .2s,transform .15s}
-.ad-lt-cta:hover{background:#33ebff;transform:translateY(-1px)}
-.ad-lt-close{background:transparent;border:none;color:#83919b;font-size:14px;padding:6px;margin-left:8px;cursor:pointer;border-radius:6px;transition:color .2s}
-.ad-lt-close:hover{color:#fff}
+.ad-lt-img-link{width:100%;display:block;text-decoration:none}
+.ad-lt-img-link img{width:100%;height:auto;display:block;border-radius:14px;filter:drop-shadow(0 14px 35px rgba(0,0,0,.85));transition:transform .15s}
+.ad-lt-img-link:hover img{transform:scale(1.01)}
+.ad-lt-close{position:absolute;top:-8px;right:-8px;background:rgba(8,12,16,.92);border:1px solid rgba(0,229,255,.4);color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;z-index:26;transition:all .2s}
+.ad-lt-close:hover{background:#ff4444;border-color:#ff4444;color:#fff}
 
-/* Formato 2: Corner Badge de Patrocínio */
-.ad-corner-badge{position:absolute;top:16px;right:16px;z-index:20;display:flex;align-items:center;gap:8px;background:rgba(5,8,10,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(183,255,60,.35);border-radius:30px;padding:6px 14px;box-shadow:0 4px 20px rgba(0,0,0,.5);text-decoration:none;transition:border-color .2s,transform .2s}
-.ad-corner-badge:hover{border-color:rgba(183,255,60,.8);transform:translateY(-1px)}
-.ad-badge-tag{font-size:9px;font-weight:700;color:#7d8b80;letter-spacing:1px;font-family:monospace}
-.ad-badge-brand{font-size:12px;font-weight:700;color:#b7ff3c;letter-spacing:.5px}
-.ad-badge-dot{width:6px;height:6px;border-radius:50%;background:#b7ff3c;box-shadow:0 0 8px #b7ff3c;animation:pulse-dot 2s infinite ease-in-out}
-@keyframes pulse-dot{0%,100%{opacity:.4;transform:scale(.9)}50%{opacity:1;transform:scale(1.2)}}
+/* Formato 2: Corner Badge de Patrocínio Transitório (Canto Superior Direito) */
+.ad-corner-badge{position:absolute;top:16px;right:16px;z-index:20;display:block;background:transparent;border:none;padding:0;opacity:0;pointer-events:none;transform:translateY(-10px);transition:opacity .5s ease,transform .5s cubic-bezier(.16,1,.3,1)}
+.ad-corner-badge.visible{opacity:1;pointer-events:auto;transform:translateY(0)}
+.ad-corner-badge img{height:46px;width:auto;display:block;filter:drop-shadow(0 6px 16px rgba(0,0,0,.7));transition:transform .2s ease}
+.ad-corner-badge:hover img{transform:scale(1.04)}
 
 /* Formato 3: Banner Vertical de Anúncio na Barra Lateral */
 .cat-select-row{display:flex;align-items:center;gap:8px;margin-top:10px}
@@ -54,33 +48,14 @@ aside.sidebar.collapsed{margin-right:-340px;display:none}.list-kicker,.login-kic
 aside.sidebar{position:relative}
 .sidebar.channels-retracted .list{display:none!important}
 .sidebar:not(.channels-retracted) .list{flex:1;min-height:0;max-height:none;overflow-y:auto;position:relative;z-index:3;background:#0b0e0e}
-.sidebar:not(.channels-retracted) .ad-vertical-billboard{position:absolute;left:12px;right:12px;bottom:12px;height:320px;min-height:0;margin:0;z-index:1}
+.sidebar:not(.channels-retracted) .ad-vertical-billboard{display:none}
 
-/* Banner Vertical de Anúncio (Retângulo Vertical na parte inferior da sidebar) */
-.ad-vertical-billboard{flex:1;min-height:260px;margin:12px;display:flex;flex-direction:column;position:relative;background:#080b0d;border:1px dashed rgba(255,255,255,.08);border-radius:16px;overflow:hidden;box-shadow:inset 0 2px 10px rgba(0,0,0,.5)}
-.ad-billboard-img-link{width:100%;height:100%;display:block;border-radius:15px;overflow:hidden;position:relative;box-shadow:0 12px 30px rgba(0,0,0,.8),0 0 20px rgba(0,229,255,.15);border:1px solid rgba(0,229,255,.3);opacity:0;transform:translateY(8px);transition:opacity .6s cubic-bezier(.16,1,.3,1),transform .6s ease;pointer-events:none}
+/* Banner Vertical de Anúncio na Barra Lateral: NUNCA CORTA (object-fit: contain) */
+.ad-vertical-billboard{flex:1;min-height:280px;margin:12px;display:flex;align-items:center;justify-content:center;position:relative;background:transparent;border:none;overflow:hidden}
+.ad-billboard-img-link{width:100%;height:100%;display:flex;align-items:center;justify-content:center;position:relative;opacity:0;transform:translateY(8px);transition:opacity .6s cubic-bezier(.16,1,.3,1),transform .6s ease;pointer-events:none}
 .ad-billboard-img-link.visible{opacity:1;transform:translateY(0);pointer-events:auto}
-.ad-billboard-img-link img{width:100%;height:100%;object-fit:cover;display:block}
-.ad-billboard-inner{flex:1;display:flex;flex-direction:column;justify-content:space-between;padding:18px 16px;background:linear-gradient(175deg,rgba(16,24,30,.92) 0%,rgba(8,12,15,.98) 100%);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(0,229,255,.3);border-radius:15px;box-shadow:0 12px 30px rgba(0,0,0,.8),0 0 24px rgba(0,229,255,.1);opacity:0;transform:translateY(8px);transition:opacity .6s cubic-bezier(.16,1,.3,1),transform .6s ease;pointer-events:none}
-.ad-billboard-inner.visible{opacity:1;transform:translateY(0);pointer-events:auto}
-.ad-bb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.ad-bb-badge{font-size:9px;font-weight:700;color:#00E5FF;letter-spacing:1px;font-family:monospace;padding:3px 8px;background:rgba(0,229,255,.1);border-radius:4px;border:1px solid rgba(0,229,255,.25)}
-.ad-bb-sponsor{font-size:12px;font-weight:800;color:#fff;letter-spacing:.5px}
-.ad-bb-body{display:flex;flex-direction:column;gap:8px;flex:1}
-.ad-bb-title{font-size:16px;font-weight:800;color:#fff;line-height:1.25;margin:0;letter-spacing:-.3px}
-.ad-bb-desc{font-size:11px;line-height:1.45;color:#9eb0ba;margin:0}
-.ad-bb-features{list-style:none;padding:0;margin:6px 0 0 0;display:flex;flex-direction:column;gap:5px}
-.ad-bb-features li{font-size:11px;color:#d1dde3;display:flex;align-items:center;gap:6px}
-.feat-dot{font-size:11px;color:#b7ff3c}
-.ad-bb-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08)}
-.ad-bb-pricing{display:flex;flex-direction:column}
-.ad-bb-price-label{font-size:9px;color:#85959f;text-transform:uppercase;letter-spacing:.8px;font-family:monospace}
-.ad-bb-price{font-size:14px;font-weight:800;color:#00E5FF;font-family:monospace}
-.ad-bb-price small{font-size:10px;font-weight:400;color:#85959f}
-.ad-bb-btn{background:#b7ff3c;color:#050607;font-weight:800;font-size:12px;padding:9px 18px;border-radius:10px;text-decoration:none;transition:transform .15s,background .15s;white-space:nowrap;box-shadow:0 4px 14px rgba(183,255,60,.3)}
-.ad-bb-btn:hover{background:#cbff72;transform:translateY(-1px);box-shadow:0 6px 18px rgba(183,255,60,.45)}
-.ad-sb-btn{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#b7ff3c;text-decoration:none;transition:color .15s}
-.ad-sb-btn:hover{color:#d4ff78;text-decoration:underline}
+.ad-billboard-img-link img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;border-radius:14px;display:block;box-shadow:0 12px 35px rgba(0,0,0,.85),0 0 20px rgba(0,229,255,.12);transition:transform .2s ease}
+.ad-billboard-img-link:hover img{transform:scale(1.02)}
 @media(max-width:1000px){.stage{padding:24px}aside.sidebar{width:295px}.login-scene{padding:36px}}
 @media(max-width:860px){:root{--header:72px}header.topbar{padding:0 18px}.brand{font-size:19px;gap:8px}.brand b{font-size:8px}.status-pill{padding:5px 8px;font-size:10px}.stage{padding:22px 18px}.meta-row{align-items:flex-start}aside.sidebar{position:fixed;top:var(--header);bottom:0;right:0;width:88%;max-width:360px;z-index:40;transform:translateX(100%);visibility:hidden;transition:transform .22s ease,visibility .22s;background:#0b0e0efa;box-shadow:-24px 0 80px #000b;padding-bottom:env(safe-area-inset-bottom)}aside.sidebar.open{transform:translateX(0);visibility:visible}.login-scene{display:none}#loginGate{display:flex;padding:24px;background:radial-gradient(ellipse at 50% 0%,#b7ff3c0b,transparent 60%),var(--bg)}.login-card{padding:32px 12px;max-width:420px}.login-card h1{font-size:48px}.login-mark{margin-bottom:28px}.side-head{padding-top:20px}}
 @media(max-width:480px){header.topbar{gap:8px;padding:0 12px}.topbar>div:last-child{gap:5px!important}.topbar .icon-btn{font-size:11px;padding:8px 10px}.status-pill{max-width:106px;overflow:hidden;text-overflow:ellipsis}.brand img{width:23px}.brand{font-size:16px}.brand b{letter-spacing:1.3px}.stage{padding:16px 12px}.player-wrap{border-radius:12px}.overlay{padding:12px;gap:7px}.overlay .big{font-size:22px}.overlay p{font-size:11px}.spinner{width:30px;height:30px;margin:0}.controls-row{width:100%}.controls-row .icon-btn{flex:1}#npChannel{font-size:26px}.login-card h1{font-size:44px}}

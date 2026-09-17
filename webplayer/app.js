@@ -210,10 +210,11 @@
           hideOverlay();
           video.controls = true;
           setStatus("ao vivo", "live");
-          // Dispara o banner Lower-Third transitório 7s após início do canal
+          // Dispara os anúncios transitórios oficiais PixGet
           setTimeout(() => {
-            showLowerThird(AD_CAMPAIGNS[0], 10000);
-          }, 7000);
+            showLowerThird(10000);
+          }, 6000);
+          startCornerBadgeLoop();
           const playPromise = video.play();
           if (playPromise !== undefined) {
             playPromise.catch((err) => {
@@ -460,121 +461,44 @@
   els.searchInput.addEventListener("input", () => renderChannelList(allStreams));
   els.catSelect.addEventListener("change", () => renderChannelList(allStreams));
 
-  // ==================== NEXUS ADS ENGINE ====================
-  const AD_CAMPAIGNS = [
-    {
-      id: "nexus_vip",
-      brand: "NEXUS VIP",
-      tag: "OFERTA EXCLUSIVA",
-      kicker: "RECOMENDAÇÃO EXCLUSIVA",
-      title: "Libere 4 Telas em 4K",
-      desc: "Assista aos melhores jogos e filmes em até 4 dispositivos simultâneos com ultra estabilidade.",
-      features: ["Ultra estabilidade sem delay", "24.000 canais + 120.000 VOD", "TV, Celular, Tablet e PC"],
-      price: "R$ 29,90",
-      url: "https://nexusplay.tv",
-      cta: "Assinar ⚡"
-    },
-    {
-      id: "pixget",
-      brand: "PIXGET",
-      tag: "PARCEIRO OFICIAL",
-      kicker: "PATROCINADOR OFICIAL",
-      title: "Receba PIX no Automático",
-      desc: "Venda seus planos com confirmação bancária em 1 segundo e dinheiro direto na sua conta.",
-      features: ["Confirmação bancária em 1s", "Webhook instantâneo e seguro", "Zero taxas escondidas"],
-      image_billboard: "./design/ads/pixget_billboard.webp",
-      price: "Taxa Zero",
-      url: "https://pixget.app",
-      cta: "Conhecer ↗"
-    },
-    {
-      id: "agentia",
-      brand: "AGENTIA",
-      tag: "TECNOLOGIA PARCEIRA",
-      kicker: "TECNOLOGIA PARCEIRA",
-      title: "Agentes Autônomos de IA",
-      desc: "Automatize operações e fluxos de atendimento com agentes inteligentes integrados ao seu negócio.",
-      features: ["Treinado com seus próprios dados", "Respostas humanas e imediatas", "Integração via API e Webhook"],
-      price: "Planos PRO",
-      url: "https://agentia.app",
-      cta: "Acessar ↗"
-    }
-  ];
-
-  let currentAdIndex = -1;
-  let adTimer = null;
-  const elAdLt = document.getElementById("adLowerThird");
+  // =========================================================================
+  // GESTÃO DE ANÚNCIOS OFICIAIS NEXUS (100% TEMPORÁRIOS / NENHUM FIXO)
+  // =========================================================================
   const elAdBadge = document.getElementById("adCornerBadge");
-  const elBtnTestAd = document.getElementById("btnTestAd");
+  const elAdLt = document.getElementById("adLowerThird");
   const elBtnAdLtClose = document.getElementById("btnAdLtClose");
-  const elPeriodicContainer = document.getElementById("adPeriodicContainer");
+  const elBillboardImgLink = document.getElementById("adBbImgLink");
 
-  function showLowerThird(campaign, durationMs = 10000) {
+  // 1. CORNER BADGE (Canto Superior Direito): 14s visível -> 35s apagado
+  let badgeLoopActive = false;
+  function startCornerBadgeLoop() {
+    if (badgeLoopActive || !elAdBadge) return;
+    badgeLoopActive = true;
+    function cycleBadge() {
+      elAdBadge.classList.add("visible");
+      setTimeout(() => {
+        elAdBadge.classList.remove("visible");
+        setTimeout(cycleBadge, 35000); // 35 segundos completamente invisível
+      }, 14000); // 14 segundos visível
+    }
+    setTimeout(cycleBadge, 4000);
+  }
+
+  // 2. LOWER-THIRD (Rodapé do Vídeo): 10s visível, repete a cada 2.5 min
+  let ltTimer = null;
+  function showLowerThird(durationMs = 10000) {
     if (!elAdLt) return;
-    const safeIndex = currentAdIndex < 0 ? 0 : currentAdIndex % AD_CAMPAIGNS.length;
-    const ad = campaign || AD_CAMPAIGNS[safeIndex];
-    if (!ad) return;
-    const kickerEl = document.getElementById("adLtKicker");
-    const titleEl = document.getElementById("adLtTitle");
-    const ctaEl = document.getElementById("adLtCta");
-    if (kickerEl) kickerEl.textContent = ad.kicker;
-    if (titleEl) titleEl.textContent = ad.brand + " • " + ad.title;
-    if (ctaEl) { ctaEl.href = ad.url; ctaEl.textContent = ad.cta; }
-
     elAdLt.classList.add("active");
-    if (adTimer) clearTimeout(adTimer);
-    adTimer = setTimeout(() => {
+    if (ltTimer) clearTimeout(ltTimer);
+    ltTimer = setTimeout(() => {
       elAdLt.classList.remove("active");
+      ltTimer = null;
     }, durationMs);
   }
 
   function hideLowerThird() {
     if (elAdLt) elAdLt.classList.remove("active");
-    if (adTimer) { clearTimeout(adTimer); adTimer = null; }
-  }
-
-  const elBillboardInner = document.getElementById("adBillboardInner");
-  const elBillboardImgLink = document.getElementById("adBbImgLink");
-  const elBillboardImg = document.getElementById("adBbImg");
-
-  function updateBillboardContent(ad) {
-    if (!ad) return;
-    if (ad.image_billboard && elBillboardImg && elBillboardImgLink) {
-      elBillboardImg.src = ad.image_billboard;
-      elBillboardImgLink.href = ad.url;
-      elBillboardImgLink.style.display = "block";
-      if (elBillboardInner) elBillboardInner.style.display = "none";
-    } else {
-      if (elBillboardImgLink) elBillboardImgLink.style.display = "none";
-      if (elBillboardInner) elBillboardInner.style.display = "flex";
-      const bbTag = document.getElementById("adBbTag");
-      const bbBrand = document.getElementById("adBbBrand");
-      const bbTitle = document.getElementById("adBbTitle");
-      const bbDesc = document.getElementById("adBbDesc");
-      const bbFeatures = document.getElementById("adBbFeatures");
-      const bbPrice = document.getElementById("adBbPrice");
-      const bbBtn = document.getElementById("adBbBtn");
-      if (bbTag) bbTag.textContent = ad.tag || "OFERTA EXCLUSIVA";
-      if (bbBrand) bbBrand.textContent = ad.brand;
-      if (bbTitle) bbTitle.textContent = ad.title;
-      if (bbDesc) bbDesc.textContent = ad.desc;
-      if (bbPrice) bbPrice.innerHTML = `${ad.price}<small>/mês</small>`;
-      if (bbBtn) { bbBtn.href = ad.url; bbBtn.textContent = ad.cta; }
-      if (bbFeatures && ad.features) {
-        bbFeatures.innerHTML = ad.features.map(f => `<li><span class="feat-dot">⚡</span> ${f}</li>`).join("");
-      }
-    }
-  }
-
-  function rotateCampaign() {
-    currentAdIndex = (currentAdIndex + 1) % AD_CAMPAIGNS.length;
-    const ad = AD_CAMPAIGNS[currentAdIndex];
-    // Atualiza Corner Badge
-    const badgeBrand = document.getElementById("adBadgeBrand");
-    if (badgeBrand) badgeBrand.textContent = ad.brand;
-    if (elAdBadge) elAdBadge.href = ad.url;
-    // Atualiza Billboard Vertical
-    updateBillboardContent(ad);
+    if (ltTimer) { clearTimeout(ltTimer); ltTimer = null; }
   }
 
   if (elBtnAdLtClose) {
@@ -584,50 +508,26 @@
     });
   }
 
-  if (elBtnTestAd) {
-    elBtnTestAd.addEventListener("click", () => {
-      rotateCampaign();
-      showLowerThird(AD_CAMPAIGNS[currentAdIndex], 12000);
-      showBillboard();
-    });
-  }
-
-  function showBillboard() {
-    const ad = AD_CAMPAIGNS[currentAdIndex];
-    if (ad && ad.image_billboard && elBillboardImgLink) {
-      elBillboardImgLink.classList.add("visible");
-      if (elBillboardInner) elBillboardInner.classList.remove("visible");
-    } else if (elBillboardInner) {
-      elBillboardInner.classList.add("visible");
-      if (elBillboardImgLink) elBillboardImgLink.classList.remove("visible");
-    }
-  }
-
-  function hideBillboard() {
-    if (elBillboardInner) elBillboardInner.classList.remove("visible");
-    if (elBillboardImgLink) elBillboardImgLink.classList.remove("visible");
-  }
-
-  // Loop Periódico de Anúncios na Parte Inferior: 10s visível, 20s apagado
-  function startPeriodicBillboardLoop() {
-    function cycle() {
-      rotateCampaign();
-      showBillboard();
-      setTimeout(() => {
-        hideBillboard();
-        setTimeout(cycle, 20000); // 20 segundos apagado (apenas preto)
-      }, 10000); // 10 segundos visível
-    }
-    setTimeout(cycle, 1500);
-  }
-  startPeriodicBillboardLoop();
-
-  // Aciona automaticamente o Lower-Third a cada 3 minutos se o vídeo estiver tocando
+  // Aciona automaticamente o Lower-Third a cada 2.5 minutos se o vídeo estiver tocando
   setInterval(() => {
     if (els.video && !els.video.paused && els.video.currentTime > 5) {
-      showLowerThird(AD_CAMPAIGNS[currentAdIndex], 10000);
+      showLowerThird(10000);
     }
-  }, 180000);
+  }, 150000);
+
+  // 3. BILLBOARD VERTICAL (Barra Lateral): 12s visível -> 22s apagado (preto limpo)
+  function startBillboardLoop() {
+    if (!elBillboardImgLink) return;
+    function cycleBillboard() {
+      elBillboardImgLink.classList.add("visible");
+      setTimeout(() => {
+        elBillboardImgLink.classList.remove("visible");
+        setTimeout(cycleBillboard, 22000); // 22 segundos completamente apagado (preto limpo)
+      }, 12000); // 12 segundos visível
+    }
+    setTimeout(cycleBillboard, 1500);
+  }
+  startBillboardLoop();
 
   // Botão Ícone de Recolher/Expandir Canais na Barra Lateral
   const btnToggleChannels = document.getElementById("btnToggleChannels");
