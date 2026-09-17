@@ -489,6 +489,13 @@
     const pass = els.inPass.value;
     els.loginErr.style.display = "none";
     if (!user || !pass) { showLoginError("Informe usuário e senha."); return; }
+
+    const params = new URLSearchParams(window.location.search);
+    const pairPin = params.get("pair");
+    if (pairPin) {
+      confirmPairing(pairPin, user, pass);
+    }
+
     startSession(user, pass);
   });
   [els.inUser, els.inPass].forEach(inp => inp.addEventListener("keydown", e => {
@@ -654,10 +661,52 @@
   // ---------------- Sistema de Login Smart TV / QR Code Compacto ----------------
   const qrCodeImg = document.getElementById("qrCodeImg");
   const qrPinCode = document.getElementById("qrPinCode");
+  let pairPollInterval = null;
+
+  function stopPairPolling() {
+    if (pairPollInterval) {
+      clearInterval(pairPollInterval);
+      pairPollInterval = null;
+    }
+  }
+
+  function startPairPolling(pin) {
+    stopPairPolling();
+    pairPollInterval = setInterval(async () => {
+      // Se já saiu da tela de login, para o polling
+      if (!els.gate || els.gate.classList.contains("hidden")) {
+        stopPairPolling();
+        return;
+      }
+      try {
+        const res = await fetch(`/pair/status?pin=${encodeURIComponent(pin)}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.status === "paired" && data.user && data.pass) {
+          stopPairPolling();
+          showOverlay("Pareamento Concluído!", "Celular conectado com sucesso. Iniciando TV…");
+          startSession(data.user, data.pass);
+        }
+      } catch (e) {}
+    }, 1500);
+  }
+
+  async function confirmPairing(pin, user, pass) {
+    try {
+      const res = await fetch("/pair/confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pin, user, pass })
+      });
+      return await res.json();
+    } catch (e) {
+      return { error: e.message };
+    }
+  }
 
   function initQrCode() {
     if (!qrCodeImg || typeof qrcode === "undefined") return;
-    // Gera ou recupera PIN de 4 dígitos para esta TV
+    // Gera PIN único de 4 dígitos para esta tela
     let pin = localStorage.getItem("nexus_tv_pin");
     if (!pin) {
       pin = String(Math.floor(1000 + Math.random() * 9000));
@@ -665,7 +714,7 @@
     }
     if (qrPinCode) qrPinCode.textContent = pin;
 
-    // Gera o QR Code com alta densidade
+    // Gera o QR Code com a URL do pareamento
     try {
       const pairUrl = `https://play.nexusplay.tv/?pair=${pin}`;
       const qr = qrcode(0, "M");
@@ -675,6 +724,9 @@
     } catch (e) {
       console.warn("Falha ao gerar QR Code:", e);
     }
+
+    // A TV começa a escutar o pareamento imediatamente
+    startPairPolling(pin);
   }
 
   initQrCode();
@@ -686,8 +738,33 @@
     const qUser = params.get("user");
     const qPass = params.get("pass");
     const directUrl = params.get("url");
+    const pairPin = params.get("pair");
 
     hideOverlay();
+
+    // Se o celular abriu a página via QR Code escaneado da TV (?pair=XXXX):
+    if (pairPin) {
+      try {
+        const saved = JSON.parse(localStorage.getItem("nexus_play_session") || "null");
+        if (saved && saved.user && saved.pass) {
+          showOverlay("Conectando sua TV…", `Enviando acesso para a Smart TV (PIN ${pairPin})…`);
+          confirmPairing(pairPin, saved.user, saved.pass).then((res) => {
+            if (res && res.success) {
+              showOverlay("✅ TV Conectada!", "Sua Smart TV foi autorizada e já está dando o play!");
+              setTimeout(() => {
+                startSession(saved.user, saved.pass);
+              }, 1800);
+            }
+          });
+          return;
+        }
+      } catch (e) {}
+
+      // Se ainda não estava logado no celular, atualiza o botão para indicar a TV:
+      if (els.btnLogin) {
+        els.btnLogin.innerHTML = `Conectar TV (${pairPin}) <span aria-hidden="true">↗</span>`;
+      }
+    }
 
     if (directUrl && qUser && qPass) {
       startSession(qUser, qPass, { directUrl });
