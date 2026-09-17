@@ -402,7 +402,7 @@
   }
 
   function logout() {
-    destroyHls();
+    destroyPlayer();
     localStorage.removeItem("nexus_play_session");
     session = null;
     activeStreamId = null;
