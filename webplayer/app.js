@@ -189,12 +189,15 @@
           isLive: true,
           url: tsUrl
         }, {
-          enableWorker: false,
+          enableWorker: true,
           lazyLoad: false,
-          liveBufferLatencyChasing: true,
-          liveBufferLatencyMaxLatency: 3.0,
-          liveBufferLatencyMinRemain: 0.8,
-          autoCleanupSourceBuffer: true
+          liveBufferLatencyChasing: false,
+          liveBufferLatencyMaxLatency: 15.0,
+          liveBufferLatencyMinRemain: 4.0,
+          autoCleanupSourceBuffer: true,
+          autoCleanupMaxBackwardDuration: 30,
+          autoCleanupMinBackwardDuration: 15,
+          stashInitialSize: 512 * 1024
         });
 
         tsPlayer.attachMediaElement(video);
