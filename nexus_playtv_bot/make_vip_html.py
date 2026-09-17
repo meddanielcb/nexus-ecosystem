@@ -3,19 +3,10 @@ import qrcode
 import base64
 from io import BytesIO
 
-from partner_apps import (
-    MASTERX_DOWNLOADER_CODE,
-    PARTNER_APPS_CODE,
-    PORTAL_URL,
-    SERVER_DNS_PRIMARY,
-    SERVER_DNS_ALT,
-)
-
 def generate_interactive_html(output_path, username, password, server_url, m3u_url, plan_name, valid_until):
     # Gerar QR Code em Base64
     qr = qrcode.QRCode(box_size=6, border=1)
-    web_login_url = f"{PORTAL_URL}/?user={username}&pass={password}"
-    qr.add_data(web_login_url)
+    qr.add_data(m3u_url if m3u_url else f"{server_url}/get.php?username={username}&password={password}&type=m3u_plus")
     qr.make(fit=True)
     buf = BytesIO()
     qr.make_image(fill_color="#000000", back_color="#FFFFFF").save(buf, format="PNG")
@@ -26,62 +17,92 @@ def generate_interactive_html(output_path, username, password, server_url, m3u_u
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Nexus PlayTV • VIP Access</title>
+<title>Nexus PlayTV • Cartão VIP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
 <style>
-  * {{ box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }}
-  body {{ background: #080B10; color: #FFFFFF; display: flex; justify-content: center; padding: 16px; min-height: 100vh; }}
-  .container {{ width: 100%; max-width: 480px; background: #0D1117; border: 1px solid #21262D; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }}
-  .banner {{ width: 100%; height: 180px; object-fit: cover; display: block; }}
-  .header {{ padding: 20px; text-align: center; border-bottom: 1px solid #161B22; }}
-  .header h1 {{ font-size: 22px; color: #00E5FF; letter-spacing: 1px; font-weight: 800; }}
-  .header p {{ font-size: 13px; color: #8B949E; margin-top: 4px; }}
-  .section {{ padding: 16px 20px; border-bottom: 1px solid #161B22; }}
+  * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+  body {{ background: #050607; color: #F5F7F4; font-family: 'Space Grotesk', -apple-system, sans-serif; display: flex; justify-content: center; padding: 20px 14px; min-height: 100vh; }}
+  .card {{ width: 100%; max-width: 460px; background: #0A0D0E; border: 1px solid #1A2226; border-radius: 20px; overflow: hidden; box-shadow: 0 16px 40px rgba(0,0,0,0.85); }}
   
-  /* BOTAO PLAY 1 CLIQUE */
-  .btn-play {{ display: flex; align-items: center; justify-content: center; width: 100%; padding: 16px; background: linear-gradient(135deg, #00E5FF, #0088FF); color: #080B10; font-size: 16px; font-weight: 800; border-radius: 14px; text-decoration: none; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(0,229,255,0.4); margin-bottom: 12px; }}
-  .btn-play:active {{ transform: scale(0.98); }}
+  /* HEADER COM LOGO OFICIAL */
+  .header {{ padding: 28px 24px 22px; text-align: center; background: linear-gradient(180deg, #101614 0%, #0A0D0E 100%); border-bottom: 1px solid #16201B; position: relative; }}
+  .logo-box {{ display: inline-flex; align-items: center; gap: 10px; margin-bottom: 14px; }}
+  .logo-box svg {{ width: 32px; height: 32px; }}
+  .logo-box span {{ font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; letter-spacing: 2px; color: #FFFFFF; }}
+  .logo-box small {{ color: #B7FF3C; font-size: 24px; font-weight: 700; margin-left: 2px; }}
+  
+  .badge {{ display: inline-block; background: rgba(183, 255, 60, 0.12); color: #B7FF3C; border: 1px solid rgba(183, 255, 60, 0.3); font-size: 11px; font-weight: 700; letter-spacing: 1.5px; padding: 5px 12px; border-radius: 20px; text-transform: uppercase; }}
+  .plan-info {{ font-size: 14px; color: #8F9E9D; margin-top: 10px; }}
+  .plan-info b {{ color: #FFFFFF; }}
 
-  /* CARTOES DE COPIA */
-  .field-box {{ background: #161B22; border: 1px solid #30363D; border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }}
-  .field-info {{ overflow: hidden; margin-right: 10px; }}
-  .field-label {{ font-size: 11px; color: #8B949E; text-transform: uppercase; font-weight: 700; }}
-  .field-val {{ font-size: 14px; color: #00E5FF; font-family: monospace; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
-  .btn-copy {{ background: #21262D; color: #E6EDF3; border: 1px solid #30363D; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; flex-shrink: 0; }}
-  .btn-copy:active {{ background: #00E5FF; color: #080B10; }}
+  /* SECTIONS */
+  .section {{ padding: 20px 22px; border-bottom: 1px solid #141B18; }}
+  .sec-title {{ font-size: 12px; font-weight: 700; color: #8F9E9D; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }}
+  .sec-title span {{ color: #B7FF3C; }}
 
-  /* COPIA AUTOMATICA FEEDBACK */
-  .toast {{ position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #2EA043; color: #fff; padding: 10px 20px; border-radius: 30px; font-size: 13px; font-weight: bold; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 1000; }}
-  .toast.show {{ opacity: 1; }}
+  /* CAMPOS DE CREDENCIAIS */
+  .field-box {{ background: #0F1517; border: 1px solid #1B2628; border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; transition: border-color 0.2s; }}
+  .field-box:hover {{ border-color: #B7FF3C50; }}
+  .field-info {{ overflow: hidden; margin-right: 12px; }}
+  .field-label {{ font-size: 10px; color: #738483; text-transform: uppercase; font-weight: 700; letter-spacing: 0.8px; margin-bottom: 3px; }}
+  .field-val {{ font-size: 15px; color: #B7FF3C; font-family: monospace; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
+  
+  .btn-copy {{ background: #162022; color: #FFFFFF; border: 1px solid #283739; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; flex-shrink: 0; transition: all 0.15s; }}
+  .btn-copy:active {{ background: #B7FF3C; color: #050607; border-color: #B7FF3C; transform: scale(0.96); }}
+
+  /* GUIA DE CONEXÃO SMART TV */
+  .tv-guide {{ background: #0D1412; border: 1px solid #1A2E20; border-radius: 12px; padding: 14px; margin-top: 14px; }}
+  .tv-guide h4 {{ font-size: 13px; color: #B7FF3C; font-weight: 700; margin-bottom: 6px; }}
+  .tv-guide p {{ font-size: 12px; color: #9AB2A2; line-height: 1.5; }}
 
   /* APPS */
-  .app-pill {{ display: flex; justify-content: space-between; align-items: center; background: #161B22; border: 1px solid #21262D; padding: 10px 14px; border-radius: 10px; margin-bottom: 8px; font-size: 13px; }}
-  .app-code {{ background: #00E5FF; color: #080B10; padding: 4px 8px; border-radius: 6px; font-family: monospace; font-weight: 800; font-size: 12px; }}
+  .app-item {{ display: flex; justify-content: space-between; align-items: center; background: #0F1517; border: 1px solid #182224; padding: 11px 14px; border-radius: 10px; margin-bottom: 8px; }}
+  .app-item span {{ font-size: 13px; color: #DDE5E2; font-weight: 500; }}
+  .app-badge {{ background: #18261F; color: #B7FF3C; border: 1px solid #B7FF3C40; padding: 4px 10px; border-radius: 6px; font-family: monospace; font-weight: 700; font-size: 11px; letter-spacing: 0.5px; }}
+
+  /* QR CODE */
+  .qr-box {{ text-align: center; padding: 22px; }}
+  .qr-box img {{ width: 140px; height: 140px; border-radius: 12px; padding: 6px; background: #FFFFFF; border: 2px solid #B7FF3C; }}
+  .qr-label {{ font-size: 11px; color: #738483; margin-top: 10px; }}
+
+  /* TOAST */
+  .toast {{ position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: #B7FF3C; color: #050607; padding: 11px 22px; border-radius: 30px; font-size: 13px; font-weight: 700; opacity: 0; transition: opacity 0.25s, transform 0.25s; pointer-events: none; z-index: 1000; box-shadow: 0 8px 24px rgba(183,255,60,0.3); }}
+  .toast.show {{ opacity: 1; transform: translate(-50%, -5px); }}
 </style>
 </head>
 <body>
 
-<div class="container">
-  <img src="/static/nexus_playtv_banner.png" class="banner" alt="Nexus PlayTV">
+<div class="card">
   <div class="header">
-    <h1>NEXUS PLAYTV • ACESSO VIP</h1>
-    <p>Plano: <b>{plan_name}</b> • Validade: {valid_until}</p>
+    <div class="logo-box">
+      <svg viewBox="0 0 34 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 4L12 8V31L4 27V4Z" fill="#B7FF3C"/>
+        <path d="M22 4L30 8V31L22 27V4Z" fill="#B7FF3C"/>
+        <path d="M12 8L22 27H16L6 9L12 8Z" fill="#B7FF3C" fill-opacity="0.8"/>
+      </svg>
+      <span>NEXUS<small>PLAYTV</small></span>
+    </div>
+    <div><span class="badge">CARTÃO VIP OFICIAL</span></div>
+    <div class="plan-info">Plano: <b>{plan_name}</b> • Validade: <b>{valid_until}</b></div>
   </div>
 
-  <!-- DADOS COM COPIAR COM 1 TOQUE -->
+  <!-- CREDENCIAIS EXATAS (TV E APP) -->
   <div class="section">
-    <div style="font-size: 13px; font-weight: bold; color: #E6EDF3; margin-bottom: 12px;">📺 CONFIGURAR NA SMART TV OU NO SEU PLAYER FAVORITO:</div>
-    
+    <div class="sec-title"><span>01</span> DADOS PARA LOGIN NA SMART TV & APPS</div>
+
     <div class="field-box">
       <div class="field-info">
-        <div class="field-label">Servidor / DNS</div>
-        <div class="field-val" id="dns_val">{server_url}</div>
+        <div class="field-label">CÓDIGO PARCEIRO (MASTERX)</div>
+        <div class="field-val" id="code_val">00042</div>
       </div>
-      <button class="btn-copy" onclick="copyText('{server_url}', 'Servidor')">📋 Copiar</button>
+      <button class="btn-copy" onclick="copyText('00042', 'Código')">📋 Copiar</button>
     </div>
 
     <div class="field-box">
       <div class="field-info">
-        <div class="field-label">Usuário</div>
+        <div class="field-label">USUÁRIO</div>
         <div class="field-val" id="user_val">{username}</div>
       </div>
       <button class="btn-copy" onclick="copyText('{username}', 'Usuário')">📋 Copiar</button>
@@ -89,7 +110,7 @@ def generate_interactive_html(output_path, username, password, server_url, m3u_u
 
     <div class="field-box">
       <div class="field-info">
-        <div class="field-label">Senha</div>
+        <div class="field-label">SENHA</div>
         <div class="field-val" id="pass_val">{password}</div>
       </div>
       <button class="btn-copy" onclick="copyText('{password}', 'Senha')">📋 Copiar</button>
@@ -97,53 +118,77 @@ def generate_interactive_html(output_path, username, password, server_url, m3u_u
 
     <div class="field-box">
       <div class="field-info">
-        <div class="field-label">Lista M3U Completa</div>
-        <div class="field-val" id="m3u_val">{m3u_url}</div>
+        <div class="field-label">SERVIDOR / URL XTREAM CODES</div>
+        <div class="field-val" id="dns_val">{server_url}</div>
       </div>
-      <button class="btn-copy" onclick="copyText('{m3u_url}', 'Lista M3U')">📋 Copiar</button>
+      <button class="btn-copy" onclick="copyText('{server_url}', 'Servidor')">📋 Copiar</button>
+    </div>
+
+    <div class="tv-guide">
+      <h4>⚡ Dica para Smart TV Samsung / LG / Android:</h4>
+      <p>Nos apps <b>MasterX</b> ou <b>XCIPTV</b>, basta digitar <b>00042</b> no código, seguido do seu Usuário e Senha. Nos demais apps (FunPlays, IBO, etc.), use o Servidor acima.</p>
     </div>
   </div>
 
-  <!-- COMO INSTALAR NOS PRINCIPAIS APARELHOS -->
+  <!-- APLICATIVOS COMPATÍVEIS -->
   <div class="section">
-    <div style="font-size: 13px; font-weight: bold; color: #E6EDF3; margin-bottom: 10px;">📱 COMO ASSISTIR NOS SEUS APARELHOS:</div>
-    <div class="app-pill">
+    <div class="sec-title"><span>02</span> ONDE ASSISTIR</div>
+    
+    <div class="app-item">
       <span>Smart TV Samsung ou LG</span>
-      <span class="app-code">FUNPLAYS / MAGIC PLAY</span>
+      <span class="app-badge">FUNPLAYS / IBO PLAYER</span>
     </div>
-    <p style="font-size: 11px; color: #8B949E; margin-bottom: 8px;">Instale o app na loja da TV, clique em <b>Ativar na Smart TV</b> no Telegram e mande a foto da tela.</p>
 
-    <div class="app-pill">
-      <span>Android TV / TV Box / Fire Stick</span>
-      <span class="app-code">DOWNLOADER: 3054398</span>
+    <div class="app-item">
+      <span>Android TV / Fire Stick / TV Box</span>
+      <span class="app-badge">DOWNLOADER: 3054398</span>
     </div>
-    <p style="font-size: 11px; color: #8B949E; margin-bottom: 8px;">Abra o app <b>Downloader</b>, digite o código <b>3054398</b> e instale o player direto.</p>
 
-    <div class="app-pill">
-      <span>Celular Android ou iPhone</span>
-      <span class="app-code">PLAY STORE / APP STORE</span>
+    <div class="app-item">
+      <span>Celular Android & iPhone</span>
+      <span class="app-badge">IPTV SMARTERS PRO / XCIPTV</span>
     </div>
-    <p style="font-size: 11px; color: #8B949E; margin-bottom: 8px;">Baixe <b>IPTV Smarters Pro</b> ou <b>XCIPTV</b> e entre com Servidor, Usuário e Senha acima.</p>
+  </div>
 
-    <div style="font-size: 12px; color: #8B949E; margin-top: 12px; line-height: 1.7;">
-      Servidores oficiais: <b style="color:#00E5FF;">{SERVER_DNS_PRIMARY}</b> (principal) e
-      <b style="color:#00E5FF;">{SERVER_DNS_ALT}</b> (alternativo)
-    </div>
+  <!-- QR CODE DE CONEXÃO RÁPIDA -->
+  <div class="qr-box">
+    <img src="data:image/png;base64,{qr_b64}" alt="QR Code VIP">
+    <div class="qr-label">Escaneie com a câmera do celular para carregar a lista completa</div>
   </div>
 </div>
 
-<div id="toast" class="toast">Copiado para a área de transferência!</div>
+<div id="toast" class="toast">Copiado com sucesso!</div>
 
 <script>
 function copyText(txt, name) {{
-  navigator.clipboard.writeText(txt).then(() => {{
-    const toast = document.getElementById('toast');
-    toast.innerText = name + ' copiado!';
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 2000);
-  }}).catch(() => {{
+  if (navigator.clipboard && window.isSecureContext) {{
+    navigator.clipboard.writeText(txt).then(() => showToast(name + ' copiado!')).catch(() => fallbackCopy(txt, name));
+  }} else {{
+    fallbackCopy(txt, name);
+  }}
+}}
+
+function fallbackCopy(txt, name) {{
+  const ta = document.createElement('textarea');
+  ta.value = txt;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try {{
+    document.execCommand('copy');
+    showToast(name + ' copiado!');
+  }} catch(e) {{
     prompt('Copie o texto:', txt);
-  }});
+  }}
+  document.body.removeChild(ta);
+}}
+
+function showToast(msg) {{
+  const toast = document.getElementById('toast');
+  toast.innerText = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
 }}
 </script>
 
@@ -151,15 +196,15 @@ function copyText(txt, name) {{
 </html>"""
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(html)
-    print("HTML Interativo gerado:", output_path)
+    print("HTML Interativo gerado com sucesso:", output_path)
 
 if __name__ == "__main__":
     generate_interactive_html(
-        "/opt/data/nexus_playtv_bot/assets/acesso_vip.html",
+        "/opt/data/nexus_repo/nexus_playtv_bot/assets/acesso_vip.html",
         username="nexus_vip_7894",
         password="play_pass_2026",
-        server_url="http://cdn.nexusplay.tv:8080",
-        m3u_url="http://cdn.nexusplay.tv:8080/get.php?username=nexus_vip_7894&password=play_pass_2026&type=m3u_plus",
-        plan_name="Pass Final de Semana 48h",
-        valid_until="14/09/2026 às 21:00"
+        server_url="http://atmt.space",
+        m3u_url="http://atmt.space/get.php?username=nexus_vip_7894&password=play_pass_2026&type=m3u_plus",
+        plan_name="Anual VIP",
+        valid_until="17/09/2027"
     )

@@ -406,7 +406,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             logger.error(f"Erro ao disparar alerta de resgate: {e_alert}")
 
         # 3. Gerar URL do Cartão VIP Interativo
-        vip_page_url = f"https://nexus.pixget.io/vip/{redemption_id}"
+        vip_page_url = f"https://api.nexusplay.tv/vip/{redemption_id}"
 
         text = (
             "🎉 *SEU ACESSO DE JOGO (4 HORAS) FOI ATIVADO!*\n\n"
@@ -468,7 +468,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         rem_bonus = c.fetchone()[0]
         conn.close()
 
-        vip_page_url = f"https://nexus.pixget.io/vip/{bonus_order_id}"
+        vip_page_url = f"https://api.nexusplay.tv/vip/{bonus_order_id}"
 
         text = (
             "🎉 *PARABÉNS! SEU MÊS DE BÔNUS ESTÁ ATIVO!*\n\n"
@@ -535,7 +535,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except Exception:
             pass
 
-        vip_page_url = f"https://nexus.pixget.io/vip/{trial_id}"
+        vip_page_url = f"https://api.nexusplay.tv/vip/{trial_id}"
 
         text = (
             "🎉 *SEU TESTE GRÁTIS DE 4 HORAS FOI LIBERADO!*\n\n"
@@ -1069,7 +1069,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except Exception:
             pass
 
-        vip_page_url = f"https://nexus.pixget.io/vip/{order_id}"
+        vip_page_url = f"https://api.nexusplay.tv/vip/{order_id}"
         text_done = (
             "🎉 *PLANO ATIVADO COM SUCESSO! (100% OFF)*\n\n"
             f"📺 *Plano:* {p['name']}\n"
@@ -1746,7 +1746,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             except Exception:
                 pass
 
-            vip_page_url = f"https://nexus.pixget.io/vip/{order_id}"
+            vip_page_url = f"https://api.nexusplay.tv/vip/{order_id}"
             text_done = (
                 "🎉 *PLANO ATIVADO COM SUCESSO! (100% OFF)*\n\n"
                 f"📺 *Plano:* {p['name']}\n"

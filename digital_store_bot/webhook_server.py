@@ -452,7 +452,7 @@ def deliver_playtv_order_async(order_id: str):
     conn.close()
 
     # Enviar credenciais diretamente no chat do cliente no Nexus PlayTV
-    vip_web_url = f"https://nexus.pixget.io/vip/{order_id}"
+    vip_web_url = f"https://api.nexusplay.tv/vip/{order_id}"
 
     msg = (
         "🎉 *PAGAMENTO APROVADO! SEU ACESSO NEXUS PLAYTV ESTÁ ATIVO!*\n\n"

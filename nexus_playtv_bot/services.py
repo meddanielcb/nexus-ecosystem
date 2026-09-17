@@ -101,7 +101,7 @@ def get_network_fee_estimate(coin: str) -> float:
     return fees.get(coin, 0.50)
 
 def create_blockbee_payment(coin: str, order_id: str) -> dict:
-    callback_url = f"https://nexus.pixget.io/api/webhooks/blockbee?order_id={order_id}"
+    callback_url = f"https://api.nexusplay.tv/api/webhooks/blockbee?order_id={order_id}"
     url = f"https://api.blockbee.io/{coin}/create/"
     params = {
         "apikey": BLOCKBEE_API_KEY,

@@ -134,7 +134,7 @@ def create_blockbee_payment(coin: str, order_id: str) -> dict:
     """
     Gera um endereço de pagamento dedicado via BlockBee.
     """
-    callback_url = f"https://nexus.pixget.io/api/webhooks/blockbee?order_id={order_id}"
+    callback_url = f"https://api.nexusplay.tv/api/webhooks/blockbee?order_id={order_id}"
     url = f"https://api.blockbee.io/{coin}/create/"
     params = {
         "apikey": BLOCKBEE_API_KEY,
