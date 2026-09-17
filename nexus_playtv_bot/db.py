@@ -40,12 +40,16 @@ def db_connect(path=None):
 
 # Versão lógica do schema.  Toda vez que SCHEMA/COLUMN_MIGRATIONS mudar,
 # incremente e registre o motivo em MIGRATION_NOTES.
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 
 MIGRATION_NOTES = {
     1: "Schema inicial versionado (orders, free_trials, users).",
     2: "P1-7: adiciona game_passes, pass_redemptions, coupons e as colunas "
        "m3u_url/expires_at/reminded_3d/reminded_1d/reminded_expired em orders.",
+    3: "P2: carteira web (web_auth_sessions, web_user_wallets), amarracao "
+       "antifraude do teste 4h (fingerprint/contato/subrede IP em free_trials) "
+       "e liberacao condicionada ao PWA (pwa_installs); orders.wallet_id liga "
+       "pedidos/testes/passes a uma carteira para a tela 'Minha Carteira'.",
 }
 
 # --------------------------------------------------------------------------
@@ -150,6 +154,48 @@ SCHEMA = {
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """,
+    # P2 (carteira web / auth OTP / antifraude teste 4h) -----------------
+    "web_auth_sessions": """
+        CREATE TABLE IF NOT EXISTS web_auth_sessions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_token TEXT NOT NULL,
+            contact_type TEXT NOT NULL,
+            contact_val TEXT NOT NULL,
+            otp_code TEXT NOT NULL,
+            fingerprint TEXT,
+            ip_address TEXT,
+            attempts INTEGER DEFAULT 0,
+            status TEXT DEFAULT 'pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            expires_at TIMESTAMP
+        )
+    """,
+    "web_user_wallets": """
+        CREATE TABLE IF NOT EXISTS web_user_wallets (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            wallet_id TEXT NOT NULL,
+            contact_type TEXT NOT NULL,
+            contact_val TEXT NOT NULL,
+            fingerprint TEXT,
+            free_trial_claimed INTEGER DEFAULT 0,
+            trial_credentials TEXT,
+            referral_code TEXT,
+            referred_by TEXT,
+            referral_days_balance INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP
+        )
+    """,
+    "pwa_installs": """
+        CREATE TABLE IF NOT EXISTS pwa_installs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            wallet_id TEXT,
+            fingerprint TEXT,
+            ip_address TEXT,
+            user_agent TEXT,
+            installed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """,
 }
 
 # Colunas que podem faltar em bancos legados -> (tabela, coluna, DDL do ALTER).
@@ -202,6 +248,26 @@ COLUMN_MIGRATIONS = [
     ("coupons", "used_count", "ALTER TABLE coupons ADD COLUMN used_count INTEGER DEFAULT 0"),
     ("coupons", "created_by", "ALTER TABLE coupons ADD COLUMN created_by TEXT"),
     ("coupons", "created_at", "ALTER TABLE coupons ADD COLUMN created_at TIMESTAMP"),
+    # P2 (carteira web / antifraude teste 4h / liberacao por PWA)
+    ("orders", "wallet_id", "ALTER TABLE orders ADD COLUMN wallet_id TEXT"),
+    ("free_trials", "wallet_id", "ALTER TABLE free_trials ADD COLUMN wallet_id TEXT"),
+    ("free_trials", "fingerprint", "ALTER TABLE free_trials ADD COLUMN fingerprint TEXT"),
+    ("free_trials", "ip_address", "ALTER TABLE free_trials ADD COLUMN ip_address TEXT"),
+    ("web_auth_sessions", "fingerprint", "ALTER TABLE web_auth_sessions ADD COLUMN fingerprint TEXT"),
+    ("web_auth_sessions", "ip_address", "ALTER TABLE web_auth_sessions ADD COLUMN ip_address TEXT"),
+    ("web_auth_sessions", "attempts", "ALTER TABLE web_auth_sessions ADD COLUMN attempts INTEGER DEFAULT 0"),
+    ("web_auth_sessions", "expires_at", "ALTER TABLE web_auth_sessions ADD COLUMN expires_at TIMESTAMP"),
+    ("web_user_wallets", "fingerprint", "ALTER TABLE web_user_wallets ADD COLUMN fingerprint TEXT"),
+    ("web_user_wallets", "free_trial_claimed", "ALTER TABLE web_user_wallets ADD COLUMN free_trial_claimed INTEGER DEFAULT 0"),
+    ("web_user_wallets", "trial_credentials", "ALTER TABLE web_user_wallets ADD COLUMN trial_credentials TEXT"),
+    ("web_user_wallets", "referral_code", "ALTER TABLE web_user_wallets ADD COLUMN referral_code TEXT"),
+    ("web_user_wallets", "referred_by", "ALTER TABLE web_user_wallets ADD COLUMN referred_by TEXT"),
+    ("web_user_wallets", "referral_days_balance", "ALTER TABLE web_user_wallets ADD COLUMN referral_days_balance INTEGER DEFAULT 0"),
+    ("web_user_wallets", "updated_at", "ALTER TABLE web_user_wallets ADD COLUMN updated_at TIMESTAMP"),
+    ("pwa_installs", "wallet_id", "ALTER TABLE pwa_installs ADD COLUMN wallet_id TEXT"),
+    ("pwa_installs", "fingerprint", "ALTER TABLE pwa_installs ADD COLUMN fingerprint TEXT"),
+    ("pwa_installs", "ip_address", "ALTER TABLE pwa_installs ADD COLUMN ip_address TEXT"),
+    ("pwa_installs", "user_agent", "ALTER TABLE pwa_installs ADD COLUMN user_agent TEXT"),
 ]
 
 # Colunas de data que devem ser retro-preenchidas quando criadas via ALTER.
@@ -212,6 +278,7 @@ TIMESTAMP_BACKFILL = [
     ("game_passes", "created_at"),
     ("pass_redemptions", "redeemed_at"),
     ("coupons", "created_at"),
+    ("web_auth_sessions", "created_at"),
 ]
 
 # Índices (idempotentes).  (nome, DDL, único?)
@@ -223,6 +290,15 @@ INDEXES = [
     ("idx_game_passes_user_id", "CREATE INDEX IF NOT EXISTS idx_game_passes_user_id ON game_passes(user_id, remaining_passes)", False),
     ("idx_pass_redemptions_user_id", "CREATE INDEX IF NOT EXISTS idx_pass_redemptions_user_id ON pass_redemptions(user_id)", False),
     ("idx_coupons_code", "CREATE UNIQUE INDEX IF NOT EXISTS idx_coupons_code ON coupons(code)", True),
+    ("idx_orders_wallet_id", "CREATE INDEX IF NOT EXISTS idx_orders_wallet_id ON orders(wallet_id)", False),
+    ("idx_free_trials_wallet_id", "CREATE INDEX IF NOT EXISTS idx_free_trials_wallet_id ON free_trials(wallet_id)", False),
+    ("idx_free_trials_ip", "CREATE INDEX IF NOT EXISTS idx_free_trials_ip ON free_trials(ip_address)", False),
+    ("idx_wallets_wallet_id", "CREATE UNIQUE INDEX IF NOT EXISTS idx_wallets_wallet_id ON web_user_wallets(wallet_id)", True),
+    ("idx_wallets_contact_val", "CREATE INDEX IF NOT EXISTS idx_wallets_contact_val ON web_user_wallets(contact_val)", False),
+    ("idx_wallets_fingerprint", "CREATE INDEX IF NOT EXISTS idx_wallets_fingerprint ON web_user_wallets(fingerprint)", False),
+    ("idx_auth_sessions_token", "CREATE UNIQUE INDEX IF NOT EXISTS idx_auth_sessions_token ON web_auth_sessions(session_token)", True),
+    ("idx_pwa_installs_wallet_id", "CREATE INDEX IF NOT EXISTS idx_pwa_installs_wallet_id ON pwa_installs(wallet_id)", False),
+    ("idx_pwa_installs_fingerprint", "CREATE INDEX IF NOT EXISTS idx_pwa_installs_fingerprint ON pwa_installs(fingerprint)", False),
 ]
 
 

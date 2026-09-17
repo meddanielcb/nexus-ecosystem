@@ -19,6 +19,8 @@ sys.path.append("/opt/nexus_repo/nexus_playtv_bot")
 sys.path.append("/opt/data/nexus_repo/nexus_playtv_bot")
 from masterx_api import create_masterx_line, MasterXError, MasterXTrialLimitReached
 from checkout_api import create_checkout, get_checkout_status, CheckoutError
+from auth_api import request_otp, verify_otp, get_wallet, AuthError
+from wallet_api import claim_trial, register_pwa_install, get_wallet_credentials, WalletError
 
 # Carregar Chave Pública do BlockBee para validação RSA
 BLOCKBEE_PUBKEY = None
@@ -716,8 +718,7 @@ class WebhookHandler(BaseHTTPRequestHandler):
             if path.startswith("/api/checkout/status/"):
                 order_id = path[len("/api/checkout/status/"):].split("?")[0].strip()
             elif "?" in path:
-                from urllib.parse import parse_qs, urlparse
-                qs = parse_qs(urlparse(path).query)
+                qs = parse_qs(parsed.query)
                 order_id = qs.get("order_id", [""])[0].strip()
 
 
@@ -738,6 +739,56 @@ class WebhookHandler(BaseHTTPRequestHandler):
             except Exception as e:
                 print(f"[CHECKOUT API] Erro ao consultar status: {e}")
                 _respond_checkout(500, {"error": "erro interno ao consultar status"})
+            return
+
+        elif path == "/api/auth/wallet":
+            # Consulta de carteira: /api/auth/wallet?wallet_id=... ou ?session_token=...
+            qs = parse_qs(parsed.query)
+            wallet_id = qs.get("wallet_id", [""])[0].strip()
+            session_token = qs.get("session_token", [""])[0].strip()
+
+            def _respond_auth(code, payload):
+                body = json.dumps(payload).encode('utf-8')
+                self.send_response(code)
+                self.send_header('Content-Type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.send_header('Content-Length', str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
+            try:
+                result = get_wallet(wallet_id=wallet_id or None, session_token=session_token or None)
+                _respond_auth(200, result)
+            except AuthError as e:
+                _respond_auth(e.status, {"ok": False, "error": str(e)})
+            except Exception as e:
+                print(f"[AUTH API] Erro ao consultar carteira: {e}")
+                _respond_auth(500, {"ok": False, "error": "erro interno ao consultar carteira"})
+            return
+
+        elif path == "/api/wallet/credentials":
+            # Carteira do cliente: teste grátis, assinaturas ativas e passes de jogo.
+            # GET /api/wallet/credentials?wallet_id=WLT_...
+            qs = parse_qs(parsed.query)
+            wallet_id = qs.get("wallet_id", [""])[0].strip()
+
+            def _respond_wallet(code, payload):
+                body = json.dumps(payload).encode('utf-8')
+                self.send_response(code)
+                self.send_header('Content-Type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.send_header('Content-Length', str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
+            try:
+                result = get_wallet_credentials(wallet_id)
+                _respond_wallet(200, result)
+            except WalletError as e:
+                _respond_wallet(e.status, {"ok": False, "error": str(e)})
+            except Exception as e:
+                print(f"[WALLET API] Erro ao consultar credenciais da carteira: {e}")
+                _respond_wallet(500, {"ok": False, "error": "erro interno ao consultar carteira"})
             return
 
         self.send_response(404)
@@ -786,6 +837,134 @@ class WebhookHandler(BaseHTTPRequestHandler):
             except Exception as trial_err:
                 print(f"[TRIAL API] Erro ao gerar teste: {trial_err}")
                 _respond_trial(500, {"ok": False, "error": "Falha ao gerar credencial de teste. Tente novamente em instantes."})
+            return
+
+        if parsed_path == "/api/auth/otp/request":
+            def _respond_auth(code, payload):
+                body = json.dumps(payload).encode('utf-8')
+                self.send_response(code)
+                self.send_header('Content-Type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.send_header('Content-Length', str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
+            try:
+                data = json.loads(raw_body.decode('utf-8')) if raw_body else {}
+            except Exception:
+                _respond_auth(400, {"ok": False, "error": "JSON invalido no corpo da requisicao"})
+                return
+
+            client_ip = self.headers.get("X-Forwarded-For", self.client_address[0]).split(",")[0].strip()
+
+            try:
+                result = request_otp(
+                    contact_type=(data.get("contact_type") or "").strip().lower(),
+                    contact_val=data.get("contact_val") or "",
+                    fingerprint=data.get("fingerprint") or "",
+                    ip=client_ip,
+                )
+                _respond_auth(200, result)
+            except AuthError as e:
+                _respond_auth(e.status, {"ok": False, "error": str(e)})
+            except Exception as e:
+                print(f"[AUTH API] Erro ao solicitar OTP: {e}")
+                _respond_auth(500, {"ok": False, "error": "erro interno ao solicitar codigo"})
+            return
+
+        if parsed_path == "/api/auth/otp/verify":
+            def _respond_auth(code, payload):
+                body = json.dumps(payload).encode('utf-8')
+                self.send_response(code)
+                self.send_header('Content-Type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.send_header('Content-Length', str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
+            try:
+                data = json.loads(raw_body.decode('utf-8')) if raw_body else {}
+            except Exception:
+                _respond_auth(400, {"ok": False, "error": "JSON invalido no corpo da requisicao"})
+                return
+
+            try:
+                result = verify_otp(
+                    session_token=data.get("session_token") or "",
+                    otp_code=data.get("otp_code") or "",
+                )
+                _respond_auth(200, result)
+            except AuthError as e:
+                _respond_auth(e.status, {"ok": False, "error": str(e)})
+            except Exception as e:
+                print(f"[AUTH API] Erro ao verificar OTP: {e}")
+                _respond_auth(500, {"ok": False, "error": "erro interno ao verificar codigo"})
+            return
+
+        if parsed_path == "/api/pwa/installed":
+            # Confirmação do evento `appinstalled` do PWA (ou gatilho equivalente).
+            # Sem este registro em pwa_installs, /api/trial/claim nunca libera o teste.
+            def _respond_pwa(code, payload):
+                body = json.dumps(payload).encode('utf-8')
+                self.send_response(code)
+                self.send_header('Content-Type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.send_header('Content-Length', str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
+            try:
+                data = json.loads(raw_body.decode('utf-8')) if raw_body else {}
+            except Exception:
+                _respond_pwa(400, {"ok": False, "error": "JSON invalido no corpo da requisicao"})
+                return
+
+            client_ip = self.headers.get("X-Forwarded-For", self.client_address[0]).split(",")[0].strip()
+            user_agent = data.get("user_agent") or self.headers.get("User-Agent", "")
+
+            try:
+                result = register_pwa_install(
+                    wallet_id=data.get("wallet_id"),
+                    fingerprint=data.get("fingerprint"),
+                    ip=client_ip,
+                    user_agent=user_agent,
+                )
+                _respond_pwa(200, result)
+            except WalletError as e:
+                _respond_pwa(e.status, {"ok": False, "error": str(e)})
+            except Exception as e:
+                print(f"[WALLET API] Erro ao registrar instalacao do PWA: {e}")
+                _respond_pwa(500, {"ok": False, "error": "erro interno ao registrar instalacao"})
+            return
+
+        if parsed_path == "/api/trial/claim":
+            # Teste de 4 horas amarrado a carteira autenticada + antifraude +
+            # liberacao condicionada a instalacao do PWA (ver wallet_api.py).
+            def _respond_claim(code, payload):
+                body = json.dumps(payload).encode('utf-8')
+                self.send_response(code)
+                self.send_header('Content-Type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.send_header('Content-Length', str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
+            try:
+                data = json.loads(raw_body.decode('utf-8')) if raw_body else {}
+            except Exception:
+                _respond_claim(400, {"ok": False, "error": "JSON invalido no corpo da requisicao"})
+                return
+
+            client_ip = self.headers.get("X-Forwarded-For", self.client_address[0]).split(",")[0].strip()
+
+            try:
+                result = claim_trial(data, request_ip=client_ip)
+                _respond_claim(200, result)
+            except WalletError as e:
+                _respond_claim(e.status, {"ok": False, "error": str(e)})
+            except Exception as e:
+                print(f"[WALLET API] Erro ao processar claim de teste 4h: {e}")
+                _respond_claim(500, {"ok": False, "error": "erro interno ao gerar teste gratis"})
             return
 
         if parsed_path == "/api/checkout/create":
