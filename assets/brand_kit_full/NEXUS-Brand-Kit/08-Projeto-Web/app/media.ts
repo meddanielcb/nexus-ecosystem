@@ -1,6 +1,7 @@
 export const asset=(name:string)=>'/media/'+name;
 export const brands=[
- {name:'Premiere',file:'premiere.svg'},{name:'SporTV',file:'sportv.svg'},{name:'ESPN',file:'espn.png'},{name:'Netflix',file:'netflix.svg'},{name:'Disney+',file:'disney.svg'},{name:'UFC',file:'ufc.svg'},{name:'HBO',file:'hbo.svg'},{name:'Prime Video',file:'prime.svg'},
+ {name:'Premiere',file:'premiere.svg'},{name:'SporTV',file:'sportv-white.svg'},{name:'ESPN',file:'espn.png'},{name:'Netflix',file:'netflix.svg'},{name:'Disney+',file:'disney.svg'},{name:'UFC',file:'ufc.svg'},{name:'HBO',file:'hbo.svg'},{name:'Prime Video',file:'prime.svg'},
+ {name:'Paramount+',file:'paramount.svg'},{name:'Globo',file:'globo.svg'},{name:'SBT',file:'sbt.svg'},{name:'Combate',file:'combate.svg'},{name:'Champions League',file:'champions-white.svg'},{name:'Fórmula 1',file:'f1.svg'},
 ];
 export const entertainment=[
  {title:'Stranger Things',category:'SÉRIES',image:'stranger-things.webp',brand:'netflix.svg',position:'70% 50%'},

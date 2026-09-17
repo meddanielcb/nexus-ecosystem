@@ -9,10 +9,12 @@ export const demoGames:Game[]=[
 ];
 export const channels=[
 {id:'premiere',name:'Premiere',file:'premiere.svg',category:'Esportes',number:'101',now:'Pré-jogo: futebol brasileiro',next:'19:00 · Flamengo × Palmeiras',start:18*60,end:19*60},
-{id:'sportv',name:'SporTV',file:'sportv.svg',category:'Esportes',number:'102',now:'Redação esportiva',next:'19:30 · Giro do esporte',start:18*60+30,end:19*60+30},
+{id:'sportv',name:'SporTV',file:'sportv-white.svg',category:'Esportes',number:'102',now:'Redação esportiva',next:'19:30 · Giro do esporte',start:18*60+30,end:19*60+30},
 {id:'espn',name:'ESPN',file:'espn.png',category:'Esportes',number:'103',now:'Central do esporte',next:'20:00 · Aquecimento LaLiga',start:18*60,end:20*60},
 {id:'hbo',name:'HBO',file:'hbo.svg',category:'Filmes e séries',number:'201',now:'Sessão de cinema',next:'20:10 · Próxima sessão',start:18*60+10,end:20*60+10},
 ];
+export const crests:Record<string,string>={Flamengo:'crests/flamengo.png',Palmeiras:'crests/palmeiras.png','Real Madrid':'crests/real-madrid.png',Barcelona:'crests/barcelona.png',Lakers:'crests/lakers.png',Warriors:'crests/warriors.png',UFC:'crests/ufc.svg'};
+export const crestFor=(team:string)=>crests[team]||null;
 export const favoriteOptions=['Flamengo','Palmeiras','Real Madrid','Barcelona','Lakers','Warriors','UFC','Poatan'];
 export type Preferences={favorites:string[],alerts:{gameDay:boolean,kickoff:boolean,renewal:boolean}};
 export const defaults:Preferences={favorites:[],alerts:{gameDay:true,kickoff:true,renewal:true}};

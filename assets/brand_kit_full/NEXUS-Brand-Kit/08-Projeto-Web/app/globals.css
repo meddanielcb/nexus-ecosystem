@@ -225,3 +225,15 @@ body{font-family:'Space Grotesk',sans-serif;background:#050607}button,input,sele
 .interlude-bg img{object-fit:contain;object-position:right center}
 .interlude-shade{background:linear-gradient(90deg,#030704 0%,#030704f2 38%,#03070466 62%,#03070426 100%),linear-gradient(0deg,#050607,transparent 42%,transparent 78%,#050607)}
 @media(max-width:900px){.interlude-bg img{object-position:center 30%}.interlude-shade{background:linear-gradient(0deg,#050607 12%,#050607d9 45%,#03070480)}}
+
+/* Marquee discreto de marcas (mesmos tokens do ribbon) */
+.channel-ribbon{overflow:hidden}
+.marquee{position:relative;flex:1 1 auto;min-width:0;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.marquee-track{display:flex;width:max-content;animation:marqueeRoll 48s linear infinite}
+.marquee-group{display:flex;align-items:center;gap:38px;padding-right:38px}
+.marquee-group .brand-logo{width:105px;height:32px;flex:0 0 auto;object-fit:contain;opacity:.62;transition:opacity .25s ease}
+.marquee-group .brand-logo:hover{opacity:1}
+.marquee:hover .marquee-track{animation-play-state:paused}
+@keyframes marqueeRoll{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
+@media(prefers-reduced-motion:reduce){.marquee-track{animation:none}.marquee-group .brand-logo{opacity:.8}}
+@media(max-width:700px){.marquee-group{gap:24px;padding-right:24px}.marquee-group .brand-logo{width:84px;height:26px}}

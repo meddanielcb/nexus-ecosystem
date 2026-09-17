@@ -15,7 +15,7 @@ export const devices=[
 ];
 export const faqs=[
  ['Tem o canal ou título que eu quero assistir?','Consulte o catálogo e a grade pelo Telegram antes de contratar. As marcas e imagens desta vitrine não significam que o plano inclui contas individuais de Netflix, Disney+, Prime Video ou outras plataformas.'],
- ['Como a NEXUS enfrenta travamentos e atraso?','O StreamCore™ Ultra-P2P é a rede anti-bloqueio de operadoras informada pela marca, com distribuição redundante. A Engine Go™ Anti-Delay trabalha a latência do futebol. A experiência também depende da fonte, conexão, aplicativo e aparelho.'],
+ ['Como a NEXUS enfrenta travamentos e atraso?','O StreamCore™ Ultra-P2P é a rede anti-bloqueio de operadoras informada pela marca, com distribuição redundante. A Engine Go™ trabalha a latência do futebol. A experiência também depende da fonte, conexão, aplicativo e aparelho.'],
  ['Como funciona a ativação por foto?','Abra o aplicativo compatível na TV e envie uma foto da tela pelo canal indicado após a compra. O Nexus Vision AI identifica os dados de configuração. Os 15 segundos são uma referência informada pela marca para aparelhos e aplicativos compatíveis, não um prazo universal.'],
  ['Minha TV é compatível?','A compatibilidade depende do modelo, ano, sistema e aplicativo disponível. Consulte seu aparelho no Telegram antes de escolher o plano. Nem todos os aparelhos permitem ativação por foto.'],
  ['Preciso instalar algum aplicativo?','Em geral, você precisa de um player compatível no aparelho. A equipe orienta qual usar após verificar o modelo e o sistema.'],
