@@ -33,11 +33,9 @@
     channelList: document.getElementById("channelList"),
     searchInput: document.getElementById("searchInput"),
     catSelect: document.getElementById("catSelect"),
-    gamesList: document.getElementById("gamesList"),
     btnFullscreen: document.getElementById("btnFullscreen"),
     btnReload: document.getElementById("btnReload"),
     btnLogout: document.getElementById("btnLogout"),
-    btnToggleList: document.getElementById("btnToggleList"),
     sidebar: document.getElementById("sidebar"),
   };
 
@@ -105,10 +103,8 @@
     if (!absoluteOrPath) return absoluteOrPath;
     try {
       const u = new URL(absoluteOrPath, window.location.origin);
-      // já é same-origin (ex: segmentos relativos que o hls.js resolveu)
-      if (u.origin === window.location.origin) return u.pathname + u.search;
-      // upstream real -> troca para o proxy same-origin
-      return PROXY_BASE + u.pathname + u.search;
+      if (u.origin === window.location.origin) return u.href;
+      return window.location.origin + PROXY_BASE + u.pathname + u.search;
     } catch (e) {
       return absoluteOrPath;
     }
@@ -151,23 +147,40 @@
   }
 
   // ---------------- Player HLS & MPEG-TS ----------------
+  let reconnectTimer = null;
+
   function destroyPlayer() {
+    if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
     if (hls) { try { hls.destroy(); } catch (e) {} hls = null; }
-    if (tsPlayer) { try { tsPlayer.pause(); tsPlayer.unload(); tsPlayer.detachMediaElement(); tsPlayer.destroy(); } catch (e) {} tsPlayer = null; }
+    if (tsPlayer) {
+      try {
+        tsPlayer.pause();
+        tsPlayer.unload();
+        tsPlayer.detachMediaElement();
+        tsPlayer.destroy();
+      } catch (e) {}
+      tsPlayer = null;
+    }
+    if (els.video) {
+      try {
+        els.video.controls = false;
+        els.video.pause();
+        els.video.removeAttribute("src");
+        els.video.load();
+      } catch (e) {}
+    }
   }
 
   function playStream(streamId, label) {
     destroyPlayer();
-    showOverlay("Carregando stream…", label || "");
+    showOverlay("Carregando canal…", label || "");
     setStatus("carregando", "");
 
     const video = els.video;
     const user = session ? session.user : "";
     const pass = session ? session.pass : "";
 
-    // 1. Tentar primeiro via mpegts.js (Fluxo contínuo ultra rápido direto do servidor TS)
     const tsUrl = toProxied(buildLiveUrl(user, pass, streamId, "ts"));
-    const m3u8Url = toProxied(buildLiveUrl(user, pass, streamId, "m3u8"));
 
     if (window.mpegts && window.mpegts.isSupported()) {
       try {
@@ -176,7 +189,7 @@
           isLive: true,
           url: tsUrl
         }, {
-          enableWorker: true,
+          enableWorker: false,
           lazyLoad: false,
           liveBufferLatencyChasing: true,
           liveBufferLatencyMaxLatency: 3.0,
@@ -186,25 +199,51 @@
 
         tsPlayer.attachMediaElement(video);
         tsPlayer.load();
-        
+
         let playStarted = false;
         const startPlayback = () => {
           if (playStarted) return;
           playStarted = true;
           hideOverlay();
+          video.controls = true;
           setStatus("ao vivo", "live");
-          video.play().catch(() => {});
+          const playPromise = video.play();
+          if (playPromise !== undefined) {
+            playPromise.catch((err) => {
+              if (err.name === "NotAllowedError") {
+                video.muted = true;
+                video.play().catch(() => {});
+                showOverlay("Clique para ativar o som 🔊", "O navegador requer um clique para liberar o áudio.");
+                const unmute = () => {
+                  video.muted = false;
+                  hideOverlay();
+                  window.removeEventListener("click", unmute);
+                  video.removeEventListener("click", unmute);
+                };
+                window.addEventListener("click", unmute, { once: true });
+                video.addEventListener("click", unmute, { once: true });
+              }
+            });
+          }
         };
 
         video.onloadeddata = startPlayback;
         video.onplaying = startPlayback;
         video.oncanplay = startPlayback;
 
-        tsPlayer.on(window.mpegts.Events.ERROR, (errType, errDetail) => {
-          console.warn("mpegts erro:", errType, errDetail);
+        tsPlayer.on(window.mpegts.Events.ERROR, (errType, errDetail, errInfo) => {
+          console.warn("mpegts erro:", errType, errDetail, errInfo);
           if (!playStarted) {
             destroyPlayer();
-            fallbackHls(m3u8Url, label);
+            if (errInfo && errInfo.code === 429) {
+              showOverlay("Conexão ocupada", "Liberando conexão e reconectando em 3s…");
+              setStatus("reconectando", "err");
+              reconnectTimer = setTimeout(() => playStream(streamId, label), 3500);
+            } else {
+              showOverlay("Erro ao carregar canal", "Tentando reconectar…");
+              setStatus("erro", "err");
+              reconnectTimer = setTimeout(() => playStream(streamId, label), 3000);
+            }
           }
         });
         return;
@@ -213,7 +252,8 @@
       }
     }
 
-    // Fallback HLS se mpegts não suportado
+    // Fallback HLS apenas para navegadores que não suportam MSE (ex: Safari iOS nativo)
+    const m3u8Url = toProxied(buildLiveUrl(user, pass, streamId, "m3u8"));
     fallbackHls(m3u8Url, label);
   }
 
@@ -316,22 +356,6 @@
   function renderCategories(cats) {
     els.catSelect.innerHTML = `<option value="">Todas as categorias</option>` +
       cats.map(c => `<option value="${c.category_id}">${(c.category_name || "").replace(/</g, "&lt;")}</option>`).join("");
-
-    // Renderizar painel de Jogos do Dia com busca automática no canal
-    if (els.gamesList) {
-      const todayGames = [
-        { time: "16:00", title: "Real Madrid x Barcelona", ch: "ESPN" },
-        { time: "19:00", title: "Flamengo x Palmeiras", ch: "Premiere" },
-        { time: "20:00", title: "Corinthians x Atlético-MG", ch: "SporTV" },
-        { time: "21:30", title: "CazeTV • Transmissão Ao Vivo", ch: "CazeTV" }
-      ];
-      els.gamesList.innerHTML = todayGames.map(g => `
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:#0d1110;border-radius:6px;cursor:pointer;" onclick="document.getElementById('searchInput').value='${g.ch}';document.getElementById('searchInput').dispatchEvent(new Event('input'));">
-          <span style="color:#fff;font-weight:600;">⚽ ${g.title}</span>
-          <span style="color:var(--green);font-size:10px;font-weight:700;background:#b7ff3c15;padding:2px 6px;border-radius:4px;">${g.time}</span>
-        </div>
-      `).join("");
-    }
   }
 
   // ---------------- Fluxo de sessão ----------------
@@ -346,7 +370,6 @@
       localStorage.setItem("nexus_play_session", JSON.stringify(session));
 
       els.npUser.textContent = `Conta: ${user}${login.user_info && login.user_info.exp_date ? " • expira " + new Date(login.user_info.exp_date * 1000).toLocaleDateString("pt-BR") : ""}`;
-      els.btnToggleList.style.display = "inline-flex";
 
       showOverlay("Carregando canais…", "Montando sua lista de canais ao vivo.");
       const [streams, cats] = await Promise.all([
@@ -387,7 +410,6 @@
     els.npChannel.textContent = "Nenhum canal selecionado";
     els.npUser.textContent = "";
     els.channelList.innerHTML = `<div class="empty-hint">Faça login para carregar a lista de canais.</div>`;
-    els.btnToggleList.style.display = "none";
     els.gate.classList.remove("hidden");
     setStatus("desconectado", "");
     hideOverlay();
@@ -412,13 +434,6 @@
     const wrap = els.video.closest(".player-wrap");
     if (wrap.requestFullscreen) wrap.requestFullscreen();
     else if (els.video.webkitEnterFullscreen) els.video.webkitEnterFullscreen();
-  });
-  els.btnToggleList.addEventListener("click", () => {
-    if (window.innerWidth <= 860) {
-      els.sidebar.classList.toggle("open");
-    } else {
-      els.sidebar.classList.toggle("collapsed");
-    }
   });
   els.searchInput.addEventListener("input", () => renderChannelList(allStreams));
   els.catSelect.addEventListener("change", () => renderChannelList(allStreams));
