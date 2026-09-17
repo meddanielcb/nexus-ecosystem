@@ -383,9 +383,10 @@
 
     els.channelList.innerHTML = items.map(c => {
       const active = String(c.category_id) === String(activeCat) ? " active" : "";
-      const icon = c.category_id === "" ? "📂" : "📁";
       return `<div class="chan cat-card${active}" data-cat-id="${c.category_id}">
-        <div class="cat-icon-badge">${icon}</div>
+        <div class="cat-icon-badge">
+          <img src="./design/nexus.svg" alt="" class="cat-n-icon">
+        </div>
         <span class="name">${(c.category_name || "Geral").replace(/</g, "&lt;")}</span>
       </div>`;
     }).join("");
