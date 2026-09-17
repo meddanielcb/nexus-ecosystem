@@ -41,6 +41,7 @@
   };
 
   let hls = null;
+  let tsPlayer = null;
   let session = null;       // { user, pass }
   let allStreams = [];      // cache de canais carregados
   let activeStreamId = null;
@@ -148,25 +149,86 @@
     return apiUrl(`/live/${encodeURIComponent(user)}/${encodeURIComponent(pass)}/${streamId}.${ext}`);
   }
 
-  // ---------------- Player HLS ----------------
-  function destroyHls() {
+  // ---------------- Player HLS & MPEG-TS ----------------
+  function destroyPlayer() {
     if (hls) { try { hls.destroy(); } catch (e) {} hls = null; }
+    if (tsPlayer) { try { tsPlayer.pause(); tsPlayer.unload(); tsPlayer.detachMediaElement(); tsPlayer.destroy(); } catch (e) {} tsPlayer = null; }
   }
 
-  function playStream(streamUrl, label) {
-    destroyHls();
+  function playStream(streamId, label) {
+    destroyPlayer();
     showOverlay("Carregando stream…", label || "");
     setStatus("carregando", "");
 
     const video = els.video;
-    const finalUrl = toProxied(streamUrl);
+    const user = session ? session.user : "";
+    const pass = session ? session.pass : "";
 
+    // 1. Tentar primeiro via mpegts.js (Fluxo contínuo ultra rápido direto do servidor TS)
+    const tsUrl = toProxied(buildLiveUrl(user, pass, streamId, "ts"));
+    const m3u8Url = toProxied(buildLiveUrl(user, pass, streamId, "m3u8"));
+
+    if (window.mpegts && window.mpegts.isSupported()) {
+      try {
+        tsPlayer = window.mpegts.createPlayer({
+          type: 'mse',
+          isLive: true,
+          url: tsUrl
+        }, {
+          enableWorker: true,
+          lazyLoad: false,
+          liveBufferLatencyChasing: true,
+          liveBufferLatencyMaxLatency: 3.0,
+          liveBufferLatencyMinRemain: 0.8,
+          autoCleanupSourceBuffer: true
+        });
+
+        tsPlayer.attachMediaElement(video);
+        tsPlayer.load();
+        
+        let playStarted = false;
+        const startPlayback = () => {
+          if (playStarted) return;
+          playStarted = true;
+          hideOverlay();
+          setStatus("ao vivo", "live");
+          video.play().catch(() => {});
+        };
+
+        video.onloadeddata = startPlayback;
+        video.onplaying = startPlayback;
+        video.oncanplay = startPlayback;
+
+        tsPlayer.on(window.mpegts.Events.ERROR, (errType, errDetail) => {
+          console.warn("mpegts erro:", errType, errDetail);
+          if (!playStarted) {
+            destroyPlayer();
+            fallbackHls(m3u8Url, label);
+          }
+        });
+        return;
+      } catch (err) {
+        console.warn("Erro ao iniciar mpegts:", err);
+      }
+    }
+
+    // Fallback HLS se mpegts não suportado
+    fallbackHls(m3u8Url, label);
+  }
+
+  function fallbackHls(finalUrl, label) {
+    const video = els.video;
     if (window.Hls && window.Hls.isSupported()) {
       hls = new Hls({
         lowLatencyMode: true,
         backBufferLength: 60,
         maxBufferLength: 30,
         enableWorker: true,
+        xhrSetup: function(xhr, url) {
+          if (url.startsWith("http://atmt.space")) {
+            xhr.open("GET", url.replace("http://atmt.space", "/stream"), true);
+          }
+        }
       });
       hls.loadSource(finalUrl);
       hls.attachMedia(video);
@@ -190,7 +252,7 @@
           default:
             showOverlay("Não foi possível reproduzir", "Verifique a conexão ou tente outro canal.");
             setStatus("erro", "err");
-            destroyHls();
+            destroyPlayer();
         }
       });
     } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
@@ -206,8 +268,8 @@
         setStatus("erro", "err");
       }, { once: true });
     } else {
-      showOverlay("Navegador incompatível", "Seu navegador não suporta reprodução HLS.");
-      setStatus("indisponível", "err");
+      showOverlay("Navegador não suportado", "Seu navegador não suporta reprodução HLS ou MPEG-TS.");
+      setStatus("erro", "err");
     }
   }
 
@@ -229,8 +291,9 @@
     els.channelList.innerHTML = filtered.slice(0, 400).map(s => {
       const logo = s.stream_icon ? toProxied(s.stream_icon) : "";
       const active = String(s.stream_id) === String(activeStreamId) ? " active" : "";
+      const finalLogo = logo || "/favicon.png";
       return `<div class="chan${active}" data-id="${s.stream_id}">
-        ${logo ? `<img class="logo" src="${logo}" loading="lazy" onerror="this.style.visibility='hidden'">` : `<div class="logo"></div>`}
+        <img class="logo" src="${finalLogo}" loading="lazy" onerror="this.onerror=null;this.src='/favicon.png';">
         <span class="name">${(s.name || "Canal").replace(/</g, "&lt;")}</span>
       </div>`;
     }).join("");
@@ -244,7 +307,7 @@
         els.npChannel.textContent = stream.name || "Canal";
         renderChannelList(streams);
         if (window.innerWidth <= 860) els.sidebar.classList.remove("open");
-        playStream(buildLiveUrl(session.user, session.pass, stream.stream_id), stream.name);
+        playStream(stream.stream_id, stream.name);
       });
     });
   }
@@ -278,13 +341,13 @@
       renderChannelList(allStreams);
 
       if (opts.directUrl) {
-        playStream(opts.directUrl, "Stream direto");
+        fallbackHls(opts.directUrl, "Stream direto");
       } else if (allStreams.length) {
         const first = allStreams[0];
         activeStreamId = first.stream_id;
         els.npChannel.textContent = first.name || "Canal";
         renderChannelList(allStreams);
-        playStream(buildLiveUrl(user, pass, first.stream_id), first.name);
+        playStream(first.stream_id, first.name);
       } else {
         hideOverlay();
         setStatus("conectado", "live");
@@ -326,7 +389,7 @@
   }));
   els.btnLogout.addEventListener("click", logout);
   els.btnReload.addEventListener("click", () => {
-    if (session && activeStreamId) playStream(buildLiveUrl(session.user, session.pass, activeStreamId), els.npChannel.textContent);
+    if (session && activeStreamId) playStream(activeStreamId, els.npChannel.textContent);
   });
   els.btnFullscreen.addEventListener("click", () => {
     const wrap = els.video.closest(".player-wrap");
