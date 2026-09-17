@@ -426,6 +426,21 @@
   [els.inUser, els.inPass].forEach(inp => inp.addEventListener("keydown", e => {
     if (e.key === "Enter") els.btnLogin.click();
   }));
+  // Toggle exibir/ocultar senha
+  const btnTogglePass = document.getElementById("btnTogglePass");
+  if (btnTogglePass) {
+    btnTogglePass.addEventListener("click", () => {
+      const isPass = els.inPass.type === "password";
+      els.inPass.type = isPass ? "text" : "password";
+      const iconEye = btnTogglePass.querySelector(".icon-eye");
+      const iconEyeOff = btnTogglePass.querySelector(".icon-eye-off");
+      if (iconEye && iconEyeOff) {
+        iconEye.style.display = isPass ? "block" : "none";
+        iconEyeOff.style.display = isPass ? "none" : "block";
+      }
+    });
+  }
+
   els.btnLogout.addEventListener("click", logout);
   els.btnReload.addEventListener("click", () => {
     if (session && activeStreamId) playStream(activeStreamId, els.npChannel.textContent);
