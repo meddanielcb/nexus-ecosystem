@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#050607">
 <title>Nexus PlayTV • WebPlayer</title>
 <link rel="icon" href="/favicon.png" type="image/png">
-<link rel="stylesheet" href="./design/player.css?v=2.3">
+<link rel="stylesheet" href="./design/player.css?v=2.6">
 </head>
 <body>
 
@@ -55,6 +55,29 @@
   <section class="stage">
     <div class="player-wrap">
       <video id="video" playsinline></video>
+
+      <!-- Formato 2: Corner Badge de Patrocínio (Canto Superior) -->
+      <a class="ad-corner-badge" id="adCornerBadge" href="https://pixget.app" target="_blank" rel="noopener" title="Patrocinador Oficial">
+        <span class="ad-badge-tag">APOIO</span>
+        <span class="ad-badge-brand" id="adBadgeBrand">PIXGET</span>
+        <span class="ad-badge-dot"></span>
+      </a>
+
+      <!-- Formato 1: Lower-Third Flutuante Transitório (Padrão TV) -->
+      <div class="ad-lower-third" id="adLowerThird">
+        <div class="ad-lt-content">
+          <div class="ad-lt-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+          <div class="ad-lt-text">
+            <span class="ad-lt-kicker" id="adLtKicker">PATROCINADOR OFICIAL</span>
+            <span class="ad-lt-title" id="adLtTitle">Pixget • O Checkout PIX Instantâneo sem Intermediários</span>
+          </div>
+          <a class="ad-lt-cta" id="adLtCta" href="https://pixget.app" target="_blank" rel="noopener">Saiba Mais ↗</a>
+        </div>
+        <button class="ad-lt-close" id="btnAdLtClose" aria-label="Fechar anúncio">✕</button>
+      </div>
+
       <div class="overlay" id="overlay">
         <div class="spinner"></div>
         <p class="big" id="overlayTitle">Carregando WebPlayer…</p>
@@ -67,28 +90,64 @@
         <span id="npUser"></span>
       </div>
       <div class="controls-row">
+        <button class="icon-btn" id="btnTestAd" title="Testar exibição do Banner Lower-Third">★ Demo Banner</button>
         <button class="icon-btn" id="btnFullscreen">⛶ Tela Cheia</button>
         <button class="icon-btn" id="btnReload">⟲ Recarregar</button>
       </div>
     </div>
   </section>
 
-  <aside class="sidebar" id="sidebar">
+  <aside class="sidebar channels-retracted" id="sidebar">
     <div class="side-head">
       <span class="list-kicker">SUA PROGRAMAÇÃO</span>
       <h2>Canais ao vivo.</h2>
       <input class="side-search" id="searchInput" aria-label="Buscar canal" placeholder="Buscar canal…">
-      <select class="cat-select" id="catSelect" aria-label="Categoria de canais"><option value="">Todas as categorias</option></select>
+      <div class="cat-select-row">
+        <select class="cat-select" id="catSelect" aria-label="Categoria de canais"><option value="">Todas as categorias</option></select>
+        <button type="button" class="btn-toggle-compact" id="btnToggleChannels" title="Recolher / Expandir lista de canais" aria-label="Alternar altura dos canais">
+          <svg class="toggle-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+          </svg>
+        </button>
+      </div>
     </div>
+
+    <!-- Lista de canais (Em cima: retraída com rolagem compacta) -->
     <div class="list" id="channelList">
       <div class="empty-hint">Faça login para carregar a lista de canais.</div>
+    </div>
+
+    <!-- Banner Vertical de Anúncio (Em baixo: retângulo vertical) -->
+    <div class="ad-vertical-billboard" id="adVerticalBillboard">
+      <div class="ad-billboard-inner visible" id="adBillboardInner">
+        <div class="ad-bb-header">
+          <span class="ad-bb-badge" id="adBbTag">OFERTA EXCLUSIVA</span>
+          <span class="ad-bb-sponsor" id="adBbBrand">NEXUS VIP</span>
+        </div>
+        <div class="ad-bb-body">
+          <h3 class="ad-bb-title" id="adBbTitle">Libere 4 Telas em 4K</h3>
+          <p class="ad-bb-desc" id="adBbDesc">Assista aos melhores jogos e filmes sem travar, em até 4 aparelhos ao mesmo tempo.</p>
+          <ul class="ad-bb-features" id="adBbFeatures">
+            <li><span class="feat-dot">⚡</span> Ultra estabilidade sem delay</li>
+            <li><span class="feat-dot">📺</span> 24.000 canais + 120.000 VOD</li>
+            <li><span class="feat-dot">📱</span> TV, Celular, Tablet e PC</li>
+          </ul>
+        </div>
+        <div class="ad-bb-footer">
+          <div class="ad-bb-pricing">
+            <span class="ad-bb-price-label">Apenas</span>
+            <span class="ad-bb-price" id="adBbPrice">R$ 29,90<small>/mês</small></span>
+          </div>
+          <a href="https://nexusplay.tv" target="_blank" rel="noopener" class="ad-bb-btn" id="adBbBtn">Assinar ⚡</a>
+        </div>
+      </div>
     </div>
   </aside>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/mpegts.js@1.7.3/dist/mpegts.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
-<script src="/app.js?v=2.3"></script>
-<script src="./design/motion.js?v=2.3"></script>
+<script src="/app.js?v=2.6"></script>
+<script src="./design/motion.js?v=2.6"></script>
 </body>
 </html>

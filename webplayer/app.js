@@ -210,6 +210,10 @@
           hideOverlay();
           video.controls = true;
           setStatus("ao vivo", "live");
+          // Dispara o banner Lower-Third transitório 7s após início do canal
+          setTimeout(() => {
+            showLowerThird(AD_CAMPAIGNS[0], 10000);
+          }, 7000);
           const playPromise = video.play();
           if (playPromise !== undefined) {
             playPromise.catch((err) => {
@@ -455,6 +459,162 @@
   });
   els.searchInput.addEventListener("input", () => renderChannelList(allStreams));
   els.catSelect.addEventListener("change", () => renderChannelList(allStreams));
+
+  // ==================== NEXUS ADS ENGINE ====================
+  const AD_CAMPAIGNS = [
+    {
+      id: "nexus_vip",
+      brand: "NEXUS VIP",
+      tag: "OFERTA EXCLUSIVA",
+      kicker: "RECOMENDAÇÃO EXCLUSIVA",
+      title: "Libere 4 Telas em 4K",
+      desc: "Assista aos melhores jogos e filmes em até 4 dispositivos simultâneos com ultra estabilidade.",
+      features: ["Ultra estabilidade sem delay", "24.000 canais + 120.000 VOD", "TV, Celular, Tablet e PC"],
+      price: "R$ 29,90",
+      url: "https://nexusplay.tv",
+      cta: "Assinar ⚡"
+    },
+    {
+      id: "pixget",
+      brand: "PIXGET",
+      tag: "PARCEIRO OFICIAL",
+      kicker: "PATROCINADOR OFICIAL",
+      title: "Receba PIX no Automático",
+      desc: "Venda seus planos com confirmação bancária em 1 segundo e dinheiro direto na sua conta.",
+      features: ["Confirmação bancária em 1s", "Webhook instantâneo e seguro", "Zero taxas escondidas"],
+      price: "Taxa Zero",
+      url: "https://pixget.app",
+      cta: "Conhecer ↗"
+    },
+    {
+      id: "agentia",
+      brand: "AGENTIA",
+      tag: "TECNOLOGIA PARCEIRA",
+      kicker: "TECNOLOGIA PARCEIRA",
+      title: "Agentes Autônomos de IA",
+      desc: "Automatize operações e fluxos de atendimento com agentes inteligentes integrados ao seu negócio.",
+      features: ["Treinado com seus próprios dados", "Respostas humanas e imediatas", "Integração via API e Webhook"],
+      price: "Planos PRO",
+      url: "https://agentia.app",
+      cta: "Acessar ↗"
+    }
+  ];
+
+  let currentAdIndex = -1;
+  let adTimer = null;
+  const elAdLt = document.getElementById("adLowerThird");
+  const elAdBadge = document.getElementById("adCornerBadge");
+  const elBtnTestAd = document.getElementById("btnTestAd");
+  const elBtnAdLtClose = document.getElementById("btnAdLtClose");
+  const elPeriodicContainer = document.getElementById("adPeriodicContainer");
+
+  function showLowerThird(campaign, durationMs = 10000) {
+    if (!elAdLt) return;
+    const safeIndex = currentAdIndex < 0 ? 0 : currentAdIndex % AD_CAMPAIGNS.length;
+    const ad = campaign || AD_CAMPAIGNS[safeIndex];
+    if (!ad) return;
+    const kickerEl = document.getElementById("adLtKicker");
+    const titleEl = document.getElementById("adLtTitle");
+    const ctaEl = document.getElementById("adLtCta");
+    if (kickerEl) kickerEl.textContent = ad.kicker;
+    if (titleEl) titleEl.textContent = ad.brand + " • " + ad.title;
+    if (ctaEl) { ctaEl.href = ad.url; ctaEl.textContent = ad.cta; }
+
+    elAdLt.classList.add("active");
+    if (adTimer) clearTimeout(adTimer);
+    adTimer = setTimeout(() => {
+      elAdLt.classList.remove("active");
+    }, durationMs);
+  }
+
+  function hideLowerThird() {
+    if (elAdLt) elAdLt.classList.remove("active");
+    if (adTimer) { clearTimeout(adTimer); adTimer = null; }
+  }
+
+  function rotateCampaign() {
+    currentAdIndex = (currentAdIndex + 1) % AD_CAMPAIGNS.length;
+    const ad = AD_CAMPAIGNS[currentAdIndex];
+    // Atualiza Corner Badge
+    const badgeBrand = document.getElementById("adBadgeBrand");
+    if (badgeBrand) badgeBrand.textContent = ad.brand;
+    if (elAdBadge) elAdBadge.href = ad.url;
+    // Atualiza Billboard Vertical (na parte inferior da barra lateral)
+    const bbTag = document.getElementById("adBbTag");
+    const bbBrand = document.getElementById("adBbBrand");
+    const bbTitle = document.getElementById("adBbTitle");
+    const bbDesc = document.getElementById("adBbDesc");
+    const bbFeatures = document.getElementById("adBbFeatures");
+    const bbPrice = document.getElementById("adBbPrice");
+    const bbBtn = document.getElementById("adBbBtn");
+    if (bbTag) bbTag.textContent = ad.tag || "OFERTA EXCLUSIVA";
+    if (bbBrand) bbBrand.textContent = ad.brand;
+    if (bbTitle) bbTitle.textContent = ad.title;
+    if (bbDesc) bbDesc.textContent = ad.desc;
+    if (bbPrice) bbPrice.innerHTML = `${ad.price}<small>/mês</small>`;
+    if (bbBtn) { bbBtn.href = ad.url; bbBtn.textContent = ad.cta; }
+    if (bbFeatures && ad.features) {
+      bbFeatures.innerHTML = ad.features.map(f => `<li><span class="feat-dot">⚡</span> ${f}</li>`).join("");
+    }
+  }
+
+  if (elBtnAdLtClose) {
+    elBtnAdLtClose.addEventListener("click", (e) => {
+      e.stopPropagation();
+      hideLowerThird();
+    });
+  }
+
+  const elBillboardInner = document.getElementById("adBillboardInner");
+
+  if (elBtnTestAd) {
+    elBtnTestAd.addEventListener("click", () => {
+      rotateCampaign();
+      showLowerThird(AD_CAMPAIGNS[currentAdIndex], 12000);
+      if (elBillboardInner) elBillboardInner.classList.add("visible");
+    });
+  }
+
+  // Loop Periódico de Anúncios na Parte Inferior: 10s visível, 20s apagado
+  function startPeriodicBillboardLoop() {
+    function cycle() {
+      rotateCampaign();
+      if (elBillboardInner) elBillboardInner.classList.add("visible");
+      setTimeout(() => {
+        if (elBillboardInner) elBillboardInner.classList.remove("visible");
+        setTimeout(cycle, 20000); // 20 segundos apagado (apenas preto)
+      }, 10000); // 10 segundos visível
+    }
+    setTimeout(cycle, 2000);
+  }
+  startPeriodicBillboardLoop();
+
+  // Aciona automaticamente o Lower-Third a cada 3 minutos se o vídeo estiver tocando
+  setInterval(() => {
+    if (els.video && !els.video.paused && els.video.currentTime > 5) {
+      showLowerThird(AD_CAMPAIGNS[currentAdIndex], 10000);
+    }
+  }, 180000);
+
+  // Botão Ícone de Recolher/Expandir Canais na Barra Lateral
+  const btnToggleChannels = document.getElementById("btnToggleChannels");
+  const sidebar = document.getElementById("sidebar");
+
+  if (btnToggleChannels && sidebar) {
+    btnToggleChannels.addEventListener("click", () => {
+      const isRetracted = sidebar.classList.toggle("channels-retracted");
+      btnToggleChannels.setAttribute("aria-expanded", isRetracted ? "false" : "true");
+      btnToggleChannels.title = isRetracted ? "Expandir lista de canais" : "Recolher lista para ver anúncio";
+    });
+
+    els.searchInput.addEventListener("focus", () => {
+      if (sidebar.classList.contains("channels-retracted")) {
+        sidebar.classList.remove("channels-retracted");
+        btnToggleChannels.setAttribute("aria-expanded", "true");
+        btnToggleChannels.title = "Recolher lista para ver anúncio";
+      }
+    });
+  }
 
   // ---------------- Bootstrap: querystring / sessão salva ----------------
   function boot() {
