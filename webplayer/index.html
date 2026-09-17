@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#050607">
 <title>Nexus PlayTV • WebPlayer</title>
 <link rel="icon" href="/favicon.png" type="image/png">
-<link rel="stylesheet" href="./design/player.css?v=3.9">
+<link rel="stylesheet" href="./design/player.css?v=4.0">
 </head>
 <body>
 
@@ -70,8 +70,14 @@
 
 <main>
   <section class="stage">
-    <div class="player-wrap">
+    <div class="player-wrap" id="playerWrap">
       <video id="video" playsinline></video>
+
+      <!-- Botão Flutuante de Sair da Tela Cheia -->
+      <button class="fullscreen-exit-btn" id="btnExitFullscreen" aria-label="Sair da tela cheia">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline></svg>
+        <span>Sair da Tela Cheia</span>
+      </button>
 
       <!-- Formato 2: Corner Badge de Patrocínio Transitório (Canto Superior) -->
       <a class="ad-corner-badge" id="adCornerBadge" href="https://pixget.app" target="_blank" rel="noopener" title="Patrocinador Oficial PixGet">
@@ -151,7 +157,7 @@
 <script src="https://cdn.jsdelivr.net/npm/mpegts.js@1.7.3/dist/mpegts.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
 <script src="./design/qrcode.min.js"></script>
-<script src="/app.js?v=3.9"></script>
-<script src="./design/motion.js?v=3.9"></script>
+<script src="/app.js?v=4.0"></script>
+<script src="./design/motion.js?v=4.0"></script>
 </body>
 </html>

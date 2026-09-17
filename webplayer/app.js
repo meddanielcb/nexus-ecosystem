@@ -521,10 +521,40 @@
   els.btnReload.addEventListener("click", () => {
     if (session && activeStreamId) playStream(activeStreamId, els.npChannel.textContent);
   });
-  els.btnFullscreen.addEventListener("click", () => {
-    const wrap = els.video.closest(".player-wrap");
-    if (wrap.requestFullscreen) wrap.requestFullscreen();
-    else if (els.video.webkitEnterFullscreen) els.video.webkitEnterFullscreen();
+  const playerWrap = document.getElementById("playerWrap") || els.video.closest(".player-wrap");
+  const btnExitFullscreen = document.getElementById("btnExitFullscreen");
+
+  function toggleFullscreen() {
+    if (!playerWrap) return;
+    const isFull = playerWrap.classList.contains("fullscreen-mode") || !!document.fullscreenElement || !!document.webkitFullscreenElement;
+
+    if (!isFull) {
+      playerWrap.classList.add("fullscreen-mode");
+      document.body.classList.add("in-fullscreen");
+      const req = playerWrap.requestFullscreen || playerWrap.webkitRequestFullscreen || playerWrap.mozRequestFullScreen || playerWrap.msRequestFullscreen;
+      if (req) {
+        req.call(playerWrap).catch(() => {});
+      }
+    } else {
+      playerWrap.classList.remove("fullscreen-mode");
+      document.body.classList.remove("in-fullscreen");
+      const exit = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+      if (exit && (document.fullscreenElement || document.webkitFullscreenElement)) {
+        exit.call(document).catch(() => {});
+      }
+    }
+  }
+
+  if (els.btnFullscreen) els.btnFullscreen.addEventListener("click", toggleFullscreen);
+  if (btnExitFullscreen) btnExitFullscreen.addEventListener("click", toggleFullscreen);
+
+  ["fullscreenchange", "webkitfullscreenchange"].forEach(evt => {
+    document.addEventListener(evt, () => {
+      if (!document.fullscreenElement && !document.webkitFullscreenElement && playerWrap) {
+        playerWrap.classList.remove("fullscreen-mode");
+        document.body.classList.remove("in-fullscreen");
+      }
+    });
   });
   els.searchInput.addEventListener("input", () => {
     if (currentViewMode === "categories") {
@@ -582,12 +612,12 @@
     });
   }
 
-  // Aciona automaticamente o Lower-Third a cada 2.5 minutos se o vídeo estiver tocando
+  // Aciona automaticamente o Lower-Third a cada 60s se o vídeo estiver tocando
   setInterval(() => {
-    if (els.video && !els.video.paused && els.video.currentTime > 5) {
+    if (els.video && !els.video.paused) {
       showLowerThird(10000);
     }
-  }, 150000);
+  }, 60000);
 
   // 3. BILLBOARD VERTICAL (Barra Lateral): 12s visível -> 22s apagado (preto limpo)
   function startBillboardLoop() {
