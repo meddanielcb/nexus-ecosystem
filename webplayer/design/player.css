@@ -22,12 +22,12 @@ aside.sidebar.collapsed{margin-right:-340px;display:none}.list-kicker,.login-kic
 /* ================= FORMATOS DE ANÚNCIOS (NEXUS ADS) ================= */
 
 /* Formato 1: Lower-Third Flutuante Transitório */
-.ad-lower-third{position:absolute;bottom:8px;left:50%;transform:translateX(-50%) translateY(25px);opacity:0;pointer-events:none;z-index:25;width:88%;max-width:680px;background:transparent;border:none;padding:0;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:transform .4s cubic-bezier(.16,1,.3,1),opacity .4s ease}
+.ad-lower-third{position:absolute;bottom:12px;left:50%;transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;z-index:25;width:auto;max-width:650px;background:transparent!important;border:none!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;padding:0;display:flex;align-items:center;justify-content:center;transition:transform .35s cubic-bezier(.16,1,.3,1),opacity .35s ease}
 .ad-lower-third.active{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:auto}
-.ad-lt-img-link{width:100%;display:block;text-decoration:none}
-.ad-lt-img-link img{width:100%;height:auto;display:block;border-radius:12px;filter:drop-shadow(0 8px 24px rgba(0,0,0,.75));transition:transform .15s}
+.ad-lt-img-link{display:block;text-decoration:none;background:transparent!important}
+.ad-lt-img-link img{width:100%;max-width:650px;height:auto;display:block;border-radius:0;filter:drop-shadow(0 8px 24px rgba(0,0,0,.85));transition:transform .15s}
 .ad-lt-img-link:hover img{transform:scale(1.01)}
-.ad-lt-close{position:absolute;top:-6px;right:-6px;background:rgba(8,12,16,.9);border:1px solid rgba(0,229,255,.4);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px;z-index:26;transition:all .2s}
+.ad-lt-close{position:absolute;top:-6px;right:-6px;background:rgba(8,12,16,.95);border:1px solid rgba(0,229,255,.5);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px;z-index:26;transition:all .2s}
 .ad-lt-close:hover{background:#ff4444;border-color:#ff4444;color:#fff}
 
 /* Formato 2: Corner Badge de Patrocínio Transitório (Canto Superior Direito) */
