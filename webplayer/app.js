@@ -631,6 +631,59 @@
     });
   }
 
+  // ---------------- Sistema de Login Smart TV / QR Code ----------------
+  const tabQr = document.getElementById("tabQr");
+  const tabForm = document.getElementById("tabForm");
+  const paneQr = document.getElementById("paneQr");
+  const paneForm = document.getElementById("paneForm");
+  const qrCodeImg = document.getElementById("qrCodeImg");
+  const qrPinCode = document.getElementById("qrPinCode");
+
+  function switchLoginTab(mode) {
+    if (!tabQr || !tabForm || !paneQr || !paneForm) return;
+    if (mode === "qr") {
+      tabQr.classList.add("active");
+      tabForm.classList.remove("active");
+      paneQr.classList.add("active");
+      paneForm.classList.remove("active");
+    } else {
+      tabForm.classList.add("active");
+      tabQr.classList.remove("active");
+      paneForm.classList.add("active");
+      paneQr.classList.remove("active");
+      if (els.inUser) els.inUser.focus();
+    }
+  }
+
+  if (tabQr && tabForm) {
+    tabQr.addEventListener("click", () => switchLoginTab("qr"));
+    tabForm.addEventListener("click", () => switchLoginTab("form"));
+  }
+
+  function initQrCode() {
+    if (!qrCodeImg || typeof qrcode === "undefined") return;
+    // Gera ou recupera PIN de 4 dígitos para esta TV
+    let pin = localStorage.getItem("nexus_tv_pin");
+    if (!pin) {
+      pin = String(Math.floor(1000 + Math.random() * 9000));
+      localStorage.setItem("nexus_tv_pin", pin);
+    }
+    if (qrPinCode) qrPinCode.textContent = pin;
+
+    // Gera o QR Code com alta densidade
+    try {
+      const pairUrl = `https://play.nexusplay.tv/?pair=${pin}`;
+      const qr = qrcode(0, "M");
+      qr.addData(pairUrl);
+      qr.make();
+      qrCodeImg.src = qr.createDataURL(6, 2);
+    } catch (e) {
+      console.warn("Falha ao gerar QR Code:", e);
+    }
+  }
+
+  initQrCode();
+
   // ---------------- Bootstrap: querystring / sessão salva ----------------
   function boot() {
     const params = new URLSearchParams(window.location.search);
