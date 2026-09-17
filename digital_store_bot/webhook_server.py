@@ -17,6 +17,9 @@ from notifier import alert_sale, alert_system
 import sys
 sys.path.append("/opt/nexus_repo/nexus_playtv_bot")
 sys.path.append("/opt/data/nexus_repo/nexus_playtv_bot")
+sys.path.append("/opt/nexus_repo/whatsapp_support_agent")
+sys.path.append("/opt/data/nexus_repo/whatsapp_support_agent")
+import agent_bridge
 from masterx_api import create_masterx_line, MasterXError, MasterXTrialLimitReached
 from checkout_api import create_checkout, get_checkout_status, CheckoutError
 from auth_api import request_otp, verify_otp, get_wallet, AuthError
@@ -799,7 +802,50 @@ class WebhookHandler(BaseHTTPRequestHandler):
         raw_body = self.rfile.read(length)
         parsed_path = urlparse(self.path).path
 
-        
+        if parsed_path == "/api/webhooks/evolution":
+            try:
+                payload = json.loads(raw_body.decode('utf-8')) if raw_body else {}
+            except Exception:
+                payload = {}
+            event_type = payload.get("event")
+            data_body = payload.get("data", {})
+            
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(b'{"status":"received"}')
+            
+            if event_type == "messages.upsert":
+                msg_obj = data_body.get("message", {})
+                key_obj = data_body.get("key", {})
+                
+                if not key_obj.get("fromMe", False):
+                    remote_jid = key_obj.get("remoteJid", "")
+                    if "@s.whatsapp.net" in remote_jid:
+                        user_text = ""
+                        if "conversation" in msg_obj:
+                            user_text = msg_obj["conversation"]
+                        elif "extendedTextMessage" in msg_obj:
+                            user_text = msg_obj["extendedTextMessage"].get("text", "")
+                            
+                        if user_text:
+                            def _handle_whatsapp_msg(jid, txt):
+                                reply, img, handoff = agent_bridge.process_ai_reply(txt)
+                                if img:
+                                    agent_bridge.send_whatsapp_media(jid, img, caption=reply)
+                                else:
+                                    agent_bridge.send_whatsapp_text(jid, reply)
+                                    
+                                if handoff:
+                                    try:
+                                        alert_system("⚠️ SUPORTE HUMANO NO WHATSAPP", f"Cliente: {jid}\nMensagem: {txt}")
+                                    except Exception:
+                                        pass
+                                        
+                            threading.Thread(target=_handle_whatsapp_msg, args=(remote_jid, user_text), daemon=True).start()
+            return
+
         if parsed_path == "/api/trial/create":
             def _respond_trial(code, payload):
                 body = json.dumps(payload).encode('utf-8')
