@@ -35,7 +35,7 @@
   <div class="brand"><img src="./design/nexus.svg" alt="" width="29" height="32"><span>NEXUS <b>PLAYTV</b></span></div>
   <div style="display:flex;align-items:center;gap:8px;">
     <span class="status-pill" id="statusPill">● conectando…</span>
-    <button class="icon-btn" id="btnToggleList" style="display:none;">Canais</button>
+    <button class="icon-btn" id="btnToggleList" style="display:inline-flex;">☰ Canais</button>
     <button class="icon-btn" id="btnLogout">Sair</button>
   </div>
 </header>
@@ -63,7 +63,15 @@
   </section>
 
   <aside class="sidebar" id="sidebar">
-    <div class="side-head"><span class="list-kicker">SUA PROGRAMAÇÃO</span><h2>Canais ao vivo.</h2>
+    <div class="side-head">
+      <span class="list-kicker">SUA PROGRAMAÇÃO</span>
+      <h2>Canais ao vivo.</h2>
+      <div id="gamesSection" style="margin-bottom:16px;padding:12px;background:#141a18;border-radius:10px;border:1px solid #ffffff14;">
+        <div style="font-size:11px;font-weight:700;color:var(--green);letter-spacing:1px;margin-bottom:8px;display:flex;align-items:center;gap:6px;">
+          <span>⚽</span> JOGOS DE HOJE
+        </div>
+        <div id="gamesList" style="display:flex;flex-direction:column;gap:6px;font-size:12px;"></div>
+      </div>
       <input class="side-search" id="searchInput" aria-label="Buscar canal" placeholder="Buscar canal…">
       <select class="cat-select" id="catSelect" aria-label="Categoria de canais"><option value="">Todas as categorias</option></select>
     </div>

@@ -33,6 +33,7 @@
     channelList: document.getElementById("channelList"),
     searchInput: document.getElementById("searchInput"),
     catSelect: document.getElementById("catSelect"),
+    gamesList: document.getElementById("gamesList"),
     btnFullscreen: document.getElementById("btnFullscreen"),
     btnReload: document.getElementById("btnReload"),
     btnLogout: document.getElementById("btnLogout"),
@@ -315,6 +316,22 @@
   function renderCategories(cats) {
     els.catSelect.innerHTML = `<option value="">Todas as categorias</option>` +
       cats.map(c => `<option value="${c.category_id}">${(c.category_name || "").replace(/</g, "&lt;")}</option>`).join("");
+
+    // Renderizar painel de Jogos do Dia com busca automática no canal
+    if (els.gamesList) {
+      const todayGames = [
+        { time: "16:00", title: "Real Madrid x Barcelona", ch: "ESPN" },
+        { time: "19:00", title: "Flamengo x Palmeiras", ch: "Premiere" },
+        { time: "20:00", title: "Corinthians x Atlético-MG", ch: "SporTV" },
+        { time: "21:30", title: "CazeTV • Transmissão Ao Vivo", ch: "CazeTV" }
+      ];
+      els.gamesList.innerHTML = todayGames.map(g => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:#0d1110;border-radius:6px;cursor:pointer;" onclick="document.getElementById('searchInput').value='${g.ch}';document.getElementById('searchInput').dispatchEvent(new Event('input'));">
+          <span style="color:#fff;font-weight:600;">⚽ ${g.title}</span>
+          <span style="color:var(--green);font-size:10px;font-weight:700;background:#b7ff3c15;padding:2px 6px;border-radius:4px;">${g.time}</span>
+        </div>
+      `).join("");
+    }
   }
 
   // ---------------- Fluxo de sessão ----------------
@@ -396,7 +413,13 @@
     if (wrap.requestFullscreen) wrap.requestFullscreen();
     else if (els.video.webkitEnterFullscreen) els.video.webkitEnterFullscreen();
   });
-  els.btnToggleList.addEventListener("click", () => els.sidebar.classList.toggle("open"));
+  els.btnToggleList.addEventListener("click", () => {
+    if (window.innerWidth <= 860) {
+      els.sidebar.classList.toggle("open");
+    } else {
+      els.sidebar.classList.toggle("collapsed");
+    }
+  });
   els.searchInput.addEventListener("input", () => renderChannelList(allStreams));
   els.catSelect.addEventListener("change", () => renderChannelList(allStreams));
 
