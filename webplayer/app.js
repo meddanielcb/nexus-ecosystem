@@ -423,8 +423,7 @@
 
   function renderCategories(cats) {
     allCategories = Array.isArray(cats) ? cats : [];
-    els.catSelect.innerHTML = `<option value="">Todas as categorias</option>` +
-      allCategories.map(c => `<option value="${c.category_id}">${(c.category_name || "").replace(/</g, "&lt;")}</option>`).join("");
+    if (els.catSelect) els.catSelect.value = "";
   }
 
   // ---------------- Fluxo de sessão ----------------
