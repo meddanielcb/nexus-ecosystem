@@ -30,12 +30,12 @@ aside.sidebar.collapsed{margin-right:-350px;display:none}
 /* ================= FORMATOS DE ANÚNCIOS (NEXUS ADS) ================= */
 
 /* Formato 1: Lower-Third Flutuante Transitório (Colado na base inferior) */
-.ad-lower-third{position:absolute;bottom:4px;left:50%;transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;z-index:25;width:92%;max-width:840px;background:transparent!important;border:none!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;padding:0;display:flex;align-items:center;justify-content:center;transition:transform .35s cubic-bezier(.16,1,.3,1),opacity .35s ease}
+.ad-lower-third{position:absolute;bottom:0;left:50%;transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;z-index:25;width:auto;max-width:92%;background:transparent!important;border:none!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;padding:0;display:flex;align-items:center;justify-content:center;transition:transform .35s cubic-bezier(.16,1,.3,1),opacity .35s ease}
 .ad-lower-third.active{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:auto}
-.ad-lt-img-link{display:block;text-decoration:none;background:transparent!important;width:100%}
-.ad-lt-img-link img{width:100%;height:auto;display:block;border-radius:0;filter:drop-shadow(0 6px 20px rgba(0,0,0,.9));transition:transform .15s}
+.ad-lt-img-link{display:block;text-decoration:none;background:transparent!important;max-width:100%}
+.ad-lt-img-link img{max-height:105px;width:auto;max-width:100%;object-fit:contain;display:block;border-radius:0;filter:drop-shadow(0 4px 16px rgba(0,0,0,.95));transition:transform .15s}
 .ad-lt-img-link:hover img{transform:scale(1.008)}
-.ad-lt-close{position:absolute;top:6px;right:14px;background:transparent!important;border:none!important;color:rgba(255,255,255,.6);font-size:14px;font-weight:400;cursor:pointer;padding:4px 6px;line-height:1;border-radius:4px;z-index:26;transition:all .15s ease}
+.ad-lt-close{position:absolute;top:2px;right:6px;background:transparent!important;border:none!important;color:rgba(255,255,255,.6);font-size:13px;font-weight:400;cursor:pointer;padding:2px 5px;line-height:1;border-radius:4px;z-index:26;transition:all .15s ease}
 .ad-lt-close:hover{color:#fff;transform:scale(1.2)}
 
 /* Formato 2: Corner Badge de Patrocínio Transitório (Canto Superior Direito) */
@@ -98,9 +98,9 @@ aside.sidebar{position:relative}
 .login-identity{text-align:center;margin-bottom:50px}.mark-stage{display:grid;place-items:center;perspective:450px;height:86px;margin-bottom:13px}.login-mark{width:58px;height:65px;object-fit:contain;margin:0;filter:drop-shadow(0 5px 16px #b7ff3c22);animation:brand-turn 14s ease-in-out infinite;transform-origin:center}.login-wordmark{font:600 31px/1 Space,sans-serif;letter-spacing:2px;color:#f5f7f4}.login-wordmark span{display:block;font-size:9px;font-weight:400;letter-spacing:5.5px;color:#b7ff3c;margin-top:9px;margin-left:5px}.login-identity p{font-size:12px;color:#8e9890;margin-top:16px}
 .login-heading{text-align:center;margin-bottom:24px}.login-card h1{font:600 23px/1.3 Space,sans-serif;letter-spacing:-.6px;margin:0 0 8px}.login-card .sub{margin:0;font-size:12px;color:#9ba59b}.login-card .field{margin-bottom:18px}.login-card .field label{display:block;font-size:11px;letter-spacing:.25px;color:#aab3aa;margin-bottom:8px}.login-card .field input{margin:0;min-height:58px;border-radius:13px;background:#111314;border-color:#ffffff1c;padding:16px 18px;box-shadow:inset 0 1px 0 #ffffff03}.login-card .field input:hover{border-color:#ffffff30}.login-card .field input:focus{border-color:#b7ff3c80;background:#141914}.login-card .btn{display:flex;align-items:center;justify-content:space-between;min-height:54px;border-radius:12px;margin-top:12px;padding:14px 20px;font-size:14px;box-shadow:0 5px 24px #b7ff3c09}.login-card .btn span{font-size:20px;font-weight:400}
 
-/* QR Code Integrado e Compacto na tela de Login */
-.login-qr-inline{display:flex;align-items:center;gap:15px;margin-top:22px;padding:12px 14px;background:#0d1113;border:1px solid rgba(0,229,255,.2);border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.6)}
-.qr-inline-box{background:#fff;padding:6px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 16px rgba(0,229,255,.2)}
+/* QR Code Integrado e Compacto na tela de Login (sem fundo transparente ou caixa isolada) */
+.login-qr-inline{display:flex;align-items:center;gap:16px;margin-top:24px;padding:16px 0 0;background:transparent!important;border:none!important;border-top:1px solid rgba(255,255,255,.07)!important;border-radius:0!important;box-shadow:none!important}
+.qr-inline-box{background:#fff;padding:6px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 14px rgba(0,0,0,.5)}
 .qr-inline-img{width:86px;height:86px;display:block;border-radius:4px}
 .qr-inline-info{flex:1;min-width:0}
 .qr-inline-title{font-size:11px;font-weight:700;letter-spacing:1.5px;color:#00E5FF;display:block;margin-bottom:3px}
