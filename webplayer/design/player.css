@@ -71,21 +71,11 @@ body.in-fullscreen{overflow:hidden!important}
 .cat-n-icon{width:18px;height:20px;display:block;object-fit:contain}
 .chan.cat-card .cat-count-badge{font-size:11px;color:#717c74;margin-left:auto;font-variant-numeric:tabular-nums}
 
-.btn-toggle-compact{width:46px;height:46px;background:#131718;border:1px solid var(--border);border-radius:10px;color:#a2afb8;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s ease}
-.btn-toggle-compact:hover{background:rgba(183,255,60,.12);border-color:rgba(183,255,60,.4);color:#b7ff3c}
-.toggle-icon{transition:transform .3s cubic-bezier(.16,1,.3,1)}
-.sidebar.channels-retracted .toggle-icon{transform:rotate(180deg)}
-.sidebar:not(.channels-retracted) .toggle-icon{transform:rotate(0deg)}
-
-/* Comportamento da lista: RETRAÍDA = lista 100% oculta (só banner)
-   EXPANDIDA = lista ocupa tudo e passa POR CIMA do banner */
-aside.sidebar{position:relative}
-.sidebar.channels-retracted .list{display:none!important}
-.sidebar:not(.channels-retracted) .list{flex:1;min-height:0;max-height:none;overflow-y:auto;position:relative;z-index:3;background:#0b0e0e}
-.sidebar:not(.channels-retracted) .ad-vertical-billboard{display:none}
+/* Lista de Canais e Categorias: SEMPRE VISÍVEL E FLUIDA */
+aside.sidebar .list{flex:1;min-height:0;overflow-y:auto;padding:6px 16px 20px;display:flex;flex-direction:column;gap:4px;position:relative;z-index:2;background:#0b0e0e}
 
 /* Banner Vertical de Anúncio na Barra Lateral: NUNCA CORTA (object-fit: contain) */
-.ad-vertical-billboard{flex:1;min-height:280px;margin:16px 18px 24px;display:flex;align-items:center;justify-content:center;position:relative;background:transparent;border:none;overflow:hidden}
+.ad-vertical-billboard{min-height:200px;max-height:280px;margin:12px 18px 20px;display:flex;align-items:center;justify-content:center;position:relative;background:transparent;border:none;overflow:hidden}
 .ad-billboard-img-link{width:100%;height:100%;display:flex;align-items:center;justify-content:center;position:relative;opacity:0;transform:translateY(8px);transition:opacity .6s cubic-bezier(.16,1,.3,1),transform .6s ease;pointer-events:none}
 .ad-billboard-img-link.visible{opacity:1;transform:translateY(0);pointer-events:auto}
 .ad-billboard-img-link img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;border-radius:14px;display:block;box-shadow:0 12px 35px rgba(0,0,0,.85),0 0 20px rgba(0,229,255,.12);transition:transform .2s ease}

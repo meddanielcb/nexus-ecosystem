@@ -402,7 +402,7 @@
         currentViewMode = "channels";
         if (catTrigger) catTrigger.classList.remove("active-mode");
         renderChannelList(allStreams);
-        resetAutoRetractTimer();
+        resetCatAutoCloseTimer();
       });
     });
   }
@@ -418,7 +418,7 @@
         catTrigger.classList.remove("active-mode");
         renderChannelList(allStreams);
       }
-      resetAutoRetractTimer();
+      resetCatAutoCloseTimer();
     });
   }
 
@@ -631,59 +631,31 @@
   }
   startBillboardLoop();
 
-  // Botão Ícone de Recolher/Expandir Canais na Barra Lateral
-  const btnToggleChannels = document.getElementById("btnToggleChannels");
-  const sidebar = document.getElementById("sidebar");
+  // Timer de Auto-Encolhimento do Seletor de Categorias (3s de inatividade)
+  let catAutoCloseTimer = null;
 
-  // Timer de Auto-Recolhimento (após 2s de inatividade na lista expandida)
-  let autoRetractTimer = null;
-
-  function resetAutoRetractTimer() {
-    if (autoRetractTimer) {
-      clearTimeout(autoRetractTimer);
-      autoRetractTimer = null;
+  function resetCatAutoCloseTimer() {
+    if (catAutoCloseTimer) {
+      clearTimeout(catAutoCloseTimer);
+      catAutoCloseTimer = null;
     }
-    // Se a lista estiver EXPANDIDA (não tem channels-retracted)
-    if (sidebar && !sidebar.classList.contains("channels-retracted")) {
-      autoRetractTimer = setTimeout(() => {
-        // Não recolhe se o dropdown de categorias ainda estiver aberto
-        if (catDropdown && catDropdown.classList.contains("open")) {
-          resetAutoRetractTimer();
-          return;
+    if (currentViewMode === "categories") {
+      catAutoCloseTimer = setTimeout(() => {
+        if (currentViewMode === "categories") {
+          currentViewMode = "channels";
+          if (catTrigger) catTrigger.classList.remove("active-mode");
+          renderChannelList(allStreams);
         }
-        sidebar.classList.add("channels-retracted");
-        if (btnToggleChannels) {
-          btnToggleChannels.setAttribute("aria-expanded", "false");
-          btnToggleChannels.title = "Expandir lista de canais";
-        }
-      }, 2000); // 2 segundos sem interação
+      }, 3000); // 3 segundos para encolher
     }
   }
 
-  // Interações na barra lateral reiniciam o timer de 2s
+  const sidebar = document.getElementById("sidebar");
   if (sidebar) {
     ["mousemove", "scroll", "keydown", "touchstart", "click"].forEach(evt => {
-      sidebar.addEventListener(evt, resetAutoRetractTimer, { passive: true });
-    });
-  }
-
-  if (btnToggleChannels && sidebar) {
-    btnToggleChannels.addEventListener("click", () => {
-      const isRetracted = sidebar.classList.toggle("channels-retracted");
-      btnToggleChannels.setAttribute("aria-expanded", isRetracted ? "false" : "true");
-      btnToggleChannels.title = isRetracted ? "Expandir lista de canais" : "Recolher lista para ver anúncio";
-      if (!isRetracted) {
-        resetAutoRetractTimer();
-      }
-    });
-
-    els.searchInput.addEventListener("focus", () => {
-      if (sidebar.classList.contains("channels-retracted")) {
-        sidebar.classList.remove("channels-retracted");
-        btnToggleChannels.setAttribute("aria-expanded", "true");
-        btnToggleChannels.title = "Recolher lista para ver anúncio";
-      }
-      resetAutoRetractTimer();
+      sidebar.addEventListener(evt, () => {
+        if (currentViewMode === "categories") resetCatAutoCloseTimer();
+      }, { passive: true });
     });
   }
 
