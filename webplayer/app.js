@@ -432,40 +432,44 @@
   async function startSession(user, pass, opts) {
     opts = opts || {};
     els.gate.classList.add("hidden");
-    showOverlay("Autenticando…", `Validando ${user} no servidor de streaming.`);
-    setStatus("autenticando", "");
+    session = { user, pass };
+    localStorage.setItem("nexus_play_session", JSON.stringify(session));
+
     try {
-      const login = await xtreamLogin(user, pass);
-      session = { user, pass };
-      localStorage.setItem("nexus_play_session", JSON.stringify(session));
-
-      els.npUser.textContent = `Conta: ${user}${login.user_info && login.user_info.exp_date ? " • expira " + new Date(login.user_info.exp_date * 1000).toLocaleDateString("pt-BR") : ""}`;
-
-      // 1. Tenta carregar do cache local imediatamente para iniciar o play em 0.05s
-      let hasCached = false;
-      try {
-        const cachedS = sessionStorage.getItem("nexus_cached_streams");
-        const cachedC = sessionStorage.getItem("nexus_cached_cats");
-        if (cachedS) {
-          const parsedS = JSON.parse(cachedS);
-          if (Array.isArray(parsedS) && parsedS.length) {
-            allStreams = parsedS;
-            if (cachedC) renderCategories(JSON.parse(cachedC));
-            renderChannelList(allStreams);
-            hasCached = true;
-
-            const lastId = localStorage.getItem("nexus_last_stream_id") || allStreams[0].stream_id;
-            const target = allStreams.find(s => String(s.stream_id) === String(lastId)) || allStreams[0];
-            activeStreamId = target.stream_id;
-            els.npChannel.textContent = target.name || "Canal";
-            playStream(target.stream_id, target.name);
-          }
-        }
-      } catch (e) {}
-
-      if (!hasCached) {
-        showOverlay("Carregando canais…", "Montando sua lista de canais ao vivo.");
+      // Valida credenciais em paralelo sem bloquear a reprodução imediata
+    xtreamLogin(user, pass).then(login => {
+      if (login && login.user_info) {
+        els.npUser.textContent = `Conta: ${user}${login.user_info.exp_date ? " • expira " + new Date(login.user_info.exp_date * 1000).toLocaleDateString("pt-BR") : ""}`;
       }
+    }).catch(err => {
+      console.warn("Aviso na validação:", err);
+    });
+
+    // 1. Tenta carregar do cache local imediatamente para iniciar o play em 0.05s
+    let hasCached = false;
+    try {
+      const cachedS = sessionStorage.getItem("nexus_cached_streams");
+      const cachedC = sessionStorage.getItem("nexus_cached_cats");
+      if (cachedS) {
+        const parsedS = JSON.parse(cachedS);
+        if (Array.isArray(parsedS) && parsedS.length) {
+          allStreams = parsedS;
+          if (cachedC) renderCategories(JSON.parse(cachedC));
+          renderChannelList(allStreams);
+          hasCached = true;
+
+          const lastId = localStorage.getItem("nexus_last_stream_id") || allStreams[0].stream_id;
+          const target = allStreams.find(s => String(s.stream_id) === String(lastId)) || allStreams[0];
+          activeStreamId = target.stream_id;
+          els.npChannel.textContent = target.name || "Canal";
+          playStream(target.stream_id, target.name);
+        }
+      }
+    } catch (e) {}
+
+    if (!hasCached) {
+      showOverlay("Conectando TV…", "Iniciando transmissão ao vivo.");
+    }
 
       // 2. Busca na rede (atualiza cache e lista em segundo plano)
       Promise.all([
@@ -516,6 +520,7 @@
     els.gate.classList.remove("hidden");
     setStatus("desconectado", "");
     hideOverlay();
+    initQrCode();
   }
 
   // ---------------- Eventos de UI ----------------
@@ -534,7 +539,7 @@
         showOverlay("✅ Aparelho Conectado!", "Sua tela foi autorizada com sucesso!");
         setTimeout(() => {
           startSession(user, pass);
-        }, 1500);
+        }, 300);
         return;
       }
     }
@@ -815,7 +820,7 @@
     stopPairPolling();
     activePairPin = pin;
     checkPairStatus(pin);
-    pairPollInterval = setInterval(() => checkPairStatus(pin), 1500);
+    pairPollInterval = setInterval(() => checkPairStatus(pin), 400);
   }
 
   document.addEventListener("visibilitychange", () => {
@@ -896,7 +901,7 @@
               showOverlay("✅ TV Conectada!", "Sua Smart TV foi autorizada e já está dando o play!");
               setTimeout(() => {
                 startSession(saved.user, saved.pass);
-              }, 1800);
+              }, 300);
             }
           });
           return;
