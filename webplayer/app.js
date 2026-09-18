@@ -479,7 +479,7 @@
   }
 
   // ---------------- Eventos de UI ----------------
-  els.btnLogin.addEventListener("click", () => {
+  els.btnLogin.addEventListener("click", async () => {
     const user = els.inUser.value.trim();
     const pass = els.inPass.value;
     els.loginErr.style.display = "none";
@@ -488,7 +488,7 @@
     const params = new URLSearchParams(window.location.search);
     const pairPin = params.get("pair");
     if (pairPin) {
-      confirmPairing(pairPin, user, pass);
+      await confirmPairing(pairPin, user, pass);
     }
 
     startSession(user, pass);
