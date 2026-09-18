@@ -361,64 +361,70 @@
     });
   }
 
-  // ---------------- Dropdown Customizado de Categorias com Ícone Nexus e Verde Oficial ----------------
-  const catDropdown = document.getElementById("customCatDropdown");
+  // ---------------- Categorias no padrão dos canais (sem popup / rola até o fim) ----------------
+  let allCategories = [];
+  let currentViewMode = "channels"; // "channels" | "categories"
+
   const catTrigger = document.getElementById("catDropdownTrigger");
-  const catMenu = document.getElementById("catDropdownMenu");
   const catLabel = document.getElementById("catCurrentLabel");
 
-  function toggleCatDropdown(open) {
-    if (!catDropdown) return;
-    const isOpen = open !== undefined ? open : !catDropdown.classList.contains("open");
-    catDropdown.classList.toggle("open", isOpen);
-    if (catTrigger) catTrigger.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  function renderCategoryList() {
+    const q = (els.searchInput.value || "").toLowerCase().trim();
+    const activeCat = els.catSelect.value;
+    const items = [
+      { category_id: "", category_name: "Todas as categorias" },
+      ...allCategories
+    ].filter(c => !q || (c.category_name || "").toLowerCase().includes(q));
+
+    if (!items.length) {
+      els.channelList.innerHTML = `<div class="empty-hint">Nenhuma categoria encontrada.</div>`;
+      return;
+    }
+
+    els.channelList.innerHTML = items.map(c => {
+      const active = String(c.category_id) === String(activeCat) ? " active" : "";
+      return `<div class="chan cat-card${active}" data-cat-id="${c.category_id}">
+        <div class="cat-icon-badge">
+          <img src="./design/nexus.svg" alt="" class="cat-n-icon">
+        </div>
+        <span class="name">${(c.category_name || "Geral").replace(/</g, "&lt;")}</span>
+      </div>`;
+    }).join("");
+
+    els.channelList.querySelectorAll(".chan.cat-card").forEach(el => {
+      el.addEventListener("click", () => {
+        const catId = el.getAttribute("data-cat-id");
+        els.catSelect.value = catId;
+        const name = el.querySelector(".name").textContent;
+        if (catLabel) catLabel.textContent = name;
+
+        // Retorna para visualização de canais daquela categoria
+        currentViewMode = "channels";
+        if (catTrigger) catTrigger.classList.remove("active-mode");
+        renderChannelList(allStreams);
+        resetAutoRetractTimer();
+      });
+    });
   }
 
   if (catTrigger) {
     catTrigger.addEventListener("click", (e) => {
       e.stopPropagation();
-      toggleCatDropdown();
+      currentViewMode = currentViewMode === "categories" ? "channels" : "categories";
+      if (currentViewMode === "categories") {
+        catTrigger.classList.add("active-mode");
+        renderCategoryList();
+      } else {
+        catTrigger.classList.remove("active-mode");
+        renderChannelList(allStreams);
+      }
       resetAutoRetractTimer();
     });
   }
 
-  document.addEventListener("click", (e) => {
-    if (catDropdown && !catDropdown.contains(e.target)) {
-      toggleCatDropdown(false);
-    }
-  });
-
   function renderCategories(cats) {
-    if (els.catSelect) {
-      els.catSelect.innerHTML = `<option value="">Todas as categorias</option>` +
-        cats.map(c => `<option value="${c.category_id}">${(c.category_name || "").replace(/</g, "&lt;")}</option>`).join("");
-    }
-
-    if (catMenu) {
-      catMenu.innerHTML = `<div class="cat-item active" data-id="">
-        <img src="./design/nexus.svg" alt="" class="cat-n-icon">
-        <span>Todas as categorias</span>
-      </div>` +
-      cats.map(c => `<div class="cat-item" data-id="${c.category_id}">
-        <img src="./design/nexus.svg" alt="" class="cat-n-icon">
-        <span>${(c.category_name || "").replace(/</g, "&lt;")}</span>
-      </div>`).join("");
-
-      catMenu.querySelectorAll(".cat-item").forEach(item => {
-        item.addEventListener("click", (e) => {
-          e.stopPropagation();
-          const id = item.getAttribute("data-id");
-          if (els.catSelect) els.catSelect.value = id;
-          catMenu.querySelectorAll(".cat-item").forEach(i => i.classList.remove("active"));
-          item.classList.add("active");
-          const textSpan = item.querySelector("span");
-          if (catLabel) catLabel.textContent = textSpan ? textSpan.textContent : item.textContent;
-          toggleCatDropdown(false);
-          renderChannelList(allStreams);
-          resetAutoRetractTimer();
-        });
-      });
-    }
+    allCategories = Array.isArray(cats) ? cats : [];
+    if (els.catSelect) els.catSelect.value = "";
   }
 
   // ---------------- Fluxo de sessão ----------------
@@ -682,20 +688,26 @@
       clearTimeout(autoRetractTimer);
       autoRetractTimer = null;
     }
+    // Se estiver no modo de categorias, volta para os canais após 3s sem interação
+    if (currentViewMode === "categories") {
+      autoRetractTimer = setTimeout(() => {
+        if (currentViewMode === "categories") {
+          currentViewMode = "channels";
+          if (catTrigger) catTrigger.classList.remove("active-mode");
+          renderChannelList(allStreams);
+        }
+      }, 3000);
+      return;
+    }
     // Se a lista estiver EXPANDIDA (não tem channels-retracted)
     if (sidebar && !sidebar.classList.contains("channels-retracted")) {
       autoRetractTimer = setTimeout(() => {
-        // Não recolhe se o dropdown de categorias ainda estiver aberto
-        if (catDropdown && catDropdown.classList.contains("open")) {
-          resetAutoRetractTimer();
-          return;
-        }
         sidebar.classList.add("channels-retracted");
         if (btnToggleChannels) {
           btnToggleChannels.setAttribute("aria-expanded", "false");
           btnToggleChannels.title = "Expandir lista de canais";
         }
-      }, 2000); // 2 segundos sem interação
+      }, 3000); // 3 segundos sem interação
     }
   }
 
