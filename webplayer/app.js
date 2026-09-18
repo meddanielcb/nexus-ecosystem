@@ -322,18 +322,75 @@
     }
   }
 
+  // ---------------- Favoritos (LocalStorage) ----------------
+  function getFavorites() {
+    try {
+      const favs = JSON.parse(localStorage.getItem("nexus_favorites") || "[]");
+      return Array.isArray(favs) ? favs : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function toggleFavorite(streamId) {
+    const favs = getFavorites();
+    const strId = String(streamId);
+    const index = favs.indexOf(strId);
+    if (index >= 0) {
+      favs.splice(index, 1);
+    } else {
+      favs.push(strId);
+    }
+    localStorage.setItem("nexus_favorites", JSON.stringify(favs));
+    updateFavBadge();
+  }
+
+  function updateFavBadge() {
+    const badge = document.getElementById("favCounterBadge");
+    if (!badge) return;
+    const count = getFavorites().length;
+    if (count > 0) {
+      badge.textContent = String(count);
+      badge.style.display = "inline-block";
+    } else {
+      badge.style.display = "none";
+    }
+  }
+
   // ---------------- Lista de canais ----------------
   function renderChannelList(streams) {
     const q = (els.searchInput.value || "").toLowerCase().trim();
     const cat = els.catSelect.value;
+    const favs = getFavorites();
+
+    const btnQuickSports = document.getElementById("btnQuickSports");
+    const btnQuickFavs = document.getElementById("btnQuickFavs");
+    if (btnQuickSports) btnQuickSports.classList.toggle("active", cat === "sports_today");
+    if (btnQuickFavs) btnQuickFavs.classList.toggle("active", cat === "favorites");
+
     const filtered = streams.filter(s => {
-      if (cat && String(s.category_id) !== String(cat)) return false;
+      if (cat === "favorites") {
+        if (!favs.includes(String(s.stream_id))) return false;
+      } else if (cat === "sports_today") {
+        const name = String(s.name || "").toLowerCase();
+        const catName = String(s.category_name || "").toLowerCase();
+        const isMatch = name.includes(" x ") || name.includes(" vs ") || /\b\d{1,2}:\d{2}\b/.test(name);
+        const isSport = catName.includes("jogo") || catName.includes("futebol") || catName.includes("premiere") || catName.includes("sportv") || catName.includes("espn") || catName.includes("dazn") || catName.includes("cazé") || catName.includes("conmebol") || catName.includes("brasileir");
+        if (!isMatch && !isSport && String(s.category_id) !== "sports_today") return false;
+      } else if (cat && String(s.category_id) !== String(cat)) {
+        return false;
+      }
       if (q && !String(s.name || "").toLowerCase().includes(q)) return false;
       return true;
     });
 
     if (!filtered.length) {
-      els.channelList.innerHTML = `<div class="empty-hint">Nenhum canal encontrado.</div>`;
+      const msg = cat === "favorites"
+        ? "Nenhum canal favoritado ainda.<br>Clique no símbolo de estrela ao lado de qualquer canal para salvar aqui."
+        : cat === "sports_today"
+        ? "Nenhuma partida esportiva listada no momento."
+        : "Nenhum canal encontrado.";
+      els.channelList.innerHTML = `<div class="empty-hint">${msg}</div>`;
       return;
     }
 
@@ -341,14 +398,33 @@
       const logo = s.stream_icon ? toProxied(s.stream_icon) : "";
       const active = String(s.stream_id) === String(activeStreamId) ? " active" : "";
       const finalLogo = logo || "/favicon.png";
+      const isFav = favs.includes(String(s.stream_id));
+      const starFill = isFav ? "var(--green)" : "none";
+      const starStroke = isFav ? "var(--green)" : "rgba(255,255,255,0.35)";
+
       return `<div class="chan${active}" data-id="${s.stream_id}">
         <img class="logo" src="${finalLogo}" loading="lazy" onerror="this.onerror=null;this.src='/favicon.png';">
         <span class="name">${(s.name || "Canal").replace(/</g, "&lt;")}</span>
+        <button type="button" class="btn-fav-star${isFav ? ' is-fav' : ''}" data-fav-id="${s.stream_id}" title="${isFav ? 'Remover dos favoritos' : 'Favoritar canal'}" aria-label="Favoritar canal">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="${starFill}" stroke="${starStroke}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+        </button>
       </div>`;
     }).join("");
 
+    els.channelList.querySelectorAll(".btn-fav-star").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const id = btn.getAttribute("data-fav-id");
+        toggleFavorite(id);
+        renderChannelList(streams);
+      });
+    });
+
     els.channelList.querySelectorAll(".chan").forEach(el => {
-      el.addEventListener("click", () => {
+      el.addEventListener("click", (e) => {
+        if (e.target.closest(".btn-fav-star")) return;
         const id = el.getAttribute("data-id");
         const stream = streams.find(s => String(s.stream_id) === String(id));
         if (!stream) return;
@@ -372,8 +448,16 @@
   function renderCategoryList() {
     const q = (els.searchInput.value || "").toLowerCase().trim();
     const activeCat = els.catSelect.value;
+    const favCount = getFavorites().length;
+
+    const specialItems = [
+      { category_id: "favorites", category_name: `Favoritos (${favCount})`, isSpecial: "fav" },
+      { category_id: "sports_today", category_name: "Jogos do Dia", isSpecial: "sports" },
+      { category_id: "", category_name: "Todas as categorias" }
+    ];
+
     const items = [
-      { category_id: "", category_name: "Todas as categorias" },
+      ...specialItems,
       ...allCategories
     ].filter(c => !q || (c.category_name || "").toLowerCase().includes(q));
 
@@ -384,9 +468,16 @@
 
     els.channelList.innerHTML = items.map(c => {
       const active = String(c.category_id) === String(activeCat) ? " active" : "";
+      let iconHtml = `<img src="./design/nexus.svg" alt="" class="cat-n-icon">`;
+      if (c.isSpecial === "fav") {
+        iconHtml = `<svg width="15" height="15" viewBox="0 0 24 24" fill="var(--green)" stroke="var(--green)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+      } else if (c.isSpecial === "sports") {
+        iconHtml = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="12 6 15.5 8.5 14 12.5 10 12.5 8.5 8.5 12 6"></polygon></svg>`;
+      }
+
       return `<div class="chan cat-card${active}" data-cat-id="${c.category_id}">
         <div class="cat-icon-badge">
-          <img src="./design/nexus.svg" alt="" class="cat-n-icon">
+          ${iconHtml}
         </div>
         <span class="name">${(c.category_name || "Geral").replace(/</g, "&lt;")}</span>
       </div>`;
@@ -419,6 +510,42 @@
         catTrigger.classList.remove("active-mode");
         renderChannelList(allStreams);
       }
+      resetAutoRetractTimer();
+    });
+  }
+
+  // Atalhos Rápidos (Jogos do Dia e Favoritos)
+  const btnQuickSports = document.getElementById("btnQuickSports");
+  const btnQuickFavs = document.getElementById("btnQuickFavs");
+
+  if (btnQuickSports) {
+    btnQuickSports.addEventListener("click", () => {
+      if (els.catSelect.value === "sports_today") {
+        els.catSelect.value = "";
+        if (catLabel) catLabel.textContent = "Todas as categorias";
+      } else {
+        els.catSelect.value = "sports_today";
+        if (catLabel) catLabel.textContent = "Jogos do Dia";
+      }
+      currentViewMode = "channels";
+      if (catTrigger) catTrigger.classList.remove("active-mode");
+      renderChannelList(allStreams);
+      resetAutoRetractTimer();
+    });
+  }
+
+  if (btnQuickFavs) {
+    btnQuickFavs.addEventListener("click", () => {
+      if (els.catSelect.value === "favorites") {
+        els.catSelect.value = "";
+        if (catLabel) catLabel.textContent = "Todas as categorias";
+      } else {
+        els.catSelect.value = "favorites";
+        if (catLabel) catLabel.textContent = "Favoritos";
+      }
+      currentViewMode = "channels";
+      if (catTrigger) catTrigger.classList.remove("active-mode");
+      renderChannelList(allStreams);
       resetAutoRetractTimer();
     });
   }
@@ -932,6 +1059,8 @@
       showLoginError("Token da carteira inválido ou expirado.");
     }
     if (qUser && qPass) { startSession(qUser, qPass); return; }
+
+    updateFavBadge();
 
     // sessão local persistida (login manual anterior)
     try {

@@ -63,6 +63,21 @@ body.in-fullscreen{overflow:hidden!important}
 .zoom-toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.92);background:rgba(8,10,9,.88);border:1px solid rgba(183,255,60,.35);color:#fff;padding:10px 18px;border-radius:12px;font-size:13px;font-weight:600;letter-spacing:.5px;pointer-events:none;opacity:0;z-index:2147483647;transition:opacity .2s ease,transform .2s ease;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .zoom-toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
 
+/* Quick Nav Buttons (Jogos do Dia & Favoritos) */
+.quick-nav-bar{display:flex;gap:8px;margin-top:10px;margin-bottom:12px}
+.quick-nav-btn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:38px;padding:8px 10px;background:#131718;border:1px solid var(--border);border-radius:10px;color:#cfd6cc;font-size:11px;font-weight:600;letter-spacing:0.5px;cursor:pointer;transition:all 0.2s ease}
+.quick-nav-btn:hover{background:#181e20;border-color:rgba(183,255,60,0.35);color:#fff}
+.quick-nav-btn.active{background:rgba(183,255,60,0.12);border-color:var(--green);color:var(--green)}
+.quick-nav-btn svg{flex-shrink:0;transition:transform 0.2s ease}
+.quick-nav-btn:hover svg{transform:scale(1.15)}
+.fav-counter-badge{font-size:10px;background:rgba(183,255,60,0.22);color:var(--green);padding:1px 6px;border-radius:10px;font-weight:700}
+
+/* Botão de Estrela no Card do Canal */
+.chan .btn-fav-star{margin-left:auto;background:transparent;border:none;padding:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0.35;transition:opacity 0.2s ease,transform 0.15s ease;border-radius:6px;color:#fff}
+.chan:hover .btn-fav-star{opacity:0.85}
+.chan .btn-fav-star.is-fav{opacity:1;color:var(--green)}
+.chan .btn-fav-star:hover{transform:scale(1.25);opacity:1}
+
 /* Seletor de Categorias no Padrão dos Canais (Direto na lista, até embaixo, sem quadrante verde) */
 .cat-select-row{display:flex;align-items:center;gap:10px;margin-top:0;margin-bottom:14px;position:relative}
 .cat-dropdown-trigger{flex:1;min-height:46px;border:1px solid var(--border);border-radius:10px;padding:11px 14px;background:#131718;color:var(--text);font-size:13px;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;transition:border-color .2s,background .2s}
