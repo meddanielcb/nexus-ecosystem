@@ -1,104 +1,1033 @@
-/* ============================================================
-   NEXUS PLAY — WebPlayer proprietário (play.nexusplay.tv)
-   - Consome API Xtream Codes do fornecedor via proxy same-origin
-     (/stream/) para eliminar Mixed Content + CORS.
-   - Login manual (user/pass) ou automático via querystring:
-       ?wallet=<token>   -> token da carteira (ver decodeWallet)
-       ?user=X&pass=Y    -> credenciais diretas na URL
-       ?url=<m3u8 abs>   -> URL de stream direta (bypassa login)
-   ============================================================ */
-
 (() => {
   "use strict";
 
-  // Proxy same-origin que o Nginx repassa para http://atmt.space
   const PROXY_BASE = "/stream";
-  // Host real do provedor (apenas para referência/logs, nunca usado
-  // para requisições diretas do browser — sempre via PROXY_BASE).
-  const UPSTREAM_HOST = "atmt.space";
+  const PAIR_BASE = "/pair";
 
+  // ---------------- Elementos DOM ----------------
   const els = {
-    gate: document.getElementById("loginGate"),
+    loginGate: document.getElementById("loginGate"),
+    appShell: document.getElementById("appShell"),
+    playerLayer: document.getElementById("playerLayer"),
+    playerWrap: document.getElementById("playerWrap"),
+    screen: document.getElementById("screen"),
+    nav: document.querySelector("nav"),
+    video: document.getElementById("video"),
     inUser: document.getElementById("inUser"),
     inPass: document.getElementById("inPass"),
     btnLogin: document.getElementById("btnLogin"),
+    btnLogout: document.getElementById("btnLogout"),
     loginErr: document.getElementById("loginErr"),
-    video: document.getElementById("video"),
+    qrCodeImg: document.getElementById("qrCodeImg"),
+    qrPinCode: document.getElementById("qrPinCode"),
+    btnProfile: document.getElementById("btnProfile"),
+    btnMotionToggle: document.getElementById("btnMotionToggle"),
+    footUser: document.getElementById("footUser"),
+    clock: document.getElementById("clock"),
+    clockDate: document.getElementById("clockDate"),
+    btnPlayerBack: document.getElementById("btnPlayerBack"),
+    btnPlayerFav: document.getElementById("btnPlayerFav"),
+    btnPlayerEpg: document.getElementById("btnPlayerEpg"),
+    btnZoom: document.getElementById("btnZoom"),
+    btnFullscreen: document.getElementById("btnFullscreen"),
+    zoomToast: document.getElementById("zoomToast"),
     overlay: document.getElementById("overlay"),
     overlayTitle: document.getElementById("overlayTitle"),
     overlayMsg: document.getElementById("overlayMsg"),
-    statusPill: document.getElementById("statusPill"),
-    npChannel: document.getElementById("npChannel"),
-    npUser: document.getElementById("npUser"),
-    channelList: document.getElementById("channelList"),
-    searchInput: document.getElementById("searchInput"),
-    catSelect: document.getElementById("catSelect"),
-    btnFullscreen: document.getElementById("btnFullscreen"),
-    btnReload: document.getElementById("btnReload"),
-    btnLogout: document.getElementById("btnLogout"),
-    sidebar: document.getElementById("sidebar"),
+    notice: document.getElementById("notice"),
+    adCornerBadge: document.getElementById("adCornerBadge"),
+    adLowerThird: document.getElementById("adLowerThird"),
+    btnAdLtClose: document.getElementById("btnAdLtClose"),
+    adBbImgLink: document.getElementById("adBbImgLink")
   };
 
+  // ---------------- Estado Global ----------------
+  let session = null;
+  let allStreams = [];
+  let allCategories = [];
+  let vodCategories = [];
+  let seriesCategories = [];
+  let vodCache = {}; // category_id -> streams
+  let seriesCache = {}; // category_id -> series
+  let seriesInfoCache = {}; // series_id -> info
+  let activeStreamId = null;
+  let selectedItem = null;
   let hls = null;
   let tsPlayer = null;
-  let session = null;       // { user, pass }
-  let allStreams = [];      // cache de canais carregados
-  let activeStreamId = null;
+  let pairPollTimer = null;
+  let isTvMode = false;
+  let reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // ---------------- Helpers de UI ----------------
+  // Estado de Navegação da Interface (Designer Engine)
+  const glyph = {
+    back: 'M15 5L8 12 15 19',
+    next: 'M9 5L16 12 9 19',
+    play: 'M8 4L21 12 8 20Z',
+    star: 'M12 2L15 8 22 9 17 14 18 22 12 18 6 22 7 14 2 9 9 8Z',
+    home: 'M3 11L12 3 21 11V21H15V14H9V21H3Z',
+    sports: 'M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 4a6 6 0 1 1-6 6 6 6 0 0 1 6-6z'
+  };
+  const icon = k => `<svg viewBox="0 0 24 24" class="icon" aria-hidden="true" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;"><path d="${glyph[k] || glyph.play}"/></svg>`;
+  const safe = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  let state = {
+    view: 'home',
+    kind: 'movie', // 'movie' | 'series' | 'sports'
+    category: 'Todos',
+    categoryId: '',
+    page: 0,
+    title: null,
+    season: 1,
+    query: ''
+  };
+  let stack = [];
+  let focusMemory = '';
+  let transitionBack = false;
+
+  // Favoritos persistidos
+  let savedFavs = [];
+  try {
+    savedFavs = JSON.parse(localStorage.getItem('nexus_lab_favorites') || '[]');
+    if (!Array.isArray(savedFavs)) savedFavs = [];
+  } catch (e) {
+    savedFavs = [];
+  }
+
+  function capacity() {
+    return innerWidth < 600 ? (innerHeight < 550 ? 2 : 4) : (innerHeight < 650 || innerWidth < 900 ? 4 : 6);
+  }
+
+  function notice(text) {
+    if (!els.notice) return;
+    els.notice.textContent = text;
+    els.notice.classList.add("visible");
+    setTimeout(() => els.notice.classList.remove("visible"), 3500);
+  }
+
   function showOverlay(title, msg) {
+    if (!els.overlay) return;
+    if (els.overlayTitle) els.overlayTitle.textContent = title;
+    if (els.overlayMsg) els.overlayMsg.textContent = msg || "";
     els.overlay.classList.remove("hidden");
-    els.overlayTitle.textContent = title || "";
-    els.overlayMsg.textContent = msg || "";
-  }
-  function hideOverlay() { els.overlay.classList.add("hidden"); }
-  function setStatus(text, kind) {
-    els.statusPill.textContent = "● " + text;
-    els.statusPill.className = "status-pill" + (kind ? " " + kind : "");
-  }
-  function showLoginError(msg) {
-    els.loginErr.textContent = msg;
-    els.loginErr.style.display = "block";
   }
 
-  // ---------------- Decodificação do token da carteira ----------------
-  // Formatos aceitos (nesta ordem de tentativa):
-  //  1) base64url(JSON) -> {"user":"...","pass":"...","exp":<unix opcional>}
-  //  2) base64url("user:pass")
-  function b64urlDecode(str) {
-    let s = str.replace(/-/g, "+").replace(/_/g, "/");
-    while (s.length % 4) s += "=";
-    return decodeURIComponent(
-      atob(s).split("").map(c => "%" + c.charCodeAt(0).toString(16).padStart(2, "0")).join("")
-    );
+  function hideOverlay() {
+    if (els.overlay) els.overlay.classList.add("hidden");
   }
-  function decodeWallet(token) {
-    if (!token) return null;
-    let raw;
-    try { raw = b64urlDecode(token); } catch (e) { return null; }
-    // tentativa 1: JSON
-    try {
-      const obj = JSON.parse(raw);
-      if (obj.exp && Date.now() / 1000 > Number(obj.exp)) {
-        throw new Error("wallet token expirado");
-      }
-      const user = obj.user || obj.u || obj.username;
-      const pass = obj.pass || obj.p || obj.password;
-      if (user && pass) return { user, pass };
-    } catch (e) { /* segue para tentativa 2 */ }
-    // tentativa 2: "user:pass"
-    if (raw.includes(":")) {
-      const [user, ...rest] = raw.split(":");
-      const pass = rest.join(":");
-      if (user && pass) return { user, pass };
+
+  // ---------------- Navegação de Telas ----------------
+  function go(next) {
+    transitionBack = false;
+    stack.push({ state: { ...state }, focus: document.activeElement?.dataset?.key });
+    state = { ...state, ...next, page: 0 };
+    draw();
+  }
+
+  function back() {
+    transitionBack = true;
+    if (stack.length) {
+      const prev = stack.pop();
+      state = prev.state;
+      focusMemory = prev.focus;
+      draw();
+    } else {
+      state.view = 'home';
+      draw();
     }
-    return null;
   }
 
-  // ---------------- Reescrita de URLs upstream -> proxy seguro ----------------
-  // Qualquer URL absoluta apontando para o provedor HTTP é reescrita para
-  // o caminho relativo /stream/... servido em HTTPS pelo mesmo domínio do
-  // player, eliminando Mixed Content e CORS de uma vez.
+  function paging(total) {
+    const pages = Math.max(1, Math.ceil(total / capacity()));
+    return `<div class="paging">
+      <button data-act="prev" ${state.page === 0 ? 'disabled' : ''} aria-label="Página anterior">${icon('back')}</button>
+      <span>${state.page + 1} / ${pages}</span>
+      <button data-act="next" ${state.page >= pages - 1 ? 'disabled' : ''} aria-label="Próxima página">${icon('next')}</button>
+    </div>`;
+  }
+
+  function topBar(title, sub = '') {
+    return `<div class="tv-title">
+      <div><span class="eyebrow">${sub}</span><h1>${title}</h1></div>
+      <button data-act="back">${icon('back')} Voltar</button>
+    </div>`;
+  }
+
+  // ---------------- Renderizadores de Views ----------------
+
+  // 1. HOME (Bento Cinematográfico do Designer)
+  function homeView() {
+    const liveCount = allStreams.length || "24.000+";
+    return `<section class="tv-home">
+      <img class="scenery" src="assets/stadium-cinema.webp" alt="">
+      <video class="ambient-video" muted loop playsinline preload="none" data-src="assets/stadium-motion.mp4" aria-hidden="true" tabindex="-1" hidden></video>
+      <div class="stadium-lights" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="home-copy">
+        <span class="eyebrow">Nexus / O seu lugar na primeira fila</span>
+        <h1>A noite.<br>O jogo.<br>O seu play.</h1>
+        <p>Mais de ${liveCount} canais em 4K, filmes de cinema e séries completas.</p>
+        <button class="primary" data-act="live" data-key="home-live">${icon('play')} Abrir TV ao vivo</button>
+      </div>
+      <div class="destinations">
+        <button class="destination" data-act="live" data-key="home-live-dest">
+          <img src="assets/live-cinema.webp" alt="">
+          <span>01</span>
+          <strong>TV ao vivo</strong>
+          ${icon('next')}
+        </button>
+        <button class="destination" data-act="sports" data-key="home-sports">
+          <img src="assets/stadium-cinema.webp" alt="">
+          <span>02</span>
+          <strong>Jogos do Dia</strong>
+          ${icon('next')}
+        </button>
+        <button class="destination" data-act="movie" data-key="home-movies">
+          <img src="assets/movies-cinema.webp" alt="">
+          <span>03</span>
+          <strong>Filmes</strong>
+          ${icon('next')}
+        </button>
+        <button class="destination" data-act="series" data-key="home-series">
+          <img src="assets/series-cinema.webp" alt="">
+          <span>04</span>
+          <strong>Séries</strong>
+          ${icon('next')}
+        </button>
+      </div>
+    </section>`;
+  }
+
+  // 2. CATEGORIAS (Pastas / Folders)
+  function categoriesView() {
+    let cats = [];
+    let title = "Categorias";
+    let sub = "Escolha para navegar";
+
+    if (state.kind === 'movie') {
+      cats = vodCategories.length ? vodCategories : [{ category_id: "557", category_name: "Lançamentos Cinema" }];
+      title = "Cine Nexus";
+      sub = "Catálogo de Filmes / Escolha o Gênero";
+    } else if (state.kind === 'series') {
+      cats = seriesCategories.length ? seriesCategories : [{ category_id: "7837", category_name: "Séries em Destaque" }];
+      title = "Mais um episódio.";
+      sub = "Séries / Escolha uma Categoria";
+    } else if (state.kind === 'sports') {
+      cats = allCategories.filter(c => {
+        const n = (c.category_name || '').toLowerCase();
+        return n.includes('esporte') || n.includes('jogo') || n.includes('futebol') || n.includes('premiere') || n.includes('conmebol');
+      });
+      title = "Arena Esportiva";
+      sub = "Transmissões e Confrontos";
+    }
+
+    const paged = cats.slice(state.page * capacity(), (state.page + 1) * capacity());
+    return `${topBar(title, sub)}
+    <div class="folder-grid">
+      ${paged.map((c, i) => `
+        <button class="folder" data-cat-id="${c.category_id}" data-cat-name="${c.category_name}" data-key="cat-${c.category_id}">
+          <span class="eyebrow">${String(state.page * capacity() + i + 1).padStart(2, '0')}</span>
+          <strong>${c.category_name}</strong>
+          <span>Explorar ${icon('next')}</span>
+        </button>
+      `).join('')}
+    </div>
+    ${paging(cats.length)}`;
+  }
+
+  // 3. CATÁLOGO DE PÔSTERES (VOD / Filmes e Séries)
+  function catalogView() {
+    const list = getCatalogItems();
+    const typeLabel = state.kind === 'series' ? 'Séries' : 'Filmes';
+
+    return `${topBar(state.category || 'Catálogo', `${typeLabel} / Grade de Títulos`)}
+    <div class="tv-search">
+      <input id="tvSearch" type="search" value="${safe(state.query)}" placeholder="Buscar neste catálogo…" aria-label="Buscar neste catálogo">
+      <span>${list.length} títulos disponíveis</span>
+    </div>
+    <div class="poster-grid">
+      ${list.slice(state.page * capacity(), (state.page + 1) * capacity()).map(t => {
+        const cover = t.stream_icon || t.cover || "design/posters/dune.webp";
+        const yr = t.year || t.rating || "HD";
+        return `
+          <button class="tv-poster" data-item-id="${t.stream_id || t.series_id}" data-item-type="${state.kind}" data-key="item-${t.stream_id || t.series_id}">
+            <img src="${cover}" loading="lazy" onerror="this.onerror=null;this.src='design/posters/dune.webp';" alt="">
+            <strong>${(t.name || 'Título').replace(/</g, '&lt;')}</strong>
+            <small>${yr} · ${state.category}</small>
+          </button>
+        `;
+      }).join('') || '<p class="empty">Nenhum título encontrado.</p>'}
+    </div>
+    ${paging(list.length)}`;
+  }
+
+  function getCatalogItems() {
+    let raw = [];
+    if (state.kind === 'movie') {
+      raw = vodCache[state.categoryId] || [];
+    } else if (state.kind === 'series') {
+      raw = seriesCache[state.categoryId] || [];
+    }
+    if (!state.query) return raw;
+    const q = state.query.toLowerCase();
+    return raw.filter(item => (item.name || '').toLowerCase().includes(q));
+  }
+
+  // 4. FICHA TÉCNICA (Detail View)
+  function detailView() {
+    const t = selectedItem;
+    if (!t) return `<div class="empty">Item não encontrado.<br><button data-act="back">Voltar</button></div>`;
+
+    const cover = t.backdrop_path && t.backdrop_path[0] ? t.backdrop_path[0] : (t.stream_icon || t.cover || "assets/stadium-cinema.webp");
+    const title = (t.name || "Título").replace(/</g, '&lt;');
+    const plot = t.plot || "Assista a esta superprodução em alta definição na Nexus PlayTV com streaming offshore sem travamentos.";
+    const meta = `${t.year || '2025'} · ${t.genre || 'Cinema'} · Nota ${t.rating || '8.5'}`;
+
+    return `<section class="tv-detail">
+      <img class="scenery" src="${cover}" onerror="this.onerror=null;this.src='assets/stadium-cinema.webp';" alt="">
+      <button class="detail-back" data-act="back">${icon('back')} Voltar</button>
+      <div class="detail-copy">
+        <span class="eyebrow">${meta}</span>
+        <h1>${title}</h1>
+        <p>${plot}</p>
+        <button class="primary" data-act="${state.kind === 'series' ? 'load-seasons' : 'play-movie'}" data-key="detail-primary">
+          ${icon('play')} ${state.kind === 'series' ? 'Escolher temporada' : 'Assistir filme'}
+        </button>
+      </div>
+    </section>`;
+  }
+
+  // 5. TEMPORADAS & EPISÓDIOS
+  function seasonsView() {
+    const seasons = (selectedItem && selectedItem.seasons) || [1];
+    return `${topBar('Temporadas', `Série / ${(selectedItem && selectedItem.name) || ''}`)}
+    <div class="folder-grid">
+      ${seasons.map((s, i) => `
+        <button class="folder" data-season-num="${s.season_number || i + 1}" data-key="season-${s.season_number || i + 1}">
+          <span class="eyebrow">Temporada Completa</span>
+          <strong>Temporada ${s.season_number || i + 1}</strong>
+          <span>Ver episódios ${icon('next')}</span>
+        </button>
+      `).join('')}
+    </div>`;
+  }
+
+  function episodesView() {
+    const eps = (selectedItem && selectedItem.episodes && selectedItem.episodes[String(state.season)]) || [];
+    return `${topBar(`Temporada ${state.season}`, 'Episódios em Alta Definição')}
+    <div class="folder-grid">
+      ${eps.slice(state.page * capacity(), (state.page + 1) * capacity()).map((ep, i) => `
+        <button class="folder" data-episode-id="${ep.id || ep.stream_id}" data-episode-title="${ep.title || 'Episódio ' + (i + 1)}" data-episode-ext="${ep.container_extension || 'mp4'}" data-key="ep-${ep.id || i}">
+          <span class="eyebrow">Episódio ${ep.episode_num || i + 1}</span>
+          <strong>${(ep.title || 'Episódio ' + (i + 1)).replace(/</g, '&lt;')}</strong>
+          <span>Assistir ${icon('play')}</span>
+        </button>
+      `).join('') || '<p class="empty">Nenhum episódio cadastrado nesta temporada.</p>'}
+    </div>
+    ${paging(eps.length)}`;
+  }
+
+  // 6. TV AO VIVO (Grade de Canais com Pastas)
+  function liveView() {
+    let list = allStreams;
+    if (state.view === 'favorites') {
+      list = allStreams.filter(c => savedFavs.includes(String(c.stream_id)));
+    } else if (state.view === 'sports') {
+      list = allStreams.filter(c => {
+        const n = String(c.name || '').toLowerCase();
+        const catN = String(c.category_name || '').toLowerCase();
+        return n.includes(' x ') || n.includes(' vs ') || /\b\d{1,2}:\d{2}\b/.test(n) || catN.includes('esporte') || catN.includes('premiere') || catN.includes('sportv') || catN.includes('espn');
+      });
+    }
+
+    if (state.query) {
+      const q = state.query.toLowerCase();
+      list = list.filter(c => (c.name || '').toLowerCase().includes(q));
+    }
+
+    const title = state.view === 'favorites' ? 'Minha Lista de Favoritos' : (state.view === 'sports' ? 'Jogos de Hoje & Esportes' : 'TV ao Vivo');
+    const paged = list.slice(state.page * capacity(), (state.page + 1) * capacity());
+
+    return `${topBar(title, 'Canais / Selecione para Sintonizar')}
+    <div class="tv-search">
+      <input id="tvSearch" type="search" value="${safe(state.query)}" placeholder="Buscar canal ou partida…" aria-label="Buscar canal">
+      <span>${list.length} canais encontrados</span>
+    </div>
+    <div class="folder-grid">
+      ${paged.map((c, i) => {
+        const num = c.num ? String(c.num).padStart(3, '0') : String(state.page * capacity() + i + 1).padStart(3, '0');
+        const logo = c.stream_icon ? toProxied(c.stream_icon) : "design/nexus.svg";
+        const isFav = savedFavs.includes(String(c.stream_id));
+        return `
+          <button class="folder channel-folder" data-channel-id="${c.stream_id}" data-channel-name="${c.name || 'Canal'}" data-key="chan-${c.stream_id}">
+            <span class="eyebrow">${num} ${isFav ? '★' : ''}</span>
+            <span class="channel-logo-plate">
+              <img src="${logo}" loading="lazy" onerror="this.onerror=null;this.src='design/nexus.svg';" alt="">
+            </span>
+            <strong>${(c.name || 'Canal').replace(/</g, '&lt;')}</strong>
+            <span>Abrir canal ${icon('play')}</span>
+          </button>
+        `;
+      }).join('') || '<p class="empty">Nenhum canal encontrado.</p>'}
+    </div>
+    ${paging(list.length)}`;
+  }
+
+  // 7. CONTA & STATUS
+  function accountView() {
+    const u = session ? session.user : "Visitante";
+    return `${topBar('Sua Conta', 'Nexus PlayTV / Status')}
+    <div class="empty" style="text-align:left;max-width:600px;margin:20px auto;line-height:2;">
+      <p><strong>Usuário:</strong> ${u}</p>
+      <p><strong>Status:</strong> <span style="color:#b7ff3c;">● Assinatura Ativa</span></p>
+      <p><strong>Servidor:</strong> Offshore Suécia (Njalla BBR Turbo)</p>
+      <p><strong>Conexões Ativas:</strong> 1 tela em uso</p>
+      <br>
+      <button data-act="back">${icon('back')} Voltar</button>
+    </div>`;
+  }
+
+  // 8. EPG (Programação)
+  function epgView() {
+    const s = allStreams.find(c => String(c.stream_id) === String(activeStreamId));
+    const name = s ? s.name : "Canal Selecionado";
+    return `${topBar('Guia de Programação (EPG)', name)}
+    <div class="empty" style="line-height:1.8;">
+      <p style="font-size:16px;color:#fff;">Programação em tempo real via XMLTV.</p>
+      <p style="color:#8f9a90;font-size:13px;">O canal continua sintonizado no player principal.</p>
+      <br>
+      <button data-act="back-to-player">${icon('play')} Voltar ao Player</button>
+    </div>`;
+  }
+
+  // ---------------- Render Principal ----------------
+  function draw(keepInput = false) {
+    if (!els.screen) return;
+    const oldVideo = els.screen.querySelector('.ambient-video');
+    if (oldVideo) oldVideo.pause();
+
+    document.body.classList.toggle('home-view', state.view === 'home');
+    document.body.classList.toggle('motion-off', reduced);
+
+    // Atualiza nav ativa
+    document.querySelectorAll("nav button").forEach(b => {
+      const act = b.getAttribute("data-act");
+      b.classList.toggle("active", act === state.view || (act === 'movie' && state.kind === 'movie') || (act === 'series' && state.kind === 'series'));
+    });
+
+    let viewHtml = homeView();
+    if (state.view === 'home') viewHtml = homeView();
+    else if (state.view === 'categories') viewHtml = categoriesView();
+    else if (state.view === 'catalog') viewHtml = catalogView();
+    else if (state.view === 'detail') viewHtml = detailView();
+    else if (state.view === 'seasons') viewHtml = seasonsView();
+    else if (state.view === 'episodes') viewHtml = episodesView();
+    else if (state.view === 'live' || state.view === 'favorites' || state.view === 'sports') viewHtml = liveView();
+    else if (state.view === 'account') viewHtml = accountView();
+    else if (state.view === 'epg') viewHtml = epgView();
+
+    els.screen.innerHTML = viewHtml;
+    syncAmbient();
+
+    if (!keepInput && !reduced && els.screen.animate) {
+      els.screen.getAnimations().forEach(a => a.cancel());
+      els.screen.animate([
+        { opacity: 0.15, transform: `translateX(${transitionBack ? -12 : 18}px)` },
+        { opacity: 1, transform: 'translateX(0)' }
+      ], { duration: 240, easing: 'cubic-bezier(.16,1,.3,1)' });
+    }
+
+    if (keepInput) {
+      const inp = document.getElementById("tvSearch");
+      if (inp) { inp.focus(); inp.selectionStart = inp.selectionEnd = inp.value.length; }
+      return;
+    }
+
+    const target = [...els.screen.querySelectorAll('[data-key]')].find(e => e.dataset.key === focusMemory) || els.screen.querySelector('button:not(:disabled)');
+    focusMemory = '';
+    requestAnimationFrame(() => target?.focus());
+  }
+
+  // ---------------- Player Engine (MPEG-TS & HLS) ----------------
+  function playStream(streamId, label) {
+    destroyPlayer();
+    activeStreamId = streamId;
+
+    if (els.playerLayer) els.playerLayer.classList.remove("hidden");
+    showOverlay("Carregando canal…", label || "");
+
+    const video = els.video;
+    const user = session ? session.user : "";
+    const pass = session ? session.pass : "";
+    const tsUrl = toProxied(apiUrl(`/live/${encodeURIComponent(user)}/${encodeURIComponent(pass)}/${streamId}.ts`));
+
+    // Atualiza botão de favoritos no player
+    updatePlayerFavButton();
+
+    if (window.mpegts && window.mpegts.isSupported()) {
+      try {
+        tsPlayer = window.mpegts.createPlayer({
+          type: 'mse',
+          isLive: true,
+          url: tsUrl
+        }, {
+          enableWorker: true,
+          lazyLoad: false,
+          liveBufferLatencyChasing: false,
+          liveBufferLatencyMaxLatency: 15.0,
+          liveBufferLatencyMinRemain: 4.0,
+          autoCleanupSourceBuffer: true,
+          stashInitialSize: 512 * 1024
+        });
+
+        tsPlayer.attachMediaElement(video);
+        tsPlayer.load();
+
+        let playStarted = false;
+        const startPlayback = () => {
+          if (playStarted) return;
+          playStarted = true;
+          hideOverlay();
+          video.controls = true;
+          showSkyOsd(streamId, label);
+
+          // Anúncios transitórios oficiais PixGet
+          setTimeout(() => showLowerThird(10000), 6000);
+          startCornerBadgeLoop();
+
+          const playPromise = video.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(err => {
+              if (err.name === "NotAllowedError") {
+                video.muted = true;
+                video.play().catch(() => {});
+                notice("Toque na tela para ativar o áudio");
+                const unmute = () => {
+                  video.muted = false;
+                  window.removeEventListener("click", unmute);
+                };
+                window.addEventListener("click", unmute, { once: true });
+              }
+            });
+          }
+        };
+
+        tsPlayer.on(window.mpegts.Events.MEDIA_INFO, startPlayback);
+        video.onloadeddata = startPlayback;
+        video.oncanplay = startPlayback;
+
+        tsPlayer.on(window.mpegts.Events.ERROR, (errType, errDetail) => {
+          console.warn("[TS Error] Fallback para HLS:", errType, errDetail);
+          fallbackHls(toProxied(apiUrl(`/live/${encodeURIComponent(user)}/${encodeURIComponent(pass)}/${streamId}.m3u8`)), label);
+        });
+
+        return;
+      } catch (err) {
+        console.warn("[TS Catch] Fallback para HLS:", err);
+      }
+    }
+
+    fallbackHls(toProxied(apiUrl(`/live/${encodeURIComponent(user)}/${encodeURIComponent(pass)}/${streamId}.m3u8`)), label);
+  }
+
+  function fallbackHls(finalUrl, label) {
+    destroyPlayer();
+    const video = els.video;
+
+    if (window.Hls && window.Hls.isSupported()) {
+      hls = new window.Hls({
+        enableWorker: true,
+        lowLatencyMode: true,
+        liveSyncDurationCount: 3,
+        manifestLoadingMaxRetry: 3
+      });
+      hls.loadSource(finalUrl);
+      hls.attachMedia(video);
+
+      hls.on(window.Hls.Events.MANIFEST_PARSED, () => {
+        hideOverlay();
+        video.controls = true;
+        showSkyOsd(activeStreamId, label);
+        video.play().catch(() => {
+          video.muted = true;
+          video.play().catch(() => {});
+        });
+      });
+
+      hls.on(window.Hls.Events.ERROR, (event, data) => {
+        if (data.fatal) {
+          showOverlay("Reconectando canal…", "Buscando melhor rota de transmissão.");
+          setTimeout(() => playStream(activeStreamId, label), 3000);
+        }
+      });
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = finalUrl;
+      video.controls = true;
+      video.play().then(hideOverlay).catch(hideOverlay);
+    }
+  }
+
+  function playVodMedia(url, name) {
+    destroyPlayer();
+    if (els.playerLayer) els.playerLayer.classList.remove("hidden");
+    showOverlay("Reproduzindo…", name);
+
+    const video = els.video;
+    video.src = toProxied(url);
+    video.controls = true;
+    showSkyOsd(999, name);
+
+    video.play().then(hideOverlay).catch(() => {
+      video.muted = true;
+      video.play().then(hideOverlay).catch(hideOverlay);
+    });
+  }
+
+  function destroyPlayer() {
+    if (hls) { try { hls.destroy(); } catch (e) {} hls = null; }
+    if (tsPlayer) {
+      try {
+        tsPlayer.pause();
+        tsPlayer.unload();
+        tsPlayer.detachMediaElement();
+        tsPlayer.destroy();
+      } catch (e) {}
+      tsPlayer = null;
+    }
+    if (els.video) {
+      try {
+        els.video.controls = false;
+        els.video.pause();
+        els.video.removeAttribute("src");
+        els.video.load();
+      } catch (e) {}
+    }
+  }
+
+  function closePlayer() {
+    destroyPlayer();
+    if (els.playerLayer) els.playerLayer.classList.add("hidden");
+  }
+
+  // ---------------- OSD Banner Estilo Sky / BTV ----------------
+  function showSkyOsd(streamId, label) {
+    const osd = document.getElementById("skyChannelOsd");
+    if (!osd) return;
+    const stream = allStreams.find(s => String(s.stream_id) === String(streamId));
+    const numEl = document.getElementById("osdNum");
+    const logoEl = document.getElementById("osdLogo");
+    const nameEl = document.getElementById("osdName");
+    const resEl = document.getElementById("osdRes");
+    const progEl = document.getElementById("osdProgTitle");
+
+    const index = allStreams.findIndex(s => String(s.stream_id) === String(streamId));
+    const numStr = stream && stream.num ? String(stream.num).padStart(3, "0") : String(index >= 0 ? index + 1 : 1).padStart(3, "0");
+    if (numEl) numEl.textContent = numStr;
+
+    if (logoEl) {
+      logoEl.src = stream && stream.stream_icon ? toProxied(stream.stream_icon) : "design/nexus.svg";
+      logoEl.onerror = () => { logoEl.src = "design/nexus.svg"; };
+    }
+
+    const cleanName = (label || (stream && stream.name) || "Nexus PlayTV").replace(/</g, "&lt;");
+    if (nameEl) nameEl.innerHTML = cleanName;
+
+    const is4k = /4k|uhd/i.test(label || (stream && stream.name) || "");
+    const isFhd = /fhd|1080/i.test(label || (stream && stream.name) || "");
+    if (resEl) {
+      resEl.textContent = is4k ? "4K" : (isFhd ? "FHD" : "HD");
+      resEl.className = `osd-res ${is4k ? "res-4k" : (isFhd ? "res-fhd" : "")}`;
+    }
+
+    if (progEl) {
+      progEl.textContent = stream && stream.category_name ? `${stream.category_name} • Transmissão ao Vivo` : "Transmissão Oficial Nexus";
+    }
+
+    osd.classList.add("show");
+    if (window.skyOsdTimer) clearTimeout(window.skyOsdTimer);
+    window.skyOsdTimer = setTimeout(() => osd.classList.remove("show"), 4500);
+  }
+
+  function updatePlayerFavButton() {
+    if (!els.btnPlayerFav) return;
+    const isFav = savedFavs.includes(String(activeStreamId));
+    els.btnPlayerFav.setAttribute("aria-pressed", isFav ? "true" : "false");
+    const favLabel = document.getElementById("favLabel");
+    if (favLabel) favLabel.textContent = isFav ? "Salvo" : "Favoritar";
+  }
+
+  function toggleActiveFavorite() {
+    if (!activeStreamId) return;
+    const strId = String(activeStreamId);
+    if (savedFavs.includes(strId)) {
+      savedFavs = savedFavs.filter(id => id !== strId);
+      notice("Removido dos favoritos");
+    } else {
+      savedFavs.push(strId);
+      notice("Canal salvo nos favoritos");
+    }
+    localStorage.setItem('nexus_lab_favorites', JSON.stringify(savedFavs));
+    updatePlayerFavButton();
+  }
+
+  // ---------------- Zoom Mode (YouTube Style) ----------------
+  function showZoomToast(text) {
+    if (!els.zoomToast) return;
+    els.zoomToast.textContent = text;
+    els.zoomToast.classList.add("show");
+    if (window.zoomToastTimer) clearTimeout(window.zoomToastTimer);
+    window.zoomToastTimer = setTimeout(() => els.zoomToast.classList.remove("show"), 1200);
+  }
+
+  function toggleZoom() {
+    if (!els.playerWrap) return;
+    const isZoomed = els.playerWrap.classList.toggle("zoom-fill");
+    localStorage.setItem("nexus_zoom_mode", isZoomed ? "fill" : "fit");
+    showZoomToast(isZoomed ? "⛶ Ampliado para preencher a tela" : "⊡ Ajustado à tela (original)");
+  }
+
+  if (localStorage.getItem("nexus_zoom_mode") === "fill" && els.playerWrap) {
+    els.playerWrap.classList.add("zoom-fill");
+  }
+
+  // ---------------- Fullscreen ----------------
+  function toggleFullscreen() {
+    if (!els.playerWrap) return;
+    const isFull = !!document.fullscreenElement || !!document.webkitFullscreenElement;
+    if (!isFull) {
+      const req = els.playerWrap.requestFullscreen || els.playerWrap.webkitRequestFullscreen || els.playerWrap.msRequestFullscreen;
+      if (req) req.call(els.playerWrap).catch(() => {});
+    } else {
+      const exit = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+      if (exit) exit.call(document).catch(() => {});
+    }
+  }
+
+  // ---------------- Publicidade Oficial PixGet ----------------
+  let badgeLoopActive = false;
+  function startCornerBadgeLoop() {
+    if (badgeLoopActive || !els.adCornerBadge) return;
+    badgeLoopActive = true;
+    function cycleBadge() {
+      els.adCornerBadge.classList.add("visible");
+      setTimeout(() => {
+        els.adCornerBadge.classList.remove("visible");
+        setTimeout(cycleBadge, 35000); // 35 segundos invisível
+      }, 14000); // 14 segundos visível
+    }
+    setTimeout(cycleBadge, 4000);
+  }
+
+  let ltTimer = null;
+  function showLowerThird(durationMs = 10000) {
+    if (!els.adLowerThird) return;
+    els.adLowerThird.classList.add("active");
+    if (ltTimer) clearTimeout(ltTimer);
+    ltTimer = setTimeout(() => {
+      els.adLowerThird.classList.remove("active");
+      ltTimer = null;
+    }, durationMs);
+  }
+
+  function hideLowerThird() {
+    if (els.adLowerThird) els.adLowerThird.classList.remove("active");
+    if (ltTimer) { clearTimeout(ltTimer); ltTimer = null; }
+  }
+
+  if (els.btnAdLtClose) {
+    els.btnAdLtClose.addEventListener("click", e => {
+      e.stopPropagation();
+      hideLowerThird();
+    });
+  }
+
+  // Billboard Vertical (Rail Lateral no Catálogo/Canais)
+  function startBillboardLoop() {
+    if (!els.adBbImgLink) return;
+    function cycleBillboard() {
+      els.adBbImgLink.classList.add("visible");
+      setTimeout(() => {
+        els.adBbImgLink.classList.remove("visible");
+        setTimeout(cycleBillboard, 22000); // 22s apagado
+      }, 12000); // 12s visível
+    }
+    setTimeout(cycleBillboard, 1500);
+  }
+  startBillboardLoop();
+
+  // ---------------- Relógio Digital ----------------
+  function clock() {
+    const now = new Date();
+    const parts = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }).split(':');
+    if (els.clock) els.clock.innerHTML = `<span>${parts[0]}</span><i>:</i><span>${parts[1]}</span>`;
+    if (els.clockDate) els.clockDate.textContent = now.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' });
+  }
+  setInterval(clock, 1000);
+  clock();
+
+  // ---------------- Vídeo Ambiente do Estádio ----------------
+  function syncAmbient() {
+    const video = els.screen ? els.screen.querySelector('.ambient-video') : null;
+    if (!video) return;
+    if (reduced || document.hidden) {
+      video.pause();
+      video.hidden = true;
+      return;
+    }
+    video.muted = true;
+    if (!video.getAttribute('src')) video.src = video.dataset.src;
+    video.onplaying = () => { video.hidden = false; };
+    video.onerror = () => { video.hidden = true; };
+    const pending = video.play();
+    if (pending?.catch) pending.catch(() => { video.hidden = true; });
+  }
+
+  // ---------------- Event Listeners Globais ----------------
+  document.addEventListener('click', async e => {
+    const b = e.target.closest('button, [data-act]');
+    if (!b) return;
+
+    // Ações de categorias
+    if (b.dataset.catId) {
+      const catId = b.dataset.catId;
+      const catName = b.dataset.catName;
+      state.categoryId = catId;
+      state.category = catName;
+
+      showOverlay("Carregando catálogo…", catName);
+      if (state.kind === 'movie') {
+        if (!vodCache[catId]) {
+          vodCache[catId] = await fetchVodStreams(session.user, session.pass, catId);
+        }
+      } else if (state.kind === 'series') {
+        if (!seriesCache[catId]) {
+          seriesCache[catId] = await fetchSeries(session.user, session.pass, catId);
+        }
+      }
+      hideOverlay();
+      go({ view: 'catalog', query: '' });
+      return;
+    }
+
+    // Ações de itens de catálogo
+    if (b.dataset.itemId) {
+      const id = b.dataset.itemId;
+      const type = b.dataset.itemType;
+      showOverlay("Carregando título…", "");
+      if (type === 'movie') {
+        const item = (vodCache[state.categoryId] || []).find(v => String(v.stream_id) === String(id));
+        selectedItem = item;
+      } else {
+        const item = (seriesCache[state.categoryId] || []).find(s => String(s.series_id) === String(id));
+        selectedItem = item;
+      }
+      hideOverlay();
+      go({ view: 'detail', title: id });
+      return;
+    }
+
+    // Ações de temporadas
+    if (b.dataset.seasonNum) {
+      state.season = Number(b.dataset.seasonNum);
+      go({ view: 'episodes' });
+      return;
+    }
+
+    // Ações de episódios
+    if (b.dataset.episodeId) {
+      const epId = b.dataset.episodeId;
+      const epTitle = b.dataset.episodeTitle;
+      const epExt = b.dataset.episodeExt || 'mp4';
+      const user = session ? session.user : '';
+      const pass = session ? session.pass : '';
+      const url = apiUrl(`/series/${encodeURIComponent(user)}/${encodeURIComponent(pass)}/${epId}.${epExt}`);
+      playVodMedia(url, epTitle);
+      return;
+    }
+
+    // Ações de canais de TV
+    if (b.dataset.channelId) {
+      const id = b.dataset.channelId;
+      const name = b.dataset.channelName;
+      playStream(id, name);
+      return;
+    }
+
+    // Ações por data-act
+    const act = b.dataset.act || b.dataset.action;
+    switch (act) {
+      case 'back':
+        back();
+        break;
+      case 'home':
+        go({ view: 'home' });
+        break;
+      case 'live':
+        go({ view: 'live', query: '' });
+        break;
+      case 'sports':
+        go({ view: 'sports', query: '' });
+        break;
+      case 'movie':
+      case 'series':
+        showOverlay("Carregando categorias…", "");
+        if (act === 'movie' && !vodCategories.length) {
+          vodCategories = await fetchVodCategories(session.user, session.pass);
+        } else if (act === 'series' && !seriesCategories.length) {
+          seriesCategories = await fetchSeriesCategories(session.user, session.pass);
+        }
+        hideOverlay();
+        go({ view: 'categories', kind: act, query: '' });
+        break;
+      case 'favorites':
+        go({ view: 'favorites', query: '' });
+        break;
+      case 'next':
+        state.page++;
+        draw();
+        break;
+      case 'prev':
+        state.page = Math.max(0, state.page - 1);
+        draw();
+        break;
+      case 'load-seasons':
+        showOverlay("Carregando temporadas…", "");
+        if (selectedItem && selectedItem.series_id && !seriesInfoCache[selectedItem.series_id]) {
+          const info = await fetchSeriesInfo(session.user, session.pass, selectedItem.series_id);
+          selectedItem.seasons = info.seasons || [];
+          selectedItem.episodes = info.episodes || {};
+          seriesInfoCache[selectedItem.series_id] = info;
+        }
+        hideOverlay();
+        go({ view: 'seasons' });
+        break;
+      case 'play-movie':
+        if (selectedItem) {
+          const user = session ? session.user : '';
+          const pass = session ? session.pass : '';
+          const ext = selectedItem.container_extension || 'mp4';
+          const url = apiUrl(`/movie/${encodeURIComponent(user)}/${encodeURIComponent(pass)}/${selectedItem.stream_id}.${ext}`);
+          playVodMedia(url, selectedItem.name);
+        }
+        break;
+      case 'account':
+        go({ view: 'account' });
+        break;
+      case 'epg':
+        go({ view: 'epg' });
+        break;
+      case 'back-to-player':
+        if (els.playerLayer) els.playerLayer.classList.remove("hidden");
+        break;
+      case 'favorite':
+        toggleActiveFavorite();
+        break;
+      case 'motion':
+        reduced = !reduced;
+        document.body.classList.toggle('motion-off', reduced);
+        b.textContent = reduced ? 'Ativar movimento' : 'Pausar movimento';
+        syncAmbient();
+        break;
+    }
+  });
+
+  // Eventos do Player Persistente
+  if (els.btnPlayerBack) {
+    els.btnPlayerBack.addEventListener("click", () => {
+      closePlayer();
+    });
+  }
+  if (els.btnPlayerFav) {
+    els.btnPlayerFav.addEventListener("click", () => {
+      toggleActiveFavorite();
+    });
+  }
+  if (els.btnPlayerEpg) {
+    els.btnPlayerEpg.addEventListener("click", () => {
+      if (els.playerLayer) els.playerLayer.classList.add("hidden");
+      go({ view: 'epg' });
+    });
+  }
+  if (els.btnZoom) {
+    els.btnZoom.addEventListener("click", toggleZoom);
+  }
+  if (els.btnFullscreen) {
+    els.btnFullscreen.addEventListener("click", toggleFullscreen);
+  }
+
+  // Duplo toque / clique no vídeo para Zoom
+  let lastTouchEndTime = 0;
+  if (els.playerWrap) {
+    els.playerWrap.addEventListener("touchend", e => {
+      if (e.target.closest("button, a")) return;
+      const now = Date.now();
+      if (now - lastTouchEndTime < 350) {
+        e.preventDefault();
+        toggleZoom();
+        lastTouchEndTime = 0;
+        return;
+      }
+      lastTouchEndTime = now;
+    }, { passive: false });
+
+    els.playerWrap.addEventListener("dblclick", e => {
+      if (e.target.closest("button, a")) return;
+      e.preventDefault();
+      toggleZoom();
+    });
+  }
+
+  // Campo de Busca Dinâmica
+  document.addEventListener('input', e => {
+    if (e.target.id === 'tvSearch') {
+      state.query = e.target.value;
+      state.page = 0;
+      draw(true);
+    }
+  });
+
+  // Controle Remoto Smart TV (D-Pad) & Teclado
+  document.addEventListener('keydown', e => {
+    if (['Escape', 'BrowserBack', 'GoBack'].includes(e.key) || [10009, 461].includes(e.keyCode)) {
+      e.preventDefault();
+      if (els.playerLayer && !els.playerLayer.classList.contains("hidden")) {
+        closePlayer();
+      } else {
+        back();
+      }
+      return;
+    }
+
+    if (!e.key.startsWith('Arrow') || ['INPUT', 'VIDEO'].includes(e.target.tagName)) return;
+
+    const elsList = [...document.querySelectorAll('button:not(:disabled), a, input')].filter(x => x.getClientRects().length);
+    const active = document.activeElement;
+    if (!elsList.includes(active)) {
+      elsList[0]?.focus();
+      return;
+    }
+
+    const a = active.getBoundingClientRect();
+    const vertical = ['ArrowUp', 'ArrowDown'].includes(e.key);
+    const sign = ['ArrowDown', 'ArrowRight'].includes(e.key) ? 1 : -1;
+    let best, score = Infinity;
+
+    for (const el of elsList) {
+      if (el === active) continue;
+      const b = el.getBoundingClientRect();
+      const dx = b.x + b.width / 2 - a.x - a.width / 2;
+      const dy = b.y + b.height / 2 - a.y - a.height / 2;
+      const p = (vertical ? dy : dx) * sign;
+      const s = Math.abs(vertical ? dx : dy);
+      if (p > 2 && p + s * 3 < score) {
+        score = p + s * 3;
+        best = el;
+      }
+    }
+
+    e.preventDefault();
+    best?.focus();
+  });
+
+  // ---------------- Proxy e API Helpers ----------------
   function toProxied(absoluteOrPath) {
     if (!absoluteOrPath) return absoluteOrPath;
     try {
@@ -109,11 +1038,11 @@
       return absoluteOrPath;
     }
   }
+
   function apiUrl(path) {
     return PROXY_BASE + path;
   }
 
-  // ---------------- Xtream Codes API (via proxy) ----------------
   async function xtreamLogin(user, pass) {
     const url = apiUrl(`/player_api.php?username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}`);
     const res = await fetch(url, { cache: "no-store" });
@@ -140,909 +1069,66 @@
     return res.json();
   }
 
-  function buildLiveUrl(user, pass, streamId, ext) {
-    ext = ext || "m3u8";
-    // Formato padrão Xtream Codes: /live/USER/PASS/STREAM_ID.ext
-    return apiUrl(`/live/${encodeURIComponent(user)}/${encodeURIComponent(pass)}/${streamId}.${ext}`);
+  async function fetchVodCategories(user, pass) {
+    const url = apiUrl(`/player_api.php?username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}&action=get_vod_categories`);
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) return [];
+    return res.json();
   }
 
-  // ---------------- Player HLS & MPEG-TS ----------------
-  let reconnectTimer = null;
-
-  function destroyPlayer() {
-    if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
-    if (hls) { try { hls.destroy(); } catch (e) {} hls = null; }
-    if (tsPlayer) {
-      try {
-        tsPlayer.pause();
-        tsPlayer.unload();
-        tsPlayer.detachMediaElement();
-        tsPlayer.destroy();
-      } catch (e) {}
-      tsPlayer = null;
-    }
-    if (els.video) {
-      try {
-        els.video.controls = false;
-        els.video.pause();
-        els.video.removeAttribute("src");
-        els.video.load();
-      } catch (e) {}
-    }
+  async function fetchVodStreams(user, pass, catId) {
+    const url = apiUrl(`/player_api.php?username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}&action=get_vod_streams&category_id=${encodeURIComponent(catId)}`);
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) return [];
+    return res.json();
   }
 
-  // ---------------- OSD Banner Estilo Sky / BTV ----------------
-  function showSkyOsd(streamId, label) {
-    const osd = document.getElementById("skyChannelOsd");
-    if (!osd) return;
-    const stream = allStreams.find(s => String(s.stream_id) === String(streamId));
-    const numEl = document.getElementById("osdNum");
-    const logoEl = document.getElementById("osdLogo");
-    const nameEl = document.getElementById("osdName");
-    const resEl = document.getElementById("osdRes");
-    const progEl = document.getElementById("osdProgTitle");
-
-    const index = allStreams.findIndex(s => String(s.stream_id) === String(streamId));
-    const numStr = stream && stream.num ? String(stream.num).padStart(3, "0") : String(index >= 0 ? index + 1 : 1).padStart(3, "0");
-    if (numEl) numEl.textContent = numStr;
-
-    if (logoEl) {
-      logoEl.src = stream && stream.stream_icon ? toProxied(stream.stream_icon) : "./design/nexus.svg";
-      logoEl.onerror = () => { logoEl.src = "./design/nexus.svg"; };
-    }
-
-    const cleanName = (label || (stream && stream.name) || "Canal Nexus").replace(/</g, "&lt;");
-    if (nameEl) nameEl.innerHTML = cleanName;
-
-    const is4k = /4k|uhd/i.test(label || (stream && stream.name) || "");
-    const isFhd = /fhd|1080/i.test(label || (stream && stream.name) || "");
-    if (resEl) {
-      resEl.textContent = is4k ? "4K" : (isFhd ? "FHD" : "HD");
-      resEl.className = `osd-res ${is4k ? "res-4k" : (isFhd ? "res-fhd" : "")}`;
-    }
-
-    if (progEl) {
-      progEl.textContent = stream && stream.category_name ? `${stream.category_name} • Transmissão ao Vivo` : "Transmissão Oficial Nexus";
-    }
-
-    osd.classList.add("show");
-    if (window.skyOsdTimer) clearTimeout(window.skyOsdTimer);
-    window.skyOsdTimer = setTimeout(() => {
-      osd.classList.remove("show");
-    }, 4500);
+  async function fetchSeriesCategories(user, pass) {
+    const url = apiUrl(`/player_api.php?username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}&action=get_series_categories`);
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) return [];
+    return res.json();
   }
 
-  function playStream(streamId, label) {
-    destroyPlayer();
-    showOverlay("Carregando canal…", label || "");
-    setStatus("carregando", "");
-
-    const video = els.video;
-    const user = session ? session.user : "";
-    const pass = session ? session.pass : "";
-
-    const tsUrl = toProxied(buildLiveUrl(user, pass, streamId, "ts"));
-
-    if (window.mpegts && window.mpegts.isSupported()) {
-      try {
-        tsPlayer = window.mpegts.createPlayer({
-          type: 'mse',
-          isLive: true,
-          url: tsUrl
-        }, {
-          enableWorker: true,
-          lazyLoad: false,
-          liveBufferLatencyChasing: false,
-          liveBufferLatencyMaxLatency: 15.0,
-          liveBufferLatencyMinRemain: 4.0,
-          autoCleanupSourceBuffer: true,
-          autoCleanupMaxBackwardDuration: 30,
-          autoCleanupMinBackwardDuration: 15,
-          stashInitialSize: 512 * 1024
-        });
-
-        tsPlayer.attachMediaElement(video);
-        tsPlayer.load();
-
-        let playStarted = false;
-        const startPlayback = () => {
-          if (playStarted) return;
-          playStarted = true;
-          hideOverlay();
-          video.controls = true;
-          setStatus("ao vivo", "live");
-          showSkyOsd(streamId, label);
-          // Dispara os anúncios transitórios oficiais PixGet
-          setTimeout(() => {
-            showLowerThird(10000);
-          }, 6000);
-          startCornerBadgeLoop();
-          const playPromise = video.play();
-          if (playPromise !== undefined) {
-            playPromise.catch((err) => {
-              if (err.name === "NotAllowedError") {
-                video.muted = true;
-                video.play().catch(() => {});
-                showOverlay("Clique para ativar o som 🔊", "O navegador requer um clique para liberar o áudio.");
-                const unmute = () => {
-                  video.muted = false;
-                  hideOverlay();
-                  window.removeEventListener("click", unmute);
-                  video.removeEventListener("click", unmute);
-                };
-                window.addEventListener("click", unmute, { once: true });
-                video.addEventListener("click", unmute, { once: true });
-              }
-            });
-          }
-        };
-
-        video.onloadeddata = startPlayback;
-        video.onplaying = startPlayback;
-        video.oncanplay = startPlayback;
-
-        tsPlayer.on(window.mpegts.Events.ERROR, (errType, errDetail, errInfo) => {
-          console.warn("mpegts erro:", errType, errDetail, errInfo);
-          if (!playStarted) {
-            destroyPlayer();
-            if (errInfo && errInfo.code === 429) {
-              showOverlay("Conexão ocupada", "Liberando conexão e reconectando em 3s…");
-              setStatus("reconectando", "err");
-              reconnectTimer = setTimeout(() => playStream(streamId, label), 3500);
-            } else {
-              showOverlay("Erro ao carregar canal", "Tentando reconectar…");
-              setStatus("erro", "err");
-              reconnectTimer = setTimeout(() => playStream(streamId, label), 3000);
-            }
-          }
-        });
-        return;
-      } catch (err) {
-        console.warn("Erro ao iniciar mpegts:", err);
-      }
-    }
-
-    // Fallback HLS apenas para navegadores que não suportam MSE (ex: Safari iOS nativo)
-    const m3u8Url = toProxied(buildLiveUrl(user, pass, streamId, "m3u8"));
-    fallbackHls(m3u8Url, label);
+  async function fetchSeries(user, pass, catId) {
+    const url = apiUrl(`/player_api.php?username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}&action=get_series&category_id=${encodeURIComponent(catId)}`);
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) return [];
+    return res.json();
   }
 
-  function fallbackHls(finalUrl, label) {
-    const video = els.video;
-    if (window.Hls && window.Hls.isSupported()) {
-      hls = new Hls({
-        lowLatencyMode: true,
-        backBufferLength: 60,
-        maxBufferLength: 30,
-        enableWorker: true,
-        xhrSetup: function(xhr, url) {
-          if (url.startsWith("http://atmt.space")) {
-            xhr.open("GET", url.replace("http://atmt.space", "/stream"), true);
-          }
-        }
-      });
-      hls.loadSource(finalUrl);
-      hls.attachMedia(video);
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        hideOverlay();
-        setStatus("ao vivo", "live");
-        video.play().catch(() => {});
-      });
-      hls.on(Hls.Events.ERROR, (event, data) => {
-        if (!data.fatal) return;
-        switch (data.type) {
-          case Hls.ErrorTypes.NETWORK_ERROR:
-            showOverlay("Erro de rede", "Tentando reconectar ao stream…");
-            setStatus("reconectando", "err");
-            setTimeout(() => { try { hls.startLoad(); } catch (e) {} }, 1500);
-            break;
-          case Hls.ErrorTypes.MEDIA_ERROR:
-            showOverlay("Erro de mídia", "Recuperando decodificador…");
-            try { hls.recoverMediaError(); } catch (e) {}
-            break;
-          default:
-            showOverlay("Não foi possível reproduzir", "Verifique a conexão ou tente outro canal.");
-            setStatus("erro", "err");
-            destroyPlayer();
-        }
-      });
-    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-      // Safari / iOS: HLS nativo
-      video.src = finalUrl;
-      video.addEventListener("loadedmetadata", () => {
-        hideOverlay();
-        setStatus("ao vivo", "live");
-        video.play().catch(() => {});
-      }, { once: true });
-      video.addEventListener("error", () => {
-        showOverlay("Não foi possível reproduzir", "Verifique a conexão ou tente outro canal.");
-        setStatus("erro", "err");
-      }, { once: true });
-    } else {
-      showOverlay("Navegador não suportado", "Seu navegador não suporta reprodução HLS ou MPEG-TS.");
-      setStatus("erro", "err");
-    }
+  async function fetchSeriesInfo(user, pass, seriesId) {
+    const url = apiUrl(`/player_api.php?username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}&action=get_series_info&series_id=${encodeURIComponent(seriesId)}`);
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) return {};
+    return res.json();
   }
 
-  // ---------------- Favoritos (LocalStorage) ----------------
-  function getFavorites() {
-    try {
-      const favs = JSON.parse(localStorage.getItem("nexus_favorites") || "[]");
-      return Array.isArray(favs) ? favs : [];
-    } catch (e) {
-      return [];
-    }
-  }
+  // ---------------- Sessão e Autenticação ----------------
+  async function startSession(user, pass) {
+    if (els.loginGate) els.loginGate.classList.add("hidden");
+    if (els.appShell) els.appShell.classList.remove("hidden");
 
-  function toggleFavorite(streamId) {
-    const favs = getFavorites();
-    const strId = String(streamId);
-    const index = favs.indexOf(strId);
-    if (index >= 0) {
-      favs.splice(index, 1);
-    } else {
-      favs.push(strId);
-    }
-    localStorage.setItem("nexus_favorites", JSON.stringify(favs));
-    updateFavBadge();
-  }
-
-  function updateFavBadge() {
-    const badge = document.getElementById("favCounterBadge");
-    if (!badge) return;
-    const count = getFavorites().length;
-    if (count > 0) {
-      badge.textContent = String(count);
-      badge.style.display = "inline-block";
-    } else {
-      badge.style.display = "none";
-    }
-  }
-
-  // ---------------- Lista de canais ----------------
-  function renderChannelList(streams) {
-    const q = (els.searchInput.value || "").toLowerCase().trim();
-    const cat = els.catSelect.value;
-    const favs = getFavorites();
-
-    const btnQuickSports = document.getElementById("btnQuickSports");
-    const btnQuickFavs = document.getElementById("btnQuickFavs");
-    if (btnQuickSports) btnQuickSports.classList.toggle("active", cat === "sports_today");
-    if (btnQuickFavs) btnQuickFavs.classList.toggle("active", cat === "favorites");
-
-    const filtered = streams.filter(s => {
-      if (cat === "favorites") {
-        if (!favs.includes(String(s.stream_id))) return false;
-      } else if (cat === "sports_today") {
-        const name = String(s.name || "").toLowerCase();
-        const catName = String(s.category_name || "").toLowerCase();
-        const isMatch = name.includes(" x ") || name.includes(" vs ") || /\b\d{1,2}:\d{2}\b/.test(name);
-        const isSport = catName.includes("jogo") || catName.includes("futebol") || catName.includes("premiere") || catName.includes("sportv") || catName.includes("espn") || catName.includes("dazn") || catName.includes("cazé") || catName.includes("conmebol") || catName.includes("brasileir");
-        if (!isMatch && !isSport && String(s.category_id) !== "sports_today") return false;
-      } else if (cat && String(s.category_id) !== String(cat)) {
-        return false;
-      }
-      if (q && !String(s.name || "").toLowerCase().includes(q)) return false;
-      return true;
-    });
-
-    if (!filtered.length) {
-      const msg = cat === "favorites"
-        ? "Nenhum canal favoritado ainda.<br>Clique no símbolo de estrela ao lado de qualquer canal para salvar aqui."
-        : cat === "sports_today"
-        ? "Nenhuma partida esportiva listada no momento."
-        : "Nenhum canal encontrado.";
-      els.channelList.innerHTML = `<div class="empty-hint">${msg}</div>`;
-      return;
-    }
-
-    els.channelList.innerHTML = filtered.slice(0, 400).map((s, idx) => {
-      const logo = s.stream_icon ? toProxied(s.stream_icon) : "";
-      const active = String(s.stream_id) === String(activeStreamId) ? " active" : "";
-      const finalLogo = logo || "/favicon.png";
-      const isFav = favs.includes(String(s.stream_id));
-      const starFill = isFav ? "var(--green)" : "none";
-      const starStroke = isFav ? "var(--green)" : "#a2b0a2";
-
-      const numStr = s.num ? String(s.num).padStart(3, "0") : String(idx + 1).padStart(3, "0");
-      const name = String(s.name || "Canal");
-      const is4k = /4k|uhd/i.test(name);
-      const isFhd = /fhd|1080/i.test(name);
-      const resBadge = is4k ? `<span class="res-badge res-4k">4K</span>` : (isFhd ? `<span class="res-badge res-fhd">FHD</span>` : `<span class="res-badge">HD</span>`);
-
-      return `<div class="chan${active}" data-id="${s.stream_id}" tabindex="0">
-        <span class="num-badge">${numStr}</span>
-        <img class="logo" src="${finalLogo}" loading="lazy" onerror="this.onerror=null;this.src='/favicon.png';">
-        <span class="name">${name.replace(/</g, "&lt;")}</span>
-        ${resBadge}
-        <button type="button" class="btn-fav-star${isFav ? ' is-fav' : ''}" data-fav-id="${s.stream_id}" title="${isFav ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}" aria-label="Favoritar">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="${starFill}" stroke="${starStroke}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-          </svg>
-        </button>
-      </div>`;
-    }).join("");
-
-    els.channelList.querySelectorAll(".btn-fav-star").forEach(btn => {
-      btn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const id = btn.getAttribute("data-fav-id");
-        toggleFavorite(id);
-        renderChannelList(streams);
-      });
-    });
-
-    els.channelList.querySelectorAll(".chan").forEach(el => {
-      el.addEventListener("click", (e) => {
-        if (e.target.closest(".btn-fav-star")) return;
-        const id = el.getAttribute("data-id");
-        const stream = streams.find(s => String(s.stream_id) === String(id));
-        if (!stream) return;
-        activeStreamId = id;
-        els.npChannel.textContent = stream.name || "Canal";
-        localStorage.setItem("nexus_last_stream_id", String(stream.stream_id));
-        renderChannelList(streams);
-        if (window.innerWidth <= 860) els.sidebar.classList.remove("open");
-        playStream(stream.stream_id, stream.name);
-      });
-    });
-  }
-
-  // ---------------- Categorias no padrão dos canais (sem popup / rola até o fim) ----------------
-  let allCategories = [];
-  let currentViewMode = "channels"; // "channels" | "categories"
-
-  const catTrigger = document.getElementById("catDropdownTrigger");
-  const catLabel = document.getElementById("catCurrentLabel");
-
-  function renderCategoryList() {
-    const q = (els.searchInput.value || "").toLowerCase().trim();
-    const activeCat = els.catSelect.value;
-    const favCount = getFavorites().length;
-
-    const specialItems = [
-      { category_id: "favorites", category_name: `Favoritos (${favCount})`, isSpecial: "fav" },
-      { category_id: "sports_today", category_name: "Jogos do Dia", isSpecial: "sports" },
-      { category_id: "", category_name: "Todas as categorias" }
-    ];
-
-    const items = [
-      ...specialItems,
-      ...allCategories
-    ].filter(c => !q || (c.category_name || "").toLowerCase().includes(q));
-
-    if (!items.length) {
-      els.channelList.innerHTML = `<div class="empty-hint">Nenhuma categoria encontrada.</div>`;
-      return;
-    }
-
-    els.channelList.innerHTML = items.map(c => {
-      const active = String(c.category_id) === String(activeCat) ? " active" : "";
-      let iconHtml = `<img src="./design/nexus.svg" alt="" class="cat-n-icon">`;
-      if (c.isSpecial === "fav") {
-        iconHtml = `<svg width="15" height="15" viewBox="0 0 24 24" fill="var(--green)" stroke="var(--green)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
-      } else if (c.isSpecial === "sports") {
-        iconHtml = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="12 6 15.5 8.5 14 12.5 10 12.5 8.5 8.5 12 6"></polygon></svg>`;
-      }
-
-      return `<div class="chan cat-card${active}" data-cat-id="${c.category_id}">
-        <div class="cat-icon-badge">
-          ${iconHtml}
-        </div>
-        <span class="name">${(c.category_name || "Geral").replace(/</g, "&lt;")}</span>
-      </div>`;
-    }).join("");
-
-    els.channelList.querySelectorAll(".chan.cat-card").forEach(el => {
-      el.addEventListener("click", () => {
-        const catId = el.getAttribute("data-cat-id");
-        els.catSelect.value = catId;
-        const name = el.querySelector(".name").textContent;
-        if (catLabel) catLabel.textContent = name;
-
-        // Retorna para visualização de canais daquela categoria
-        currentViewMode = "channels";
-        if (catTrigger) catTrigger.classList.remove("active-mode");
-        renderChannelList(allStreams);
-        resetAutoRetractTimer();
-      });
-    });
-  }
-
-  if (catTrigger) {
-    catTrigger.addEventListener("click", (e) => {
-      e.stopPropagation();
-      currentViewMode = currentViewMode === "categories" ? "channels" : "categories";
-      if (currentViewMode === "categories") {
-        catTrigger.classList.add("active-mode");
-        renderCategoryList();
-      } else {
-        catTrigger.classList.remove("active-mode");
-        renderChannelList(allStreams);
-      }
-      resetAutoRetractTimer();
-    });
-  }
-
-  // Atalhos Rápidos (Jogos do Dia e Favoritos)
-  const btnQuickSports = document.getElementById("btnQuickSports");
-  const btnQuickFavs = document.getElementById("btnQuickFavs");
-
-  if (btnQuickSports) {
-    btnQuickSports.addEventListener("click", () => {
-      if (els.catSelect.value === "sports_today") {
-        els.catSelect.value = "";
-        if (catLabel) catLabel.textContent = "Todas as categorias";
-      } else {
-        els.catSelect.value = "sports_today";
-        if (catLabel) catLabel.textContent = "Jogos do Dia";
-      }
-      currentViewMode = "channels";
-      if (catTrigger) catTrigger.classList.remove("active-mode");
-      renderChannelList(allStreams);
-      resetAutoRetractTimer();
-    });
-  }
-
-  if (btnQuickFavs) {
-    btnQuickFavs.addEventListener("click", () => {
-      if (els.catSelect.value === "favorites") {
-        els.catSelect.value = "";
-        if (catLabel) catLabel.textContent = "Todas as categorias";
-      } else {
-        els.catSelect.value = "favorites";
-        if (catLabel) catLabel.textContent = "Favoritos";
-      }
-      currentViewMode = "channels";
-      if (catTrigger) catTrigger.classList.remove("active-mode");
-      renderChannelList(allStreams);
-      resetAutoRetractTimer();
-    });
-  }
-
-  // ---------------- Relógio Digital de Topo (Estilo BTV / Sky) ----------------
-  function updateTvClock() {
-    const timeEl = document.getElementById("tvTime");
-    const dateEl = document.getElementById("tvDate");
-    if (!timeEl || !dateEl) return;
-    const now = new Date();
-    const h = String(now.getHours()).padStart(2, "0");
-    const m = String(now.getMinutes()).padStart(2, "0");
-    timeEl.textContent = `${h}:${m}`;
-    const days = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-    const months = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
-    dateEl.textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
-  }
-  setInterval(updateTvClock, 1000);
-  updateTvClock();
-
-  // ---------------- Navegação por Controle Remoto (Smart TV D-Pad) ----------------
-  let focusedChannelIndex = -1;
-  window.addEventListener("keydown", (e) => {
-    if (document.activeElement && (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA")) return;
-    const chanElements = Array.from(els.channelList.querySelectorAll(".chan"));
-    if (!chanElements.length) return;
-
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      focusedChannelIndex = Math.min(chanElements.length - 1, focusedChannelIndex + 1);
-      updateTvFocus(chanElements);
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      focusedChannelIndex = Math.max(0, focusedChannelIndex - 1);
-      updateTvFocus(chanElements);
-    } else if ((e.key === "Enter" || e.key === " ") && focusedChannelIndex >= 0) {
-      e.preventDefault();
-      chanElements[focusedChannelIndex].click();
-    }
-  });
-
-  function updateTvFocus(elements) {
-    elements.forEach((el, i) => {
-      if (i === focusedChannelIndex) {
-        el.classList.add("tv-focused");
-        el.scrollIntoView({ block: "nearest", behavior: "smooth" });
-      } else {
-        el.classList.remove("tv-focused");
-      }
-    });
-  }
-
-  // ---------------- Abas de Conteúdo no Topo (BTV / RedPlay Launcher) ----------------
-  const tvTabs = document.querySelectorAll(".tv-tab-btn");
-  let currentActiveTab = "live"; // "live" | "sports" | "movies" | "series" | "favs"
-
-  tvTabs.forEach(btn => {
-    btn.addEventListener("click", () => {
-      const tab = btn.getAttribute("data-tab");
-      tvTabs.forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      currentActiveTab = tab;
-
-      if (tab === "live") {
-        els.catSelect.value = "";
-        if (catLabel) catLabel.textContent = "Todas as categorias";
-        renderChannelList(allStreams);
-      } else if (tab === "sports") {
-        els.catSelect.value = "sports_today";
-        if (catLabel) catLabel.textContent = "Jogos do Dia";
-        renderChannelList(allStreams);
-      } else if (tab === "favs") {
-        els.catSelect.value = "favorites";
-        if (catLabel) catLabel.textContent = "Meus Favoritos";
-        renderChannelList(allStreams);
-      } else if (tab === "movies") {
-        loadVodSection("movie");
-      } else if (tab === "series") {
-        loadVodSection("series");
-      }
-    });
-  });
-
-  async function loadVodSection(type) {
-    if (!session) return;
-    const title = type === "series" ? "Séries & Temporadas" : "Cine Nexus (Filmes)";
-    if (catLabel) catLabel.textContent = title;
-    els.channelList.innerHTML = `<div class="empty-hint"><div class="spinner" style="margin:0 auto 12px;width:32px;height:32px;"></div>Carregando catálogo de ${type === "series" ? "séries" : "filmes"}…</div>`;
-
-    try {
-      const catAction = type === "series" ? "get_series_categories" : "get_vod_categories";
-      const catRes = await fetch(`/stream/player_api.php?username=${encodeURIComponent(session.user)}&password=${encodeURIComponent(session.pass)}&action=${catAction}`);
-      const cats = await catRes.json();
-      const firstCat = Array.isArray(cats) && cats.length ? cats[0].category_id : "";
-
-      const streamAction = type === "series" ? "get_series" : "get_vod_streams";
-      const vodRes = await fetch(`/stream/player_api.php?username=${encodeURIComponent(session.user)}&password=${encodeURIComponent(session.pass)}&action=${streamAction}&category_id=${encodeURIComponent(firstCat)}`);
-      const vods = await vodRes.json();
-
-      if (!Array.isArray(vods) || !vods.length) {
-        els.channelList.innerHTML = `<div class="empty-hint">Nenhum conteúdo sob demanda encontrado no momento.</div>`;
-        return;
-      }
-
-      els.channelList.innerHTML = vods.slice(0, 150).map(v => {
-        const cover = v.stream_icon || v.cover || "/favicon.png";
-        const vTitle = (v.name || "Filme").replace(/</g, "&lt;");
-        const rating = v.rating ? `★ ${v.rating}` : (v.year || "VOD");
-        return `<div class="chan vod-card" data-vod-id="${v.stream_id || v.series_id}" data-type="${type}" data-ext="${v.container_extension || 'mp4'}">
-          <img class="logo vod-poster" src="${cover}" loading="lazy" onerror="this.onerror=null;this.src='/favicon.png';">
-          <div style="flex:1;min-width:0;">
-            <span class="name" style="font-weight:600;">${vTitle}</span>
-            <div style="font-size:10px;color:var(--muted);margin-top:2px;">${rating} • ${type === 'series' ? 'Série' : 'Cinema'}</div>
-          </div>
-        </div>`;
-      }).join("");
-
-      els.channelList.querySelectorAll(".chan.vod-card").forEach(el => {
-        el.addEventListener("click", () => {
-          const id = el.getAttribute("data-vod-id");
-          const vType = el.getAttribute("data-type");
-          const vExt = el.getAttribute("data-ext");
-          const vName = el.querySelector(".name").textContent;
-          if (vType === "movie") {
-            playVodMovie(id, vName, vExt);
-          } else {
-            showOverlay(vName, "Abra um episódio para reproduzir.");
-            setTimeout(hideOverlay, 2000);
-          }
-        });
-      });
-    } catch (e) {
-      els.channelList.innerHTML = `<div class="empty-hint">Erro ao carregar catálogo. Retorne para TV ao Vivo.</div>`;
-    }
-  }
-
-  function playVodMovie(streamId, name, ext) {
-    destroyPlayer();
-    showOverlay("Reproduzindo Filme…", name);
-    setStatus("reproduzindo", "live");
-    els.npChannel.textContent = name;
-    showSkyOsd(streamId, name);
-
-    const user = session ? session.user : "";
-    const pass = session ? session.pass : "";
-    const movieUrl = `/stream/movie/${encodeURIComponent(user)}/${encodeURIComponent(pass)}/${encodeURIComponent(streamId)}.${ext || 'mp4'}`;
-    els.video.src = movieUrl;
-    els.video.controls = true;
-    els.video.play().then(() => {
-      hideOverlay();
-    }).catch(() => {
-      hideOverlay();
-    });
-  }
-
-  function renderCategories(cats) {
-    allCategories = Array.isArray(cats) ? cats : [];
-    if (els.catSelect) els.catSelect.value = "";
-  }
-
-
-  // ===================== BTV / REDPLAY DASHBOARD LOGIC =====================
-  const dashboardView = document.getElementById("dashboardView");
-  const appPlayerView = document.getElementById("appPlayerView");
-  const cardTvLive = document.getElementById("cardTvLive");
-  const cardMovies = document.getElementById("cardMovies");
-  const cardSeries = document.getElementById("cardSeries");
-  const cardSports = document.getElementById("cardSports");
-  const cardFavs = document.getElementById("cardFavs");
-  const btnHomeReturn = document.getElementById("btnHomeReturn");
-  const btnLauncherLogout = document.getElementById("btnLauncherLogout");
-  const btnActionReload = document.getElementById("btnActionReload");
-  const btnActionAccount = document.getElementById("btnActionAccount");
-  const btnActionFullscreen = document.getElementById("btnActionFullscreen");
-
-  function showDashboard() {
-    if (dashboardView) dashboardView.classList.remove("hidden");
-    if (appPlayerView) appPlayerView.classList.add("hidden");
-    updateDashboardInfo();
-    // Foca por padrao no card TV ao Vivo
-    setLauncherFocus(cardTvLive);
-  }
-
-  function showPlayerView() {
-    if (dashboardView) dashboardView.classList.add("hidden");
-    if (appPlayerView) appPlayerView.classList.remove("hidden");
-  }
-
-  function updateDashboardInfo() {
-    const lUserId = document.getElementById("lUserId");
-    if (lUserId && session) {
-      lUserId.textContent = `Usuário: ${session.user}`;
-    }
-    const prevName = document.getElementById("previewChannelName");
-    if (prevName) {
-      prevName.textContent = els.npChannel.textContent || "Canal ao Vivo";
-    }
-
-    const timeEl = document.getElementById("lClockTime");
-    const dateEl = document.getElementById("lClockDate");
-    if (timeEl && dateEl) {
-      const now = new Date();
-      const h = String(now.getHours()).padStart(2, "0");
-      const m = String(now.getMinutes()).padStart(2, "0");
-      timeEl.textContent = `${h}:${m}`;
-      const days = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
-      const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-      dateEl.textContent = `${days[now.getDay()]}, ${now.getDate()} de ${months[now.getMonth()]}`;
-    }
-  }
-
-  setInterval(() => {
-    if (dashboardView && !dashboardView.classList.contains("hidden")) {
-      updateDashboardInfo();
-    }
-  }, 1000);
-
-  // Navegação do Bento Grid
-  let currentLauncherFocus = cardTvLive;
-  function setLauncherFocus(el) {
-    if (!el) return;
-    document.querySelectorAll(".bento-card, .bento-action-btn").forEach(c => c.classList.remove("focused"));
-    el.classList.add("focused");
-    el.focus();
-    currentLauncherFocus = el;
-  }
-
-  // Cliques nos Cards do Dashboard
-  if (cardTvLive) {
-    cardTvLive.addEventListener("click", () => {
-      showPlayerView();
-      switchTvTab("live");
-      if (!activeStreamId && allStreams.length) {
-        const first = allStreams[0];
-        activeStreamId = first.stream_id;
-        els.npChannel.textContent = first.name || "Canal";
-        playStream(first.stream_id, first.name);
-      }
-    });
-  }
-
-  if (cardMovies) {
-    cardMovies.addEventListener("click", () => {
-      showPlayerView();
-      switchTvTab("movies");
-    });
-  }
-
-  if (cardSeries) {
-    cardSeries.addEventListener("click", () => {
-      showPlayerView();
-      switchTvTab("series");
-    });
-  }
-
-  if (cardSports) {
-    cardSports.addEventListener("click", () => {
-      showPlayerView();
-      switchTvTab("sports");
-    });
-  }
-
-  if (cardFavs) {
-    cardFavs.addEventListener("click", () => {
-      showPlayerView();
-      switchTvTab("favs");
-    });
-  }
-
-  if (btnHomeReturn) {
-    btnHomeReturn.addEventListener("click", () => {
-      showDashboard();
-    });
-  }
-
-  if (btnLauncherLogout) {
-    btnLauncherLogout.addEventListener("click", logout);
-  }
-
-  if (btnActionReload) {
-    btnActionReload.addEventListener("click", () => {
-      showOverlay("Sincronizando…", "Atualizando catálogo e transmissões.");
-      if (session) {
-        fetchLiveStreams(session.user, session.pass).then(streams => {
-          allStreams = streams;
-          renderChannelList(allStreams);
-          hideOverlay();
-        }).catch(() => hideOverlay());
-      }
-    });
-  }
-
-  if (btnActionAccount) {
-    btnActionAccount.addEventListener("click", () => {
-      const u = session ? session.user : "Visitante";
-      showOverlay("Conta Nexus PlayTV", `Usuário: ${u}\nStatus: Assinatura Ativa\nServidor: Offshore Suécia (BBR Turbo)`);
-      setTimeout(hideOverlay, 3500);
-    });
-  }
-
-  if (btnActionFullscreen) {
-    btnActionFullscreen.addEventListener("click", () => {
-      toggleFullscreen();
-    });
-  }
-
-  function switchTvTab(tab) {
-    const tabs = document.querySelectorAll(".tv-tab-btn");
-    tabs.forEach(b => {
-      if (b.getAttribute("data-tab") === tab) {
-        b.click();
-      }
-    });
-  }
-
-  // Teclado e Controle Remoto D-Pad no Launcher
-  window.addEventListener("keydown", (e) => {
-    if (document.activeElement && (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA")) return;
-
-    // Se estiver no Player e apertar ESC ou Backspace: volta ao Dashboard
-    if (appPlayerView && !appPlayerView.classList.contains("hidden")) {
-      if (e.key === "Escape" || e.key === "Backspace") {
-        e.preventDefault();
-        showDashboard();
-        return;
-      }
-    }
-
-    // Se estiver no Dashboard: navega no Bento Grid estilo RedPlay / BTV
-    if (dashboardView && !dashboardView.classList.contains("hidden")) {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        if (currentLauncherFocus) currentLauncherFocus.click();
-        return;
-      }
-
-      if (currentLauncherFocus === cardTvLive) {
-        if (e.key === "ArrowRight") { e.preventDefault(); setLauncherFocus(cardMovies); }
-      } else if (currentLauncherFocus === cardMovies) {
-        if (e.key === "ArrowLeft") { e.preventDefault(); setLauncherFocus(cardTvLive); }
-        else if (e.key === "ArrowRight") { e.preventDefault(); setLauncherFocus(cardSeries); }
-        else if (e.key === "ArrowDown") { e.preventDefault(); setLauncherFocus(cardSports); }
-      } else if (currentLauncherFocus === cardSeries) {
-        if (e.key === "ArrowLeft") { e.preventDefault(); setLauncherFocus(cardMovies); }
-        else if (e.key === "ArrowRight") { e.preventDefault(); setLauncherFocus(btnActionReload); }
-        else if (e.key === "ArrowDown") { e.preventDefault(); setLauncherFocus(cardFavs); }
-      } else if (currentLauncherFocus === cardSports) {
-        if (e.key === "ArrowLeft") { e.preventDefault(); setLauncherFocus(cardTvLive); }
-        else if (e.key === "ArrowRight") { e.preventDefault(); setLauncherFocus(cardFavs); }
-        else if (e.key === "ArrowUp") { e.preventDefault(); setLauncherFocus(cardMovies); }
-      } else if (currentLauncherFocus === cardFavs) {
-        if (e.key === "ArrowLeft") { e.preventDefault(); setLauncherFocus(cardSports); }
-        else if (e.key === "ArrowRight") { e.preventDefault(); setLauncherFocus(btnActionAccount); }
-        else if (e.key === "ArrowUp") { e.preventDefault(); setLauncherFocus(cardSeries); }
-      } else if (currentLauncherFocus === btnActionReload) {
-        if (e.key === "ArrowLeft") { e.preventDefault(); setLauncherFocus(cardSeries); }
-        else if (e.key === "ArrowDown") { e.preventDefault(); setLauncherFocus(btnActionAccount); }
-      } else if (currentLauncherFocus === btnActionAccount) {
-        if (e.key === "ArrowLeft") { e.preventDefault(); setLauncherFocus(cardFavs); }
-        else if (e.key === "ArrowUp") { e.preventDefault(); setLauncherFocus(btnActionReload); }
-        else if (e.key === "ArrowDown") { e.preventDefault(); setLauncherFocus(btnActionFullscreen); }
-      } else if (currentLauncherFocus === btnActionFullscreen) {
-        if (e.key === "ArrowLeft") { e.preventDefault(); setLauncherFocus(cardFavs); }
-        else if (e.key === "ArrowUp") { e.preventDefault(); setLauncherFocus(btnActionAccount); }
-      }
-    }
-  });
-
-
-  // ---------------- Fluxo de sessão ----------------
-  async function startSession(user, pass, opts) {
-    opts = opts || {};
-    els.gate.classList.add("hidden");
-    showDashboard();
     session = { user, pass };
     localStorage.setItem("nexus_play_session", JSON.stringify(session));
 
+    if (els.footUser) els.footUser.textContent = `NEXUS PLATFORM • CONTA: ${user.toUpperCase()} (ATIVA)`;
+
+    // Carrega em segundo plano canais e categorias reais
     try {
-      // Valida credenciais em paralelo sem bloquear a reprodução imediata
-    xtreamLogin(user, pass).then(login => {
-      if (login && login.user_info) {
-        els.npUser.textContent = `Conta: ${user}${login.user_info.exp_date ? " • expira " + new Date(login.user_info.exp_date * 1000).toLocaleDateString("pt-BR") : ""}`;
-      }
-    }).catch(err => {
-      console.warn("Aviso na validação:", err);
-    });
-
-    // 1. Tenta carregar do cache local imediatamente para iniciar o play em 0.05s
-    let hasCached = false;
-    try {
-      const cachedS = sessionStorage.getItem("nexus_cached_streams");
-      const cachedC = sessionStorage.getItem("nexus_cached_cats");
-      if (cachedS) {
-        const parsedS = JSON.parse(cachedS);
-        if (Array.isArray(parsedS) && parsedS.length) {
-          allStreams = parsedS;
-          if (cachedC) renderCategories(JSON.parse(cachedC));
-          renderChannelList(allStreams);
-          hasCached = true;
-
-          const lastId = localStorage.getItem("nexus_last_stream_id") || allStreams[0].stream_id;
-          const target = allStreams.find(s => String(s.stream_id) === String(lastId)) || allStreams[0];
-          activeStreamId = target.stream_id;
-          els.npChannel.textContent = target.name || "Canal";
-          playStream(target.stream_id, target.name);
-        }
-      }
-    } catch (e) {}
-
-    if (!hasCached) {
-      showOverlay("Conectando TV…", "Iniciando transmissão ao vivo.");
-    }
-
-      // 2. Busca na rede (atualiza cache e lista em segundo plano)
-      Promise.all([
-        fetchLiveStreams(user, pass).catch(() => []),
-        fetchCategories(user, pass).catch(() => []),
-      ]).then(([streams, cats]) => {
-        if (Array.isArray(streams) && streams.length) {
-          allStreams = streams;
-          try {
-            sessionStorage.setItem("nexus_cached_streams", JSON.stringify(streams));
-            if (Array.isArray(cats)) sessionStorage.setItem("nexus_cached_cats", JSON.stringify(cats));
-          } catch (e) {}
-          renderCategories(Array.isArray(cats) ? cats : []);
-          renderChannelList(allStreams);
-
-          if (opts.directUrl) {
-            fallbackHls(opts.directUrl, "Stream direto");
-          } else if (!hasCached && !activeStreamId) {
-            const lastId = localStorage.getItem("nexus_last_stream_id") || allStreams[0].stream_id;
-            const target = allStreams.find(s => String(s.stream_id) === String(lastId)) || allStreams[0];
-            activeStreamId = target.stream_id;
-            els.npChannel.textContent = target.name || "Canal";
-            playStream(target.stream_id, target.name);
-          }
-        } else if (!hasCached) {
-          hideOverlay();
-          setStatus("conectado", "live");
-        }
-      });
-    } catch (err) {
-      console.error(err);
-      els.gate.classList.remove("hidden");
-      showLoginError(err.message || "Falha ao autenticar.");
-      setStatus("erro de login", "err");
+      showOverlay("Conectando…", "Carregando grade oficial de canais.");
+      const [streams, cats] = await Promise.all([
+        fetchLiveStreams(user, pass),
+        fetchCategories(user, pass)
+      ]);
+      allStreams = streams;
+      allCategories = cats;
       hideOverlay();
+      draw();
+    } catch (err) {
+      hideOverlay();
+      notice("Conectado! Alguns dados ainda estão sincronizando.");
+      draw();
     }
   }
 
@@ -1052,45 +1138,48 @@
     localStorage.removeItem("nexus_tv_pin");
     session = null;
     activeStreamId = null;
-    els.video.removeAttribute("src");
-    if (dashboardView) dashboardView.classList.add("hidden");
-    if (appPlayerView) appPlayerView.classList.add("hidden");
-    els.npChannel.textContent = "Nenhum canal selecionado";
-    els.npUser.textContent = "";
-    els.channelList.innerHTML = `<div class="empty-hint">Faça login para carregar a lista de canais.</div>`;
-    els.gate.classList.remove("hidden");
-    setStatus("desconectado", "");
-    hideOverlay();
+
+    if (els.playerLayer) els.playerLayer.classList.add("hidden");
+    if (els.appShell) els.appShell.classList.add("hidden");
+    if (els.loginGate) els.loginGate.classList.remove("hidden");
+
     initQrCode();
   }
 
-  // ---------------- Eventos de UI ----------------
-  els.btnLogin.addEventListener("click", async () => {
-    const user = els.inUser.value.trim();
-    const pass = els.inPass.value;
-    els.loginErr.style.display = "none";
-    if (!user || !pass) { showLoginError("Informe usuário e senha."); return; }
-
-    const params = new URLSearchParams(window.location.search);
-    const pairPin = params.get("pair");
-    if (pairPin) {
-      showOverlay("Conectando sua TV…", `Enviando credenciais para o aparelho (PIN ${pairPin})…`);
-      const res = await confirmPairing(pairPin, user, pass);
-      if (res && res.success) {
-        showOverlay("✅ Aparelho Conectado!", "Sua tela foi autorizada com sucesso!");
-        setTimeout(() => {
-          startSession(user, pass);
-        }, 300);
+  if (els.btnLogin) {
+    els.btnLogin.addEventListener("click", async () => {
+      const u = (els.inUser.value || "").trim();
+      const p = (els.inPass.value || "").trim();
+      if (!u || !p) {
+        if (els.loginErr) els.loginErr.textContent = "Informe usuário e senha.";
         return;
       }
-    }
+      els.btnLogin.disabled = true;
+      if (els.loginErr) els.loginErr.textContent = "Conectando…";
+      try {
+        await xtreamLogin(u, p);
+        if (els.loginErr) els.loginErr.textContent = "";
+        startSession(u, p);
+      } catch (err) {
+        if (els.loginErr) els.loginErr.textContent = err.message || "Erro ao conectar.";
+      } finally {
+        els.btnLogin.disabled = false;
+      }
+    });
+  }
 
-    startSession(user, pass);
+  if (els.btnLogout) {
+    els.btnLogout.addEventListener("click", logout);
+  }
+
+  [els.inUser, els.inPass].forEach(inp => {
+    if (inp) {
+      inp.addEventListener("keydown", e => {
+        if (e.key === "Enter" && els.btnLogin) els.btnLogin.click();
+      });
+    }
   });
-  [els.inUser, els.inPass].forEach(inp => inp.addEventListener("keydown", e => {
-    if (e.key === "Enter") els.btnLogin.click();
-  }));
-  // Toggle exibir/ocultar senha
+
   const btnTogglePass = document.getElementById("btnTogglePass");
   if (btnTogglePass) {
     btnTogglePass.addEventListener("click", () => {
@@ -1105,387 +1194,83 @@
     });
   }
 
-  els.btnLogout.addEventListener("click", logout);
-  els.btnReload.addEventListener("click", () => {
-    if (session && activeStreamId) playStream(activeStreamId, els.npChannel.textContent);
-  });
-  const playerWrap = els.video.closest(".player-wrap");
-  const btnZoom = document.getElementById("btnZoom");
-  const zoomToast = document.getElementById("zoomToast");
-  let zoomToastTimer = null;
+  // ---------------- Pareamento QR Code Inteligente ----------------
+  async function initQrCode() {
+    const pinEl = document.getElementById("qrPinCode");
+    const imgEl = document.getElementById("qrCodeImg");
+    if (!pinEl || !imgEl) return;
 
-  function showZoomToast(text) {
-    if (!zoomToast) return;
-    zoomToast.textContent = text;
-    zoomToast.classList.add("show");
-    if (zoomToastTimer) clearTimeout(zoomToastTimer);
-    zoomToastTimer = setTimeout(() => {
-      zoomToast.classList.remove("show");
-    }, 1200);
-  }
-
-  function toggleZoom() {
-    if (!playerWrap) return;
-    const isZoomed = playerWrap.classList.toggle("zoom-fill");
-    localStorage.setItem("nexus_zoom_mode", isZoomed ? "fill" : "fit");
-    showZoomToast(isZoomed ? "⛶ Ampliado para preencher a tela" : "⊡ Ajustado à tela (original)");
-  }
-
-  if (localStorage.getItem("nexus_zoom_mode") === "fill" && playerWrap) {
-    playerWrap.classList.add("zoom-fill");
-  }
-
-  if (btnZoom) btnZoom.addEventListener("click", toggleZoom);
-
-  // Duplo toque (mobile) e duplo clique (desktop) no vídeo para ampliar como no YouTube
-  let lastTouchEndTime = 0;
-  if (playerWrap) {
-    playerWrap.addEventListener("touchend", (e) => {
-      if (e.target.closest("button") || e.target.closest("a")) return;
-      const now = Date.now();
-      const delta = now - lastTouchEndTime;
-      if (delta > 40 && delta < 380) {
-        e.preventDefault();
-        toggleZoom();
-        lastTouchEndTime = 0;
-        return;
-      }
-      lastTouchEndTime = now;
-    }, { passive: false });
-
-    playerWrap.addEventListener("dblclick", (e) => {
-      if (e.target.closest("button") || e.target.closest("a")) return;
-      e.preventDefault();
-      toggleZoom();
-    });
-  }
-
-  els.btnFullscreen.addEventListener("click", () => {
-    if (!playerWrap) return;
-    const isFull = playerWrap.classList.contains("fullscreen-mode") || !!document.fullscreenElement || !!document.webkitFullscreenElement;
-
-    if (!isFull) {
-      playerWrap.classList.add("fullscreen-mode");
-      document.body.classList.add("in-fullscreen");
-      const req = playerWrap.requestFullscreen || playerWrap.webkitRequestFullscreen || playerWrap.mozRequestFullScreen || playerWrap.msRequestFullscreen;
-      if (req) req.call(playerWrap).catch(() => {});
-    } else {
-      playerWrap.classList.remove("fullscreen-mode");
-      document.body.classList.remove("in-fullscreen");
-      const exit = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
-      if (exit && (document.fullscreenElement || document.webkitFullscreenElement)) {
-        exit.call(document).catch(() => {});
-      }
-    }
-  });
-
-  ["fullscreenchange", "webkitfullscreenchange"].forEach(evt => {
-    document.addEventListener(evt, () => {
-      if (!document.fullscreenElement && !document.webkitFullscreenElement && playerWrap) {
-        playerWrap.classList.remove("fullscreen-mode");
-        document.body.classList.remove("in-fullscreen");
-      }
-    });
-  });
-  els.searchInput.addEventListener("input", () => {
-    if (currentViewMode === "categories") {
-      renderCategoryList();
-    } else {
-      renderChannelList(allStreams);
-    }
-  });
-  els.catSelect.addEventListener("change", () => renderChannelList(allStreams));
-
-  // =========================================================================
-  // GESTÃO DE ANÚNCIOS OFICIAIS NEXUS (100% TEMPORÁRIOS / NENHUM FIXO)
-  // =========================================================================
-  const elAdBadge = document.getElementById("adCornerBadge");
-  const elAdLt = document.getElementById("adLowerThird");
-  const elBtnAdLtClose = document.getElementById("btnAdLtClose");
-  const elBillboardImgLink = document.getElementById("adBbImgLink");
-
-  // 1. CORNER BADGE (Canto Superior Direito): 14s visível -> 35s apagado
-  let badgeLoopActive = false;
-  function startCornerBadgeLoop() {
-    if (badgeLoopActive || !elAdBadge) return;
-    badgeLoopActive = true;
-    function cycleBadge() {
-      elAdBadge.classList.add("visible");
-      setTimeout(() => {
-        elAdBadge.classList.remove("visible");
-        setTimeout(cycleBadge, 35000); // 35 segundos completamente invisível
-      }, 14000); // 14 segundos visível
-    }
-    setTimeout(cycleBadge, 4000);
-  }
-
-  // 2. LOWER-THIRD (Rodapé do Vídeo): 10s visível, repete a cada 2.5 min
-  let ltTimer = null;
-  function showLowerThird(durationMs = 10000) {
-    if (!elAdLt) return;
-    elAdLt.classList.add("active");
-    if (ltTimer) clearTimeout(ltTimer);
-    ltTimer = setTimeout(() => {
-      elAdLt.classList.remove("active");
-      ltTimer = null;
-    }, durationMs);
-  }
-
-  function hideLowerThird() {
-    if (elAdLt) elAdLt.classList.remove("active");
-    if (ltTimer) { clearTimeout(ltTimer); ltTimer = null; }
-  }
-
-  if (elBtnAdLtClose) {
-    elBtnAdLtClose.addEventListener("click", (e) => {
-      e.stopPropagation();
-      hideLowerThird();
-    });
-  }
-
-  // Aciona automaticamente o Lower-Third a cada 60s se o vídeo estiver tocando
-  setInterval(() => {
-    if (els.video && !els.video.paused) {
-      showLowerThird(10000);
-    }
-  }, 60000);
-
-  // 3. BILLBOARD VERTICAL (Barra Lateral): 12s visível -> 22s apagado (preto limpo)
-  function startBillboardLoop() {
-    if (!elBillboardImgLink) return;
-    function cycleBillboard() {
-      elBillboardImgLink.classList.add("visible");
-      setTimeout(() => {
-        elBillboardImgLink.classList.remove("visible");
-        setTimeout(cycleBillboard, 22000); // 22 segundos completamente apagado (preto limpo)
-      }, 12000); // 12 segundos visível
-    }
-    setTimeout(cycleBillboard, 1500);
-  }
-  startBillboardLoop();
-
-  // Botão Ícone de Recolher/Expandir Canais na Barra Lateral
-  const btnToggleChannels = document.getElementById("btnToggleChannels");
-  const sidebar = document.getElementById("sidebar");
-
-  // Timer de Auto-Recolhimento (após 2s de inatividade na lista expandida)
-  let autoRetractTimer = null;
-
-  function resetAutoRetractTimer() {
-    if (autoRetractTimer) {
-      clearTimeout(autoRetractTimer);
-      autoRetractTimer = null;
-    }
-    // Se estiver no modo de categorias, volta para os canais após 3s sem interação
-    if (currentViewMode === "categories") {
-      autoRetractTimer = setTimeout(() => {
-        if (currentViewMode === "categories") {
-          currentViewMode = "channels";
-          if (catTrigger) catTrigger.classList.remove("active-mode");
-          renderChannelList(allStreams);
-        }
-      }, 3000);
-      return;
-    }
-    // Se a lista estiver EXPANDIDA (não tem channels-retracted)
-    if (sidebar && !sidebar.classList.contains("channels-retracted")) {
-      autoRetractTimer = setTimeout(() => {
-        sidebar.classList.add("channels-retracted");
-        if (btnToggleChannels) {
-          btnToggleChannels.setAttribute("aria-expanded", "false");
-          btnToggleChannels.title = "Expandir lista de canais";
-        }
-      }, 3000); // 3 segundos sem interação
-    }
-  }
-
-  // Interações na barra lateral reiniciam o timer de 2s
-  if (sidebar) {
-    ["mousemove", "scroll", "keydown", "touchstart", "click"].forEach(evt => {
-      sidebar.addEventListener(evt, resetAutoRetractTimer, { passive: true });
-    });
-  }
-
-  if (btnToggleChannels && sidebar) {
-    btnToggleChannels.addEventListener("click", () => {
-      const isRetracted = sidebar.classList.toggle("channels-retracted");
-      btnToggleChannels.setAttribute("aria-expanded", isRetracted ? "false" : "true");
-      btnToggleChannels.title = isRetracted ? "Expandir lista de canais" : "Recolher lista para ver anúncio";
-      if (!isRetracted) {
-        resetAutoRetractTimer();
-      }
-    });
-
-    els.searchInput.addEventListener("focus", () => {
-      if (sidebar.classList.contains("channels-retracted")) {
-        sidebar.classList.remove("channels-retracted");
-        btnToggleChannels.setAttribute("aria-expanded", "true");
-        btnToggleChannels.title = "Recolher lista para ver anúncio";
-      }
-      resetAutoRetractTimer();
-    });
-  }
-
-  // ---------------- Sistema de Login Smart TV / QR Code Compacto ----------------
-  const qrCodeImg = document.getElementById("qrCodeImg");
-  const qrPinCode = document.getElementById("qrPinCode");
-  let pairPollInterval = null;
-
-  function stopPairPolling() {
-    if (pairPollInterval) {
-      clearInterval(pairPollInterval);
-      pairPollInterval = null;
-    }
-  }
-
-  let activePairPin = null;
-
-  async function checkPairStatus(pin) {
-    if (!els.gate || els.gate.classList.contains("hidden")) {
-      stopPairPolling();
-      return;
-    }
     try {
-      const res = await fetch(`/pair/status?pin=${encodeURIComponent(pin)}`);
+      const res = await fetch(`${PAIR_BASE}/generate`, { cache: "no-store" });
       if (!res.ok) return;
       const data = await res.json();
-      if (data.status === "paired" && data.user && data.pass) {
-        stopPairPolling();
-        // Consome e invalida o PIN imediatamente para evitar login fantasma
-        fetch("/pair/consume", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ pin })
-        }).catch(() => {});
-        localStorage.removeItem("nexus_tv_pin");
-        showOverlay("Pareamento Concluído!", "Celular conectado com sucesso. Iniciando TV…");
-        startSession(data.user, data.pass);
+      pinEl.textContent = data.pin;
+
+      const pairUrl = `${window.location.origin}${window.location.pathname}?pair=${data.pin}`;
+      if (window.QRCode) {
+        imgEl.style.display = "none";
+        let inlineContainer = document.getElementById("qrInlineTarget");
+        if (!inlineContainer) {
+          inlineContainer = document.createElement("div");
+          inlineContainer.id = "qrInlineTarget";
+          imgEl.parentNode.appendChild(inlineContainer);
+        }
+        inlineContainer.innerHTML = "";
+        new window.QRCode(inlineContainer, {
+          text: pairUrl,
+          width: 80,
+          height: 80,
+          colorDark: "#000000",
+          colorLight: "#ffffff",
+          correctLevel: window.QRCode.CorrectLevel.M
+        });
       }
-    } catch (e) {}
+
+      startPairPolling(data.pin);
+    } catch (e) {
+      console.warn("QR code offline:", e);
+    }
   }
 
   function startPairPolling(pin) {
-    stopPairPolling();
-    activePairPin = pin;
-    checkPairStatus(pin);
-    pairPollInterval = setInterval(() => checkPairStatus(pin), 400);
-  }
-
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible" && activePairPin) {
-      checkPairStatus(activePairPin);
-    }
-  });
-
-  async function confirmPairing(pin, user, pass) {
-    try {
-      const res = await fetch("/pair/confirm", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pin, user, pass })
-      });
-      return await res.json();
-    } catch (e) {
-      return { error: e.message };
-    }
-  }
-
-  function initQrCode() {
-    const params = new URLSearchParams(window.location.search);
-    const pairPin = params.get("pair");
-
-    // Se abriu no celular para parear uma TV (?pair=XXXX), esconde o QR code local
-    const qrInlineWrap = document.querySelector(".login-qr-inline");
-    if (pairPin && qrInlineWrap) {
-      qrInlineWrap.style.display = "none";
-      return;
-    }
-
-    if (!qrCodeImg || typeof qrcode === "undefined") return;
-    // Gera PIN único de 4 dígitos para esta tela
-    let pin = localStorage.getItem("nexus_tv_pin");
-    if (!pin) {
-      pin = String(Math.floor(1000 + Math.random() * 9000));
-      localStorage.setItem("nexus_tv_pin", pin);
-    }
-    if (qrPinCode) qrPinCode.textContent = pin;
-
-    // Gera o QR Code com a URL do pareamento
-    try {
-      const pairUrl = `https://play.nexusplay.tv/?pair=${pin}`;
-      const qr = qrcode(0, "M");
-      qr.addData(pairUrl);
-      qr.make();
-      qrCodeImg.src = qr.createDataURL(4, 2);
-    } catch (e) {
-      console.warn("Falha ao gerar QR Code:", e);
-    }
-
-    // A TV começa a escutar o pareamento imediatamente
-    startPairPolling(pin);
-  }
-
-  initQrCode();
-
-  // ---------------- Bootstrap: querystring / sessão salva ----------------
-  function boot() {
-    const params = new URLSearchParams(window.location.search);
-    const walletToken = params.get("wallet");
-    const qUser = params.get("user");
-    const qPass = params.get("pass");
-    const directUrl = params.get("url");
-    const pairPin = params.get("pair");
-
-    hideOverlay();
-
-    // Se o celular abriu a página via QR Code escaneado da TV (?pair=XXXX):
-    if (pairPin) {
+    if (pairPollTimer) clearInterval(pairPollTimer);
+    pairPollTimer = setInterval(async () => {
       try {
-        const saved = JSON.parse(localStorage.getItem("nexus_play_session") || "null");
-        if (saved && saved.user && saved.pass) {
-          showOverlay("Conectando sua TV…", `Enviando acesso para a Smart TV (PIN ${pairPin})…`);
-          confirmPairing(pairPin, saved.user, saved.pass).then((res) => {
-            if (res && res.success) {
-              showOverlay("✅ TV Conectada!", "Sua Smart TV foi autorizada e já está dando o play!");
-              setTimeout(() => {
-                startSession(saved.user, saved.pass);
-              }, 300);
-            }
-          });
-          return;
+        const res = await fetch(`${PAIR_BASE}/status?pin=${encodeURIComponent(pin)}`, { cache: "no-store" });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.status === "paired" && data.user && data.pass) {
+          clearInterval(pairPollTimer);
+          fetch(`${PAIR_BASE}/consume`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ pin })
+          }).catch(() => {});
+          startSession(data.user, data.pass);
         }
       } catch (e) {}
+    }, 400);
+  }
 
-      // Se ainda não estava logado no celular, atualiza o botão para indicar a TV:
-      if (els.btnLogin) {
-        els.btnLogin.innerHTML = `Conectar TV (${pairPin}) <span aria-hidden="true">↗</span>`;
-      }
-    }
+  // ---------------- Boot da Aplicação ----------------
+  async function boot() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const pairParam = urlParams.get("pair");
 
-    if (directUrl && qUser && qPass) {
-      startSession(qUser, qPass, { directUrl });
-      return;
-    }
-    if (walletToken) {
-      const creds = decodeWallet(walletToken);
-      if (creds) { startSession(creds.user, creds.pass); return; }
-      showLoginError("Token da carteira inválido ou expirado.");
-    }
-    if (qUser && qPass) { startSession(qUser, qPass); return; }
-
-    updateFavBadge();
-
-    // sessão local persistida (login manual anterior)
+    // Sessão prévia salva
     try {
-      const saved = JSON.parse(localStorage.getItem("nexus_play_session") || "null");
-      if (saved && saved.user && saved.pass) {
-        els.inUser.value = saved.user;
-        startSession(saved.user, saved.pass);
-        return;
+      const saved = localStorage.getItem("nexus_play_session");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.user && parsed.pass) {
+          startSession(parsed.user, parsed.pass);
+          return;
+        }
       }
     } catch (e) {}
 
-    setStatus("aguardando login", "");
+    // Inicia QR code se estiver no login
+    initQrCode();
   }
 
   boot();

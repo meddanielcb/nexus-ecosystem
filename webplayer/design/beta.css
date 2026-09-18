@@ -1,0 +1,461 @@
+/* ===================== NEXUS PLAYTV • BETA BRIDGE CSS ===================== */
+/* Integração da nova interface do designer com o player, anúncios e autenticação */
+
+#loginGate.hidden,
+#appShell.hidden,
+#playerLayer.hidden {
+  display: none !important;
+}
+
+/* Estrutura do AppShell com Ad-Rail lateral reservado */
+#appShell {
+  width: 100vw;
+  height: 100dvh;
+  display: grid;
+  grid-template-rows: 84px minmax(0, 1fr) 48px;
+  grid-template-columns: 100%;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 65% 0%, #20271b70, transparent 48%), #060809;
+}
+
+.shell-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+main#screen {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 24px 3% 24px 4%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  overflow: hidden;
+}
+
+/* Ad-Rail Lateral (Reservado à direita nas telas de catálogo e grade) */
+.ad-rail {
+  width: 190px;
+  flex-shrink: 0;
+  padding: 24px 3% 24px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.ad-billboard-img-link {
+  display: block;
+  width: 100%;
+  max-width: 165px;
+  border-radius: 14px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+.ad-billboard-img-link.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.ad-billboard-img-link img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+.ad-billboard-img-link:hover {
+  transform: scale(1.03);
+  border-color: rgba(183, 255, 60, 0.4);
+}
+
+@media (max-width: 950px) {
+  .ad-rail {
+    display: none !important;
+  }
+}
+
+/* Header Action Buttons */
+.btn-logout {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #cfd6cc;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-logout:hover {
+  background: rgba(255, 82, 82, 0.15);
+  border-color: #ff5252;
+  color: #ff5252;
+}
+
+/* Camada Persistente do Player */
+#playerLayer {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: #010302;
+  display: flex;
+  flex-direction: column;
+}
+
+.player-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.player-shell video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Modo Zoom Fill (Ampliado para preencher sem barras pretas) */
+.player-shell.zoom-fill video {
+  object-fit: cover !important;
+  transform: scale(1.08) !important;
+}
+
+/* Barra Inferior de Comandos do Player */
+.player-shell .player-bottom {
+  position: absolute;
+  bottom: 20px;
+  left: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 40;
+  background: linear-gradient(180deg, transparent 0%, rgba(6, 8, 9, 0.88) 100%);
+  padding: 16px 14px 4px;
+  border-radius: 12px;
+}
+
+.player-shell .player-bottom button {
+  background: rgba(16, 23, 18, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #e5ede4;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.player-shell .player-bottom button:hover {
+  background: rgba(183, 255, 60, 0.15);
+  border-color: var(--green);
+  color: var(--green);
+  transform: translateY(-2px);
+}
+
+.player-shell .player-bottom button[aria-pressed="true"] {
+  background: rgba(183, 255, 60, 0.2);
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.player-spacer {
+  flex: 1;
+}
+
+/* OSD Banner Estilo Sky / BTV */
+.sky-channel-osd {
+  position: absolute;
+  bottom: 84px;
+  left: 24px;
+  right: 24px;
+  background: linear-gradient(90deg, rgba(11, 14, 16, 0.96) 0%, rgba(16, 20, 22, 0.92) 100%);
+  border: 1px solid rgba(183, 255, 60, 0.35);
+  border-radius: 14px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.85);
+  z-index: 35;
+  opacity: 0;
+  transform: translateY(16px);
+  pointer-events: none;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.sky-channel-osd.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.osd-num {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 32px;
+  font-weight: 700;
+  color: #b7ff3c;
+  min-width: 55px;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+
+.osd-logo {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  background: #181d1f;
+  padding: 5px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.osd-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.osd-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.osd-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.osd-res {
+  font-size: 10px;
+  font-weight: 800;
+  background: rgba(183, 255, 60, 0.2);
+  color: #b7ff3c;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(183, 255, 60, 0.35);
+}
+
+.osd-live-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: #ff5252;
+  letter-spacing: 1px;
+}
+
+.osd-prog-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.osd-prog-title {
+  font-size: 12px;
+  color: #a8b0aa;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Corner Badge de Patrocínio (Canto Superior Direito) */
+.ad-corner-badge {
+  position: absolute;
+  top: 24px;
+  right: 28px;
+  width: 140px;
+  height: 44px;
+  z-index: 35;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
+}
+
+.ad-corner-badge.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.ad-corner-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Lower-Third Banner PixGet (Base do Vídeo) */
+.ad-lower-third {
+  position: absolute;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  width: 95%;
+  max-width: 1100px;
+  max-height: 185px;
+  z-index: 35;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ad-lower-third.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.ad-lt-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ad-lt-img-link {
+  display: block;
+  width: 100%;
+}
+
+.ad-lt-img-link img {
+  width: 100%;
+  height: auto;
+  display: block;
+  max-height: 185px;
+  object-fit: cover;
+}
+
+.ad-lt-close {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  background: transparent !important;
+  border: none !important;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  z-index: 5;
+  padding: 0;
+}
+
+.ad-lt-close:hover {
+  color: #fff;
+  transform: scale(1.2);
+}
+
+/* Toast de Zoom (estilo YouTube) */
+.zoom-toast {
+  position: absolute;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-10px);
+  background: rgba(11, 15, 13, 0.92);
+  border: 1px solid rgba(183, 255, 60, 0.3);
+  color: #b7ff3c;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  z-index: 60;
+  backdrop-filter: blur(8px);
+}
+
+.zoom-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Overlay de Carregamento */
+.player-shell .overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 6, 5, 0.88);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  z-index: 50;
+  transition: opacity 0.3s ease;
+}
+
+.player-shell .overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.player-shell .overlay .spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(183, 255, 60, 0.2);
+  border-top-color: #b7ff3c;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.player-shell .overlay .big {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+.player-shell .overlay p {
+  font-size: 12px;
+  color: #9aa599;
+  margin: 0;
+}
