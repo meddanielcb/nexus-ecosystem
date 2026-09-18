@@ -354,6 +354,7 @@
         if (!stream) return;
         activeStreamId = id;
         els.npChannel.textContent = stream.name || "Canal";
+        localStorage.setItem("nexus_last_stream_id", String(stream.stream_id));
         renderChannelList(streams);
         if (window.innerWidth <= 860) els.sidebar.classList.remove("open");
         playStream(stream.stream_id, stream.name);
@@ -440,27 +441,60 @@
 
       els.npUser.textContent = `Conta: ${user}${login.user_info && login.user_info.exp_date ? " • expira " + new Date(login.user_info.exp_date * 1000).toLocaleDateString("pt-BR") : ""}`;
 
-      showOverlay("Carregando canais…", "Montando sua lista de canais ao vivo.");
-      const [streams, cats] = await Promise.all([
+      // 1. Tenta carregar do cache local imediatamente para iniciar o play em 0.05s
+      let hasCached = false;
+      try {
+        const cachedS = sessionStorage.getItem("nexus_cached_streams");
+        const cachedC = sessionStorage.getItem("nexus_cached_cats");
+        if (cachedS) {
+          const parsedS = JSON.parse(cachedS);
+          if (Array.isArray(parsedS) && parsedS.length) {
+            allStreams = parsedS;
+            if (cachedC) renderCategories(JSON.parse(cachedC));
+            renderChannelList(allStreams);
+            hasCached = true;
+
+            const lastId = localStorage.getItem("nexus_last_stream_id") || allStreams[0].stream_id;
+            const target = allStreams.find(s => String(s.stream_id) === String(lastId)) || allStreams[0];
+            activeStreamId = target.stream_id;
+            els.npChannel.textContent = target.name || "Canal";
+            playStream(target.stream_id, target.name);
+          }
+        }
+      } catch (e) {}
+
+      if (!hasCached) {
+        showOverlay("Carregando canais…", "Montando sua lista de canais ao vivo.");
+      }
+
+      // 2. Busca na rede (atualiza cache e lista em segundo plano)
+      Promise.all([
         fetchLiveStreams(user, pass).catch(() => []),
         fetchCategories(user, pass).catch(() => []),
-      ]);
-      allStreams = Array.isArray(streams) ? streams : [];
-      renderCategories(Array.isArray(cats) ? cats : []);
-      renderChannelList(allStreams);
+      ]).then(([streams, cats]) => {
+        if (Array.isArray(streams) && streams.length) {
+          allStreams = streams;
+          try {
+            sessionStorage.setItem("nexus_cached_streams", JSON.stringify(streams));
+            if (Array.isArray(cats)) sessionStorage.setItem("nexus_cached_cats", JSON.stringify(cats));
+          } catch (e) {}
+          renderCategories(Array.isArray(cats) ? cats : []);
+          renderChannelList(allStreams);
 
-      if (opts.directUrl) {
-        fallbackHls(opts.directUrl, "Stream direto");
-      } else if (allStreams.length) {
-        const first = allStreams[0];
-        activeStreamId = first.stream_id;
-        els.npChannel.textContent = first.name || "Canal";
-        renderChannelList(allStreams);
-        playStream(first.stream_id, first.name);
-      } else {
-        hideOverlay();
-        setStatus("conectado", "live");
-      }
+          if (opts.directUrl) {
+            fallbackHls(opts.directUrl, "Stream direto");
+          } else if (!hasCached && !activeStreamId) {
+            const lastId = localStorage.getItem("nexus_last_stream_id") || allStreams[0].stream_id;
+            const target = allStreams.find(s => String(s.stream_id) === String(lastId)) || allStreams[0];
+            activeStreamId = target.stream_id;
+            els.npChannel.textContent = target.name || "Canal";
+            playStream(target.stream_id, target.name);
+          }
+        } else if (!hasCached) {
+          hideOverlay();
+          setStatus("conectado", "live");
+        }
+      });
     } catch (err) {
       console.error(err);
       els.gate.classList.remove("hidden");
