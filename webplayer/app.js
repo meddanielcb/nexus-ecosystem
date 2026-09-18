@@ -528,7 +528,15 @@
     const params = new URLSearchParams(window.location.search);
     const pairPin = params.get("pair");
     if (pairPin) {
-      await confirmPairing(pairPin, user, pass);
+      showOverlay("Conectando sua TV…", `Enviando credenciais para o aparelho (PIN ${pairPin})…`);
+      const res = await confirmPairing(pairPin, user, pass);
+      if (res && res.success) {
+        showOverlay("✅ Aparelho Conectado!", "Sua tela foi autorizada com sucesso!");
+        setTimeout(() => {
+          startSession(user, pass);
+        }, 1500);
+        return;
+      }
     }
 
     startSession(user, pass);
@@ -784,26 +792,37 @@
     }
   }
 
+  let activePairPin = null;
+
+  async function checkPairStatus(pin) {
+    if (!els.gate || els.gate.classList.contains("hidden")) {
+      stopPairPolling();
+      return;
+    }
+    try {
+      const res = await fetch(`/pair/status?pin=${encodeURIComponent(pin)}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.status === "paired" && data.user && data.pass) {
+        stopPairPolling();
+        showOverlay("Pareamento Concluído!", "Celular conectado com sucesso. Iniciando TV…");
+        startSession(data.user, data.pass);
+      }
+    } catch (e) {}
+  }
+
   function startPairPolling(pin) {
     stopPairPolling();
-    pairPollInterval = setInterval(async () => {
-      // Se já saiu da tela de login, para o polling
-      if (!els.gate || els.gate.classList.contains("hidden")) {
-        stopPairPolling();
-        return;
-      }
-      try {
-        const res = await fetch(`/pair/status?pin=${encodeURIComponent(pin)}`);
-        if (!res.ok) return;
-        const data = await res.json();
-        if (data.status === "paired" && data.user && data.pass) {
-          stopPairPolling();
-          showOverlay("Pareamento Concluído!", "Celular conectado com sucesso. Iniciando TV…");
-          startSession(data.user, data.pass);
-        }
-      } catch (e) {}
-    }, 1500);
+    activePairPin = pin;
+    checkPairStatus(pin);
+    pairPollInterval = setInterval(() => checkPairStatus(pin), 1500);
   }
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible" && activePairPin) {
+      checkPairStatus(activePairPin);
+    }
+  });
 
   async function confirmPairing(pin, user, pass) {
     try {
@@ -819,6 +838,16 @@
   }
 
   function initQrCode() {
+    const params = new URLSearchParams(window.location.search);
+    const pairPin = params.get("pair");
+
+    // Se abriu no celular para parear uma TV (?pair=XXXX), esconde o QR code local
+    const qrInlineWrap = document.querySelector(".login-qr-inline");
+    if (pairPin && qrInlineWrap) {
+      qrInlineWrap.style.display = "none";
+      return;
+    }
+
     if (!qrCodeImg || typeof qrcode === "undefined") return;
     // Gera PIN único de 4 dígitos para esta tela
     let pin = localStorage.getItem("nexus_tv_pin");
