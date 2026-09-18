@@ -171,6 +171,47 @@
     }
   }
 
+  // ---------------- OSD Banner Estilo Sky / BTV ----------------
+  function showSkyOsd(streamId, label) {
+    const osd = document.getElementById("skyChannelOsd");
+    if (!osd) return;
+    const stream = allStreams.find(s => String(s.stream_id) === String(streamId));
+    const numEl = document.getElementById("osdNum");
+    const logoEl = document.getElementById("osdLogo");
+    const nameEl = document.getElementById("osdName");
+    const resEl = document.getElementById("osdRes");
+    const progEl = document.getElementById("osdProgTitle");
+
+    const index = allStreams.findIndex(s => String(s.stream_id) === String(streamId));
+    const numStr = stream && stream.num ? String(stream.num).padStart(3, "0") : String(index >= 0 ? index + 1 : 1).padStart(3, "0");
+    if (numEl) numEl.textContent = numStr;
+
+    if (logoEl) {
+      logoEl.src = stream && stream.stream_icon ? toProxied(stream.stream_icon) : "./design/nexus.svg";
+      logoEl.onerror = () => { logoEl.src = "./design/nexus.svg"; };
+    }
+
+    const cleanName = (label || (stream && stream.name) || "Canal Nexus").replace(/</g, "&lt;");
+    if (nameEl) nameEl.innerHTML = cleanName;
+
+    const is4k = /4k|uhd/i.test(label || (stream && stream.name) || "");
+    const isFhd = /fhd|1080/i.test(label || (stream && stream.name) || "");
+    if (resEl) {
+      resEl.textContent = is4k ? "4K" : (isFhd ? "FHD" : "HD");
+      resEl.className = `osd-res ${is4k ? "res-4k" : (isFhd ? "res-fhd" : "")}`;
+    }
+
+    if (progEl) {
+      progEl.textContent = stream && stream.category_name ? `${stream.category_name} • Transmissão ao Vivo` : "Transmissão Oficial Nexus";
+    }
+
+    osd.classList.add("show");
+    if (window.skyOsdTimer) clearTimeout(window.skyOsdTimer);
+    window.skyOsdTimer = setTimeout(() => {
+      osd.classList.remove("show");
+    }, 4500);
+  }
+
   function playStream(streamId, label) {
     destroyPlayer();
     showOverlay("Carregando canal…", label || "");
@@ -210,6 +251,7 @@
           hideOverlay();
           video.controls = true;
           setStatus("ao vivo", "live");
+          showSkyOsd(streamId, label);
           // Dispara os anúncios transitórios oficiais PixGet
           setTimeout(() => {
             showLowerThird(10000);
@@ -394,19 +436,27 @@
       return;
     }
 
-    els.channelList.innerHTML = filtered.slice(0, 400).map(s => {
+    els.channelList.innerHTML = filtered.slice(0, 400).map((s, idx) => {
       const logo = s.stream_icon ? toProxied(s.stream_icon) : "";
       const active = String(s.stream_id) === String(activeStreamId) ? " active" : "";
       const finalLogo = logo || "/favicon.png";
       const isFav = favs.includes(String(s.stream_id));
       const starFill = isFav ? "var(--green)" : "none";
-      const starStroke = isFav ? "var(--green)" : "rgba(255,255,255,0.35)";
+      const starStroke = isFav ? "var(--green)" : "#a2b0a2";
 
-      return `<div class="chan${active}" data-id="${s.stream_id}">
+      const numStr = s.num ? String(s.num).padStart(3, "0") : String(idx + 1).padStart(3, "0");
+      const name = String(s.name || "Canal");
+      const is4k = /4k|uhd/i.test(name);
+      const isFhd = /fhd|1080/i.test(name);
+      const resBadge = is4k ? `<span class="res-badge res-4k">4K</span>` : (isFhd ? `<span class="res-badge res-fhd">FHD</span>` : `<span class="res-badge">HD</span>`);
+
+      return `<div class="chan${active}" data-id="${s.stream_id}" tabindex="0">
+        <span class="num-badge">${numStr}</span>
         <img class="logo" src="${finalLogo}" loading="lazy" onerror="this.onerror=null;this.src='/favicon.png';">
-        <span class="name">${(s.name || "Canal").replace(/</g, "&lt;")}</span>
-        <button type="button" class="btn-fav-star${isFav ? ' is-fav' : ''}" data-fav-id="${s.stream_id}" title="${isFav ? 'Remover dos favoritos' : 'Favoritar canal'}" aria-label="Favoritar canal">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="${starFill}" stroke="${starStroke}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <span class="name">${name.replace(/</g, "&lt;")}</span>
+        ${resBadge}
+        <button type="button" class="btn-fav-star${isFav ? ' is-fav' : ''}" data-fav-id="${s.stream_id}" title="${isFav ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}" aria-label="Favoritar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="${starFill}" stroke="${starStroke}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
           </svg>
         </button>
@@ -547,6 +597,157 @@
       if (catTrigger) catTrigger.classList.remove("active-mode");
       renderChannelList(allStreams);
       resetAutoRetractTimer();
+    });
+  }
+
+  // ---------------- Relógio Digital de Topo (Estilo BTV / Sky) ----------------
+  function updateTvClock() {
+    const timeEl = document.getElementById("tvTime");
+    const dateEl = document.getElementById("tvDate");
+    if (!timeEl || !dateEl) return;
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2, "0");
+    const m = String(now.getMinutes()).padStart(2, "0");
+    timeEl.textContent = `${h}:${m}`;
+    const days = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+    const months = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+    dateEl.textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
+  }
+  setInterval(updateTvClock, 1000);
+  updateTvClock();
+
+  // ---------------- Navegação por Controle Remoto (Smart TV D-Pad) ----------------
+  let focusedChannelIndex = -1;
+  window.addEventListener("keydown", (e) => {
+    if (document.activeElement && (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA")) return;
+    const chanElements = Array.from(els.channelList.querySelectorAll(".chan"));
+    if (!chanElements.length) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      focusedChannelIndex = Math.min(chanElements.length - 1, focusedChannelIndex + 1);
+      updateTvFocus(chanElements);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      focusedChannelIndex = Math.max(0, focusedChannelIndex - 1);
+      updateTvFocus(chanElements);
+    } else if ((e.key === "Enter" || e.key === " ") && focusedChannelIndex >= 0) {
+      e.preventDefault();
+      chanElements[focusedChannelIndex].click();
+    }
+  });
+
+  function updateTvFocus(elements) {
+    elements.forEach((el, i) => {
+      if (i === focusedChannelIndex) {
+        el.classList.add("tv-focused");
+        el.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      } else {
+        el.classList.remove("tv-focused");
+      }
+    });
+  }
+
+  // ---------------- Abas de Conteúdo no Topo (BTV / RedPlay Launcher) ----------------
+  const tvTabs = document.querySelectorAll(".tv-tab-btn");
+  let currentActiveTab = "live"; // "live" | "sports" | "movies" | "series" | "favs"
+
+  tvTabs.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const tab = btn.getAttribute("data-tab");
+      tvTabs.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentActiveTab = tab;
+
+      if (tab === "live") {
+        els.catSelect.value = "";
+        if (catLabel) catLabel.textContent = "Todas as categorias";
+        renderChannelList(allStreams);
+      } else if (tab === "sports") {
+        els.catSelect.value = "sports_today";
+        if (catLabel) catLabel.textContent = "Jogos do Dia";
+        renderChannelList(allStreams);
+      } else if (tab === "favs") {
+        els.catSelect.value = "favorites";
+        if (catLabel) catLabel.textContent = "Meus Favoritos";
+        renderChannelList(allStreams);
+      } else if (tab === "movies") {
+        loadVodSection("movie");
+      } else if (tab === "series") {
+        loadVodSection("series");
+      }
+    });
+  });
+
+  async function loadVodSection(type) {
+    if (!session) return;
+    const title = type === "series" ? "Séries & Temporadas" : "Cine Nexus (Filmes)";
+    if (catLabel) catLabel.textContent = title;
+    els.channelList.innerHTML = `<div class="empty-hint"><div class="spinner" style="margin:0 auto 12px;width:32px;height:32px;"></div>Carregando catálogo de ${type === "series" ? "séries" : "filmes"}…</div>`;
+
+    try {
+      const catAction = type === "series" ? "get_series_categories" : "get_vod_categories";
+      const catRes = await fetch(`/stream/player_api.php?username=${encodeURIComponent(session.user)}&password=${encodeURIComponent(session.pass)}&action=${catAction}`);
+      const cats = await catRes.json();
+      const firstCat = Array.isArray(cats) && cats.length ? cats[0].category_id : "";
+
+      const streamAction = type === "series" ? "get_series" : "get_vod_streams";
+      const vodRes = await fetch(`/stream/player_api.php?username=${encodeURIComponent(session.user)}&password=${encodeURIComponent(session.pass)}&action=${streamAction}&category_id=${encodeURIComponent(firstCat)}`);
+      const vods = await vodRes.json();
+
+      if (!Array.isArray(vods) || !vods.length) {
+        els.channelList.innerHTML = `<div class="empty-hint">Nenhum conteúdo sob demanda encontrado no momento.</div>`;
+        return;
+      }
+
+      els.channelList.innerHTML = vods.slice(0, 150).map(v => {
+        const cover = v.stream_icon || v.cover || "/favicon.png";
+        const vTitle = (v.name || "Filme").replace(/</g, "&lt;");
+        const rating = v.rating ? `★ ${v.rating}` : (v.year || "VOD");
+        return `<div class="chan vod-card" data-vod-id="${v.stream_id || v.series_id}" data-type="${type}" data-ext="${v.container_extension || 'mp4'}">
+          <img class="logo vod-poster" src="${cover}" loading="lazy" onerror="this.onerror=null;this.src='/favicon.png';">
+          <div style="flex:1;min-width:0;">
+            <span class="name" style="font-weight:600;">${vTitle}</span>
+            <div style="font-size:10px;color:var(--muted);margin-top:2px;">${rating} • ${type === 'series' ? 'Série' : 'Cinema'}</div>
+          </div>
+        </div>`;
+      }).join("");
+
+      els.channelList.querySelectorAll(".chan.vod-card").forEach(el => {
+        el.addEventListener("click", () => {
+          const id = el.getAttribute("data-vod-id");
+          const vType = el.getAttribute("data-type");
+          const vExt = el.getAttribute("data-ext");
+          const vName = el.querySelector(".name").textContent;
+          if (vType === "movie") {
+            playVodMovie(id, vName, vExt);
+          } else {
+            showOverlay(vName, "Abra um episódio para reproduzir.");
+            setTimeout(hideOverlay, 2000);
+          }
+        });
+      });
+    } catch (e) {
+      els.channelList.innerHTML = `<div class="empty-hint">Erro ao carregar catálogo. Retorne para TV ao Vivo.</div>`;
+    }
+  }
+
+  function playVodMovie(streamId, name, ext) {
+    destroyPlayer();
+    showOverlay("Reproduzindo Filme…", name);
+    setStatus("reproduzindo", "live");
+    els.npChannel.textContent = name;
+    showSkyOsd(streamId, name);
+
+    const user = session ? session.user : "";
+    const pass = session ? session.pass : "";
+    const movieUrl = `/stream/movie/${encodeURIComponent(user)}/${encodeURIComponent(pass)}/${encodeURIComponent(streamId)}.${ext || 'mp4'}`;
+    els.video.src = movieUrl;
+    els.video.controls = true;
+    els.video.play().then(() => {
+      hideOverlay();
+    }).catch(() => {
+      hideOverlay();
     });
   }
 
