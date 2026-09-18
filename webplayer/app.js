@@ -361,70 +361,57 @@
     });
   }
 
-  // ---------------- Categorias no padrão dos canais (sem popup / rola até o fim) ----------------
-  let allCategories = [];
-  let currentViewMode = "channels"; // "channels" | "categories"
-
+  // Dropdown Customizado de Categorias (Renderizado diretamente na interface)
+  const catDropdown = document.getElementById("customCatDropdown");
   const catTrigger = document.getElementById("catDropdownTrigger");
+  const catMenu = document.getElementById("catDropdownMenu");
   const catLabel = document.getElementById("catCurrentLabel");
 
-  function renderCategoryList() {
-    const q = (els.searchInput.value || "").toLowerCase().trim();
-    const activeCat = els.catSelect.value;
-    const items = [
-      { category_id: "", category_name: "Todas as categorias" },
-      ...allCategories
-    ].filter(c => !q || (c.category_name || "").toLowerCase().includes(q));
-
-    if (!items.length) {
-      els.channelList.innerHTML = `<div class="empty-hint">Nenhuma categoria encontrada.</div>`;
-      return;
-    }
-
-    els.channelList.innerHTML = items.map(c => {
-      const active = String(c.category_id) === String(activeCat) ? " active" : "";
-      return `<div class="chan cat-card${active}" data-cat-id="${c.category_id}">
-        <div class="cat-icon-badge">
-          <img src="./design/nexus.svg" alt="" class="cat-n-icon">
-        </div>
-        <span class="name">${(c.category_name || "Geral").replace(/</g, "&lt;")}</span>
-      </div>`;
-    }).join("");
-
-    els.channelList.querySelectorAll(".chan.cat-card").forEach(el => {
-      el.addEventListener("click", () => {
-        const catId = el.getAttribute("data-cat-id");
-        els.catSelect.value = catId;
-        const name = el.querySelector(".name").textContent;
-        if (catLabel) catLabel.textContent = name;
-
-        // Retorna para visualização de canais daquela categoria
-        currentViewMode = "channels";
-        if (catTrigger) catTrigger.classList.remove("active-mode");
-        renderChannelList(allStreams);
-        resetCatAutoCloseTimer();
-      });
-    });
+  function toggleCatDropdown(open) {
+    if (!catDropdown) return;
+    const isOpen = open !== undefined ? open : !catDropdown.classList.contains("open");
+    catDropdown.classList.toggle("open", isOpen);
+    if (catTrigger) catTrigger.setAttribute("aria-expanded", isOpen ? "true" : "false");
   }
 
   if (catTrigger) {
     catTrigger.addEventListener("click", (e) => {
       e.stopPropagation();
-      currentViewMode = currentViewMode === "categories" ? "channels" : "categories";
-      if (currentViewMode === "categories") {
-        catTrigger.classList.add("active-mode");
-        renderCategoryList();
-      } else {
-        catTrigger.classList.remove("active-mode");
-        renderChannelList(allStreams);
-      }
-      resetCatAutoCloseTimer();
+      toggleCatDropdown();
+      resetAutoRetractTimer();
     });
   }
 
+  document.addEventListener("click", (e) => {
+    if (catDropdown && !catDropdown.contains(e.target)) {
+      toggleCatDropdown(false);
+    }
+  });
+
   function renderCategories(cats) {
-    allCategories = Array.isArray(cats) ? cats : [];
-    if (els.catSelect) els.catSelect.value = "";
+    if (els.catSelect) {
+      els.catSelect.innerHTML = `<option value="">Todas as categorias</option>` +
+        cats.map(c => `<option value="${c.category_id}">${(c.category_name || "").replace(/</g, "&lt;")}</option>`).join("");
+    }
+
+    if (catMenu) {
+      catMenu.innerHTML = `<div class="cat-item active" data-id="">Todas as categorias</div>` +
+        cats.map(c => `<div class="cat-item" data-id="${c.category_id}">${(c.category_name || "").replace(/</g, "&lt;")}</div>`).join("");
+
+      catMenu.querySelectorAll(".cat-item").forEach(item => {
+        item.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const id = item.getAttribute("data-id");
+          if (els.catSelect) els.catSelect.value = id;
+          catMenu.querySelectorAll(".cat-item").forEach(i => i.classList.remove("active"));
+          item.classList.add("active");
+          if (catLabel) catLabel.textContent = item.textContent;
+          toggleCatDropdown(false);
+          renderChannelList(allStreams);
+          resetAutoRetractTimer();
+        });
+      });
+    }
   }
 
   // ---------------- Fluxo de sessão ----------------
@@ -546,6 +533,47 @@
 
   if (els.btnFullscreen) els.btnFullscreen.addEventListener("click", toggleFullscreen);
 
+  // ---------------- Modo Enquadramento / Zoom (Cover vs Contain) ----------------
+  const btnFit = document.getElementById("btnFit");
+  const fitToast = document.getElementById("fitToast");
+  let fitToastTimer = null;
+
+  function showFitToast(msg) {
+    if (!fitToast) return;
+    fitToast.textContent = msg;
+    fitToast.classList.add("show");
+    if (fitToastTimer) clearTimeout(fitToastTimer);
+    fitToastTimer = setTimeout(() => {
+      fitToast.classList.remove("show");
+    }, 1200);
+  }
+
+  function toggleVideoFit() {
+    if (!playerWrap) return;
+    const isCover = playerWrap.classList.toggle("video-cover");
+    localStorage.setItem("nexus_video_fit", isCover ? "cover" : "contain");
+    showFitToast(isCover ? "⛶ Preencher Tela" : "⊡ Proporção Original");
+  }
+
+  if (localStorage.getItem("nexus_video_fit") === "cover" && playerWrap) {
+    playerWrap.classList.add("video-cover");
+  }
+
+  if (btnFit) btnFit.addEventListener("click", toggleVideoFit);
+
+  let lastTapTime = 0;
+  if (playerWrap) {
+    playerWrap.addEventListener("click", (e) => {
+      if (e.target.closest("button") || e.target.closest("a")) return;
+      const now = Date.now();
+      if (now - lastTapTime < 320) {
+        e.preventDefault();
+        toggleVideoFit();
+      }
+      lastTapTime = now;
+    });
+  }
+
   ["fullscreenchange", "webkitfullscreenchange"].forEach(evt => {
     document.addEventListener(evt, () => {
       if (!document.fullscreenElement && !document.webkitFullscreenElement && playerWrap) {
@@ -631,31 +659,64 @@
   }
   startBillboardLoop();
 
-  // Timer de Auto-Encolhimento do Seletor de Categorias (3s de inatividade)
-  let catAutoCloseTimer = null;
+  // Botão Ícone de Recolher/Expandir Canais na Barra Lateral
+  const btnToggleChannels = document.getElementById("btnToggleChannels");
+  const sidebar = document.getElementById("sidebar");
 
-  function resetCatAutoCloseTimer() {
-    if (catAutoCloseTimer) {
-      clearTimeout(catAutoCloseTimer);
-      catAutoCloseTimer = null;
+  // Timer de Auto-Recolhimento (após 3s de inatividade na lista expandida)
+  let autoRetractTimer = null;
+
+  function resetAutoRetractTimer() {
+    if (autoRetractTimer) {
+      clearTimeout(autoRetractTimer);
+      autoRetractTimer = null;
     }
-    if (currentViewMode === "categories") {
-      catAutoCloseTimer = setTimeout(() => {
-        if (currentViewMode === "categories") {
-          currentViewMode = "channels";
-          if (catTrigger) catTrigger.classList.remove("active-mode");
-          renderChannelList(allStreams);
+    // Se o dropdown de categorias estiver aberto, fecha após 3s
+    if (catDropdown && catDropdown.classList.contains("open")) {
+      autoRetractTimer = setTimeout(() => {
+        toggleCatDropdown(false);
+      }, 3000);
+      return;
+    }
+    // Se a lista estiver EXPANDIDA (não tem channels-retracted)
+    if (sidebar && !sidebar.classList.contains("channels-retracted")) {
+      autoRetractTimer = setTimeout(() => {
+        if (catDropdown && catDropdown.classList.contains("open")) {
+          toggleCatDropdown(false);
         }
-      }, 3000); // 3 segundos para encolher
+        sidebar.classList.add("channels-retracted");
+        if (btnToggleChannels) {
+          btnToggleChannels.setAttribute("aria-expanded", "false");
+          btnToggleChannels.title = "Expandir lista de canais";
+        }
+      }, 3000); // 3 segundos sem interação para recolher e exibir o anúncio
     }
   }
 
-  const sidebar = document.getElementById("sidebar");
+  // Interações na barra lateral reiniciam o timer de 3s
   if (sidebar) {
     ["mousemove", "scroll", "keydown", "touchstart", "click"].forEach(evt => {
-      sidebar.addEventListener(evt, () => {
-        if (currentViewMode === "categories") resetCatAutoCloseTimer();
-      }, { passive: true });
+      sidebar.addEventListener(evt, resetAutoRetractTimer, { passive: true });
+    });
+  }
+
+  if (btnToggleChannels && sidebar) {
+    btnToggleChannels.addEventListener("click", () => {
+      const isRetracted = sidebar.classList.toggle("channels-retracted");
+      btnToggleChannels.setAttribute("aria-expanded", isRetracted ? "false" : "true");
+      btnToggleChannels.title = isRetracted ? "Expandir lista de canais" : "Recolher lista para ver anúncio";
+      if (!isRetracted) {
+        resetAutoRetractTimer();
+      }
+    });
+
+    els.searchInput.addEventListener("focus", () => {
+      if (sidebar.classList.contains("channels-retracted")) {
+        sidebar.classList.remove("channels-retracted");
+        btnToggleChannels.setAttribute("aria-expanded", "true");
+        btnToggleChannels.title = "Recolher lista para ver anúncio";
+      }
+      resetAutoRetractTimer();
     });
   }
 
