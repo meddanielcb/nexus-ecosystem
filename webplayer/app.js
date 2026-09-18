@@ -361,57 +361,70 @@
     });
   }
 
-  // Dropdown Customizado de Categorias (Renderizado diretamente na interface)
-  const catDropdown = document.getElementById("customCatDropdown");
+  // ---------------- Categorias no padrão dos canais (sem popup / rola até o fim) ----------------
+  let allCategories = [];
+  let currentViewMode = "channels"; // "channels" | "categories"
+
   const catTrigger = document.getElementById("catDropdownTrigger");
-  const catMenu = document.getElementById("catDropdownMenu");
   const catLabel = document.getElementById("catCurrentLabel");
 
-  function toggleCatDropdown(open) {
-    if (!catDropdown) return;
-    const isOpen = open !== undefined ? open : !catDropdown.classList.contains("open");
-    catDropdown.classList.toggle("open", isOpen);
-    if (catTrigger) catTrigger.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  function renderCategoryList() {
+    const q = (els.searchInput.value || "").toLowerCase().trim();
+    const activeCat = els.catSelect.value;
+    const items = [
+      { category_id: "", category_name: "Todas as categorias" },
+      ...allCategories
+    ].filter(c => !q || (c.category_name || "").toLowerCase().includes(q));
+
+    if (!items.length) {
+      els.channelList.innerHTML = `<div class="empty-hint">Nenhuma categoria encontrada.</div>`;
+      return;
+    }
+
+    els.channelList.innerHTML = items.map(c => {
+      const active = String(c.category_id) === String(activeCat) ? " active" : "";
+      return `<div class="chan cat-card${active}" data-cat-id="${c.category_id}">
+        <div class="cat-icon-badge">
+          <img src="./design/nexus.svg" alt="" class="cat-n-icon">
+        </div>
+        <span class="name">${(c.category_name || "Geral").replace(/</g, "&lt;")}</span>
+      </div>`;
+    }).join("");
+
+    els.channelList.querySelectorAll(".chan.cat-card").forEach(el => {
+      el.addEventListener("click", () => {
+        const catId = el.getAttribute("data-cat-id");
+        els.catSelect.value = catId;
+        const name = el.querySelector(".name").textContent;
+        if (catLabel) catLabel.textContent = name;
+
+        // Retorna para visualização de canais daquela categoria
+        currentViewMode = "channels";
+        if (catTrigger) catTrigger.classList.remove("active-mode");
+        renderChannelList(allStreams);
+        resetAutoRetractTimer();
+      });
+    });
   }
 
   if (catTrigger) {
     catTrigger.addEventListener("click", (e) => {
       e.stopPropagation();
-      toggleCatDropdown();
+      currentViewMode = currentViewMode === "categories" ? "channels" : "categories";
+      if (currentViewMode === "categories") {
+        catTrigger.classList.add("active-mode");
+        renderCategoryList();
+      } else {
+        catTrigger.classList.remove("active-mode");
+        renderChannelList(allStreams);
+      }
       resetAutoRetractTimer();
     });
   }
 
-  document.addEventListener("click", (e) => {
-    if (catDropdown && !catDropdown.contains(e.target)) {
-      toggleCatDropdown(false);
-    }
-  });
-
   function renderCategories(cats) {
-    if (els.catSelect) {
-      els.catSelect.innerHTML = `<option value="">Todas as categorias</option>` +
-        cats.map(c => `<option value="${c.category_id}">${(c.category_name || "").replace(/</g, "&lt;")}</option>`).join("");
-    }
-
-    if (catMenu) {
-      catMenu.innerHTML = `<div class="cat-item active" data-id="">Todas as categorias</div>` +
-        cats.map(c => `<div class="cat-item" data-id="${c.category_id}">${(c.category_name || "").replace(/</g, "&lt;")}</div>`).join("");
-
-      catMenu.querySelectorAll(".cat-item").forEach(item => {
-        item.addEventListener("click", (e) => {
-          e.stopPropagation();
-          const id = item.getAttribute("data-id");
-          if (els.catSelect) els.catSelect.value = id;
-          catMenu.querySelectorAll(".cat-item").forEach(i => i.classList.remove("active"));
-          item.classList.add("active");
-          if (catLabel) catLabel.textContent = item.textContent;
-          toggleCatDropdown(false);
-          renderChannelList(allStreams);
-          resetAutoRetractTimer();
-        });
-      });
-    }
+    allCategories = Array.isArray(cats) ? cats : [];
+    if (els.catSelect) els.catSelect.value = "";
   }
 
   // ---------------- Fluxo de sessão ----------------
@@ -508,9 +521,48 @@
   els.btnReload.addEventListener("click", () => {
     if (session && activeStreamId) playStream(activeStreamId, els.npChannel.textContent);
   });
-  const playerWrap = document.getElementById("playerWrap") || els.video.closest(".player-wrap");
+  const playerWrap = els.video.closest(".player-wrap");
+  const btnZoom = document.getElementById("btnZoom");
+  const zoomToast = document.getElementById("zoomToast");
+  let zoomToastTimer = null;
 
-  function toggleFullscreen() {
+  function showZoomToast(text) {
+    if (!zoomToast) return;
+    zoomToast.textContent = text;
+    zoomToast.classList.add("show");
+    if (zoomToastTimer) clearTimeout(zoomToastTimer);
+    zoomToastTimer = setTimeout(() => {
+      zoomToast.classList.remove("show");
+    }, 1200);
+  }
+
+  function toggleZoom() {
+    if (!playerWrap) return;
+    const isZoomed = playerWrap.classList.toggle("zoom-fill");
+    localStorage.setItem("nexus_zoom_mode", isZoomed ? "fill" : "fit");
+    showZoomToast(isZoomed ? "⛶ Ampliado para preencher a tela" : "⊡ Ajustado à tela (original)");
+  }
+
+  if (localStorage.getItem("nexus_zoom_mode") === "fill" && playerWrap) {
+    playerWrap.classList.add("zoom-fill");
+  }
+
+  if (btnZoom) btnZoom.addEventListener("click", toggleZoom);
+
+  // Duplo toque / duplo clique no vídeo para ampliar como no YouTube
+  let lastVideoTap = 0;
+  if (els.video) {
+    els.video.addEventListener("click", (e) => {
+      const now = Date.now();
+      if (now - lastVideoTap < 320) {
+        e.preventDefault();
+        toggleZoom();
+      }
+      lastVideoTap = now;
+    });
+  }
+
+  els.btnFullscreen.addEventListener("click", () => {
     if (!playerWrap) return;
     const isFull = playerWrap.classList.contains("fullscreen-mode") || !!document.fullscreenElement || !!document.webkitFullscreenElement;
 
@@ -518,9 +570,7 @@
       playerWrap.classList.add("fullscreen-mode");
       document.body.classList.add("in-fullscreen");
       const req = playerWrap.requestFullscreen || playerWrap.webkitRequestFullscreen || playerWrap.mozRequestFullScreen || playerWrap.msRequestFullscreen;
-      if (req) {
-        req.call(playerWrap).catch(() => {});
-      }
+      if (req) req.call(playerWrap).catch(() => {});
     } else {
       playerWrap.classList.remove("fullscreen-mode");
       document.body.classList.remove("in-fullscreen");
@@ -529,50 +579,7 @@
         exit.call(document).catch(() => {});
       }
     }
-  }
-
-  if (els.btnFullscreen) els.btnFullscreen.addEventListener("click", toggleFullscreen);
-
-  // ---------------- Modo Enquadramento / Zoom (Cover vs Contain) ----------------
-  const btnFit = document.getElementById("btnFit");
-  const fitToast = document.getElementById("fitToast");
-  let fitToastTimer = null;
-
-  function showFitToast(msg) {
-    if (!fitToast) return;
-    fitToast.textContent = msg;
-    fitToast.classList.add("show");
-    if (fitToastTimer) clearTimeout(fitToastTimer);
-    fitToastTimer = setTimeout(() => {
-      fitToast.classList.remove("show");
-    }, 1200);
-  }
-
-  function toggleVideoFit() {
-    if (!playerWrap) return;
-    const isCover = playerWrap.classList.toggle("video-cover");
-    localStorage.setItem("nexus_video_fit", isCover ? "cover" : "contain");
-    showFitToast(isCover ? "⛶ Preencher Tela" : "⊡ Proporção Original");
-  }
-
-  if (localStorage.getItem("nexus_video_fit") === "cover" && playerWrap) {
-    playerWrap.classList.add("video-cover");
-  }
-
-  if (btnFit) btnFit.addEventListener("click", toggleVideoFit);
-
-  let lastTapTime = 0;
-  if (playerWrap) {
-    playerWrap.addEventListener("click", (e) => {
-      if (e.target.closest("button") || e.target.closest("a")) return;
-      const now = Date.now();
-      if (now - lastTapTime < 320) {
-        e.preventDefault();
-        toggleVideoFit();
-      }
-      lastTapTime = now;
-    });
-  }
+  });
 
   ["fullscreenchange", "webkitfullscreenchange"].forEach(evt => {
     document.addEventListener(evt, () => {
@@ -663,7 +670,7 @@
   const btnToggleChannels = document.getElementById("btnToggleChannels");
   const sidebar = document.getElementById("sidebar");
 
-  // Timer de Auto-Recolhimento (após 3s de inatividade na lista expandida)
+  // Timer de Auto-Recolhimento (após 2s de inatividade na lista expandida)
   let autoRetractTimer = null;
 
   function resetAutoRetractTimer() {
@@ -671,29 +678,24 @@
       clearTimeout(autoRetractTimer);
       autoRetractTimer = null;
     }
-    // Se o dropdown de categorias estiver aberto, fecha após 3s
-    if (catDropdown && catDropdown.classList.contains("open")) {
-      autoRetractTimer = setTimeout(() => {
-        toggleCatDropdown(false);
-      }, 3000);
-      return;
-    }
     // Se a lista estiver EXPANDIDA (não tem channels-retracted)
     if (sidebar && !sidebar.classList.contains("channels-retracted")) {
       autoRetractTimer = setTimeout(() => {
+        // Não recolhe se o dropdown de categorias ainda estiver aberto
         if (catDropdown && catDropdown.classList.contains("open")) {
-          toggleCatDropdown(false);
+          resetAutoRetractTimer();
+          return;
         }
         sidebar.classList.add("channels-retracted");
         if (btnToggleChannels) {
           btnToggleChannels.setAttribute("aria-expanded", "false");
           btnToggleChannels.title = "Expandir lista de canais";
         }
-      }, 3000); // 3 segundos sem interação para recolher e exibir o anúncio
+      }, 2000); // 2 segundos sem interação
     }
   }
 
-  // Interações na barra lateral reiniciam o timer de 3s
+  // Interações na barra lateral reiniciam o timer de 2s
   if (sidebar) {
     ["mousemove", "scroll", "keydown", "touchstart", "click"].forEach(evt => {
       sidebar.addEventListener(evt, resetAutoRetractTimer, { passive: true });
