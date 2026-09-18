@@ -385,16 +385,90 @@
     </div>`;
   }
 
-  // 8. EPG (Programação)
+  // Cache de EPG
+  let epgCache = {}; // channel_name -> epg_data
+
+  async function fetchEpgData(name, iconUrl) {
+    if (!name) return null;
+    const cacheKey = `${name}|${iconUrl || ''}`;
+    if (epgCache[cacheKey]) return epgCache[cacheKey];
+    try {
+      const url = `/beta/api/epg?name=${encodeURIComponent(name)}&icon=${encodeURIComponent(iconUrl || '')}`;
+      const res = await fetch(url);
+      if (!res.ok) return null;
+      const data = await res.json();
+      epgCache[cacheKey] = data;
+      return data;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // 8. EPG (Programação em Tempo Real)
   function epgView() {
     const s = allStreams.find(c => String(c.stream_id) === String(activeStreamId));
     const name = s ? s.name : "Canal Selecionado";
+    const logo = s && s.stream_icon ? toProxied(s.stream_icon) : "design/nexus.svg";
+    const cacheKey = `${name}|${(s && s.stream_icon) || ''}`;
+    const epg = epgCache[cacheKey];
+
+    if (!epg) {
+      // Dispara busca assíncrona e renderiza carregando
+      fetchEpgData(name, s ? s.stream_icon : "").then(data => {
+        if (state.view === 'epg') draw();
+      });
+
+      return `${topBar('Guia de Programação', name)}
+      <div class="empty" style="line-height:2;">
+        <div class="spinner" style="width:30px;height:30px;border:3px solid rgba(183,255,60,0.2);border-top-color:#b7ff3c;border-radius:50%;margin:20px auto;animation:spin 0.8s linear infinite;"></div>
+        <p style="font-size:16px;color:#fff;">Consultando guia de programação em tempo real…</p>
+        <button data-act="back-to-player">${icon('play')} Voltar ao Player</button>
+      </div>`;
+    }
+
+    const cur = epg.current || {};
+    const upcoming = epg.upcoming || [];
+
     return `${topBar('Guia de Programação (EPG)', name)}
-    <div class="empty" style="line-height:1.8;">
-      <p style="font-size:16px;color:#fff;">Programação em tempo real via XMLTV.</p>
-      <p style="color:#8f9a90;font-size:13px;">O canal continua sintonizado no player principal.</p>
-      <br>
-      <button data-act="back-to-player">${icon('play')} Voltar ao Player</button>
+    <div class="epg-container" style="display:flex;flex-direction:column;gap:18px;max-width:1050px;margin:0 auto;width:100%;padding:10px 0;">
+      <!-- Bloco do Programa Atual -->
+      <div class="epg-current-card" style="background:rgba(20,26,22,0.85);border:1px solid rgba(183,255,60,0.35);border-radius:14px;padding:22px;display:flex;gap:20px;align-items:flex-start;backdrop-filter:blur(10px);">
+        <img src="${logo}" style="width:64px;height:64px;object-fit:contain;background:#101416;border-radius:10px;padding:6px;border:1px solid rgba(255,255,255,0.08);flex-shrink:0;" alt="">
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+            <span style="background:#ff5252;color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:4px;letter-spacing:1px;">● NO AR AGORA</span>
+            <span style="font-family:'Space Grotesk',monospace;font-size:14px;color:#b7ff3c;font-weight:700;">${cur.start || '--:--'} - ${cur.stop || '--:--'}</span>
+          </div>
+          <h2 style="font-size:22px;color:#fff;margin:0 0 8px 0;font-weight:700;">${(cur.title || 'Transmissão ao Vivo').replace(/</g, '&lt;')}</h2>
+          <p style="font-size:13px;color:#a2aca0;line-height:1.6;margin:0 0 14px 0;">${(cur.desc || 'Assista em alta definição na Nexus PlayTV.').replace(/</g, '&lt;')}</p>
+          
+          <!-- Barra de Progresso -->
+          <div style="width:100%;height:6px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden;">
+            <div style="width:${cur.progress || 0}%;height:100%;background:#b7ff3c;border-radius:3px;transition:width 0.3s ease;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Próximos Programas -->
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <span style="font-size:11px;font-weight:700;color:#8f9a90;text-transform:uppercase;letter-spacing:1px;">A Seguir na Programação</span>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));gap:12px;">
+          ${upcoming.map(item => `
+            <div style="background:rgba(12,16,14,0.7);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-family:'Space Grotesk',monospace;color:#b7ff3c;font-size:12px;font-weight:700;">${item.start}</span>
+                <span style="font-size:10px;color:#6f7a70;">até ${item.stop}</span>
+              </div>
+              <strong style="font-size:14px;color:#f0f4ee;">${(item.title || 'Programa').replace(/</g, '&lt;')}</strong>
+              <p style="font-size:11px;color:#8f9a90;line-height:1.4;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${(item.desc || '').replace(/</g, '&lt;')}</p>
+            </div>
+          `).join('') || '<p style="color:#7f8a80;font-size:12px;">Nenhum próximo programa cadastrado na grade.</p>'}
+        </div>
+      </div>
+
+      <div style="margin-top:10px;">
+        <button data-act="back-to-player" class="primary">${icon('play')} Voltar ao Canal ao Vivo</button>
+      </div>
     </div>`;
   }
 
@@ -639,6 +713,12 @@
 
     if (progEl) {
       progEl.textContent = stream && stream.category_name ? `${stream.category_name} • Transmissão ao Vivo` : "Transmissão Oficial Nexus";
+      // Busca assíncrona do EPG real para atualizar o OSD
+      fetchEpgData(label || (stream && stream.name), stream && stream.stream_icon).then(epg => {
+        if (epg && epg.found && epg.current && epg.current.title) {
+          progEl.innerHTML = `<strong>${epg.current.title}</strong> (${epg.current.start} - ${epg.current.stop})`;
+        }
+      });
     }
 
     osd.classList.add("show");
