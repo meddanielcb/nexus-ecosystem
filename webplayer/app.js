@@ -522,7 +522,6 @@
     if (session && activeStreamId) playStream(activeStreamId, els.npChannel.textContent);
   });
   const playerWrap = document.getElementById("playerWrap") || els.video.closest(".player-wrap");
-  const btnExitFullscreen = document.getElementById("btnExitFullscreen");
 
   function toggleFullscreen() {
     if (!playerWrap) return;
@@ -546,7 +545,6 @@
   }
 
   if (els.btnFullscreen) els.btnFullscreen.addEventListener("click", toggleFullscreen);
-  if (btnExitFullscreen) btnExitFullscreen.addEventListener("click", toggleFullscreen);
 
   ["fullscreenchange", "webkitfullscreenchange"].forEach(evt => {
     document.addEventListener(evt, () => {

@@ -53,26 +53,21 @@ body.in-fullscreen{overflow:hidden!important}
 .player-wrap:fullscreen .ad-lower-third,.player-wrap:-webkit-full-screen .ad-lower-third,.player-wrap.fullscreen-mode .ad-lower-third{z-index:2147483647!important;position:absolute!important;bottom:0px!important;left:50%!important}
 .player-wrap:fullscreen .ad-lt-img-link img,.player-wrap:-webkit-full-screen .ad-lt-img-link img,.player-wrap.fullscreen-mode .ad-lt-img-link img{max-height:120px!important}
 
-.fullscreen-exit-btn{position:absolute;top:24px;left:24px;background:rgba(14,18,20,.85);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:10px;padding:9px 16px;font-size:12px;font-weight:600;cursor:pointer;z-index:2147483647;display:none;align-items:center;gap:8px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:all .2s ease;opacity:0}
-.player-wrap:fullscreen .fullscreen-exit-btn,.player-wrap:-webkit-full-screen .fullscreen-exit-btn,.player-wrap.fullscreen-mode .fullscreen-exit-btn{display:flex}
-.player-wrap:hover .fullscreen-exit-btn{opacity:1}
-.fullscreen-exit-btn:hover{background:#ff4444;border-color:#ff4444;color:#fff;transform:scale(1.04)}
-
 /* Formato 3: Banner Vertical de Anúncio na Barra Lateral */
 .cat-select-row{display:flex;align-items:center;gap:10px;margin-top:0;margin-bottom:14px;position:relative}
 .cat-dropdown-trigger{flex:1;min-height:46px;border:1px solid var(--border);border-radius:10px;padding:11px 14px;background:#131718;color:var(--text);font-size:13px;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;transition:all .2s ease}
-.cat-dropdown-trigger:hover{border-color:rgba(0,229,255,.4);background:#171c1e}
-.cat-dropdown-trigger.active-mode{border-color:rgba(0,229,255,.6);background:rgba(0,229,255,.08);color:#00E5FF}
-.cat-dropdown-trigger.active-mode .cat-dropdown-arrow{transform:rotate(180deg);color:#00E5FF}
+.cat-dropdown-trigger:hover{border-color:rgba(255,255,255,.2);background:#171c1e}
+.cat-dropdown-trigger.active-mode{border-color:rgba(255,255,255,.25);background:#171c1e;color:#fff}
+.cat-dropdown-trigger.active-mode .cat-dropdown-arrow{transform:rotate(180deg);color:#fff}
 .cat-current-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
 .cat-dropdown-arrow{color:#a2afb8;transition:transform .25s ease;flex-shrink:0}
 
 /* Cards de categoria na lista principal (100% no padrão dos canais, ícone Nexus) */
 .chan.cat-card{display:flex;align-items:center;gap:13px;padding:12px 14px;min-height:58px;border:1px solid transparent;border-radius:12px;cursor:pointer;color:var(--text);font-size:13px;margin-bottom:3px;background:transparent;transition:background .15s}
 .chan.cat-card:hover{background:#ffffff05}
-.chan.cat-card.active{background:rgba(255,255,255,.06);color:#00E5FF}
+.chan.cat-card.active{background:#b7ff3c0b;border-color:#b7ff3c35;color:var(--green)}
 .chan.cat-card .cat-icon-badge{width:38px;height:38px;border-radius:10px;background:#14181a;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid rgba(255,255,255,.07);box-shadow:inset 0 1px 0 rgba(255,255,255,.04);transition:all .2s ease}
-.chan.cat-card:hover .cat-icon-badge{border-color:rgba(0,229,255,.35);background:rgba(0,229,255,.06)}
+.chan.cat-card:hover .cat-icon-badge{border-color:rgba(255,255,255,.2);background:#181d1f}
 .cat-n-icon{width:18px;height:20px;display:block;object-fit:contain}
 .chan.cat-card .cat-count-badge{font-size:11px;color:#717c74;margin-left:auto;font-variant-numeric:tabular-nums}
 
