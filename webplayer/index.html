@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#050607">
 <title>Nexus PlayTV • WebPlayer</title>
 <link rel="icon" href="/favicon.png" type="image/png">
-<link rel="stylesheet" href="./design/player.css?v=5.3">
+<link rel="stylesheet" href="./design/player.css?v=5.4">
 </head>
 <body>
 
@@ -80,10 +80,12 @@
 
       <!-- Formato 1: Lower-Third Flutuante Transitório (Padrão TV) -->
       <div class="ad-lower-third" id="adLowerThird">
-        <a class="ad-lt-img-link" id="adLtImgLink" href="https://pixget.app" target="_blank" rel="noopener" title="PixGet • Conhecer Gateway">
-          <img id="adLtImg" src="./design/ads/pixget_lower_third.webp" alt="PixGet Anúncio">
-        </a>
-        <button class="ad-lt-close" id="btnAdLtClose" aria-label="Fechar anúncio">✕</button>
+        <div class="ad-lt-card">
+          <a class="ad-lt-img-link" id="adLtImgLink" href="https://pixget.app" target="_blank" rel="noopener" title="PixGet • Conhecer Gateway">
+            <img id="adLtImg" src="./design/ads/pixget_lower_third.webp" alt="PixGet Anúncio">
+          </a>
+          <button class="ad-lt-close" id="btnAdLtClose" aria-label="Fechar anúncio">✕</button>
+        </div>
       </div>
 
       <!-- Toast sutil de feedback de zoom (estilo YouTube) -->
@@ -162,7 +164,7 @@
 <script src="https://cdn.jsdelivr.net/npm/mpegts.js@1.7.3/dist/mpegts.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
 <script src="./design/qrcode.min.js"></script>
-<script src="/app.js?v=5.3"></script>
-<script src="./design/motion.js?v=5.3"></script>
+<script src="/app.js?v=5.4"></script>
+<script src="./design/motion.js?v=5.4"></script>
 </body>
 </html>
