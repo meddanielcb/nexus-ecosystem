@@ -756,10 +756,220 @@
     if (els.catSelect) els.catSelect.value = "";
   }
 
+
+  // ===================== BTV / REDPLAY DASHBOARD LOGIC =====================
+  const dashboardView = document.getElementById("dashboardView");
+  const appPlayerView = document.getElementById("appPlayerView");
+  const cardTvLive = document.getElementById("cardTvLive");
+  const cardMovies = document.getElementById("cardMovies");
+  const cardSeries = document.getElementById("cardSeries");
+  const cardSports = document.getElementById("cardSports");
+  const cardFavs = document.getElementById("cardFavs");
+  const btnHomeReturn = document.getElementById("btnHomeReturn");
+  const btnLauncherLogout = document.getElementById("btnLauncherLogout");
+  const btnActionReload = document.getElementById("btnActionReload");
+  const btnActionAccount = document.getElementById("btnActionAccount");
+  const btnActionFullscreen = document.getElementById("btnActionFullscreen");
+
+  function showDashboard() {
+    if (dashboardView) dashboardView.classList.remove("hidden");
+    if (appPlayerView) appPlayerView.classList.add("hidden");
+    updateDashboardInfo();
+    // Foca por padrao no card TV ao Vivo
+    setLauncherFocus(cardTvLive);
+  }
+
+  function showPlayerView() {
+    if (dashboardView) dashboardView.classList.add("hidden");
+    if (appPlayerView) appPlayerView.classList.remove("hidden");
+  }
+
+  function updateDashboardInfo() {
+    const lUserId = document.getElementById("lUserId");
+    if (lUserId && session) {
+      lUserId.textContent = `Usuário: ${session.user}`;
+    }
+    const prevName = document.getElementById("previewChannelName");
+    if (prevName) {
+      prevName.textContent = els.npChannel.textContent || "Canal ao Vivo";
+    }
+
+    const timeEl = document.getElementById("lClockTime");
+    const dateEl = document.getElementById("lClockDate");
+    if (timeEl && dateEl) {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, "0");
+      const m = String(now.getMinutes()).padStart(2, "0");
+      timeEl.textContent = `${h}:${m}`;
+      const days = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+      const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+      dateEl.textContent = `${days[now.getDay()]}, ${now.getDate()} de ${months[now.getMonth()]}`;
+    }
+  }
+
+  setInterval(() => {
+    if (dashboardView && !dashboardView.classList.contains("hidden")) {
+      updateDashboardInfo();
+    }
+  }, 1000);
+
+  // Navegação do Bento Grid
+  let currentLauncherFocus = cardTvLive;
+  function setLauncherFocus(el) {
+    if (!el) return;
+    document.querySelectorAll(".bento-card, .bento-action-btn").forEach(c => c.classList.remove("focused"));
+    el.classList.add("focused");
+    el.focus();
+    currentLauncherFocus = el;
+  }
+
+  // Cliques nos Cards do Dashboard
+  if (cardTvLive) {
+    cardTvLive.addEventListener("click", () => {
+      showPlayerView();
+      switchTvTab("live");
+      if (!activeStreamId && allStreams.length) {
+        const first = allStreams[0];
+        activeStreamId = first.stream_id;
+        els.npChannel.textContent = first.name || "Canal";
+        playStream(first.stream_id, first.name);
+      }
+    });
+  }
+
+  if (cardMovies) {
+    cardMovies.addEventListener("click", () => {
+      showPlayerView();
+      switchTvTab("movies");
+    });
+  }
+
+  if (cardSeries) {
+    cardSeries.addEventListener("click", () => {
+      showPlayerView();
+      switchTvTab("series");
+    });
+  }
+
+  if (cardSports) {
+    cardSports.addEventListener("click", () => {
+      showPlayerView();
+      switchTvTab("sports");
+    });
+  }
+
+  if (cardFavs) {
+    cardFavs.addEventListener("click", () => {
+      showPlayerView();
+      switchTvTab("favs");
+    });
+  }
+
+  if (btnHomeReturn) {
+    btnHomeReturn.addEventListener("click", () => {
+      showDashboard();
+    });
+  }
+
+  if (btnLauncherLogout) {
+    btnLauncherLogout.addEventListener("click", logout);
+  }
+
+  if (btnActionReload) {
+    btnActionReload.addEventListener("click", () => {
+      showOverlay("Sincronizando…", "Atualizando catálogo e transmissões.");
+      if (session) {
+        fetchLiveStreams(session.user, session.pass).then(streams => {
+          allStreams = streams;
+          renderChannelList(allStreams);
+          hideOverlay();
+        }).catch(() => hideOverlay());
+      }
+    });
+  }
+
+  if (btnActionAccount) {
+    btnActionAccount.addEventListener("click", () => {
+      const u = session ? session.user : "Visitante";
+      showOverlay("Conta Nexus PlayTV", `Usuário: ${u}\nStatus: Assinatura Ativa\nServidor: Offshore Suécia (BBR Turbo)`);
+      setTimeout(hideOverlay, 3500);
+    });
+  }
+
+  if (btnActionFullscreen) {
+    btnActionFullscreen.addEventListener("click", () => {
+      toggleFullscreen();
+    });
+  }
+
+  function switchTvTab(tab) {
+    const tabs = document.querySelectorAll(".tv-tab-btn");
+    tabs.forEach(b => {
+      if (b.getAttribute("data-tab") === tab) {
+        b.click();
+      }
+    });
+  }
+
+  // Teclado e Controle Remoto D-Pad no Launcher
+  window.addEventListener("keydown", (e) => {
+    if (document.activeElement && (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA")) return;
+
+    // Se estiver no Player e apertar ESC ou Backspace: volta ao Dashboard
+    if (appPlayerView && !appPlayerView.classList.contains("hidden")) {
+      if (e.key === "Escape" || e.key === "Backspace") {
+        e.preventDefault();
+        showDashboard();
+        return;
+      }
+    }
+
+    // Se estiver no Dashboard: navega no Bento Grid estilo RedPlay / BTV
+    if (dashboardView && !dashboardView.classList.contains("hidden")) {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        if (currentLauncherFocus) currentLauncherFocus.click();
+        return;
+      }
+
+      if (currentLauncherFocus === cardTvLive) {
+        if (e.key === "ArrowRight") { e.preventDefault(); setLauncherFocus(cardMovies); }
+      } else if (currentLauncherFocus === cardMovies) {
+        if (e.key === "ArrowLeft") { e.preventDefault(); setLauncherFocus(cardTvLive); }
+        else if (e.key === "ArrowRight") { e.preventDefault(); setLauncherFocus(cardSeries); }
+        else if (e.key === "ArrowDown") { e.preventDefault(); setLauncherFocus(cardSports); }
+      } else if (currentLauncherFocus === cardSeries) {
+        if (e.key === "ArrowLeft") { e.preventDefault(); setLauncherFocus(cardMovies); }
+        else if (e.key === "ArrowRight") { e.preventDefault(); setLauncherFocus(btnActionReload); }
+        else if (e.key === "ArrowDown") { e.preventDefault(); setLauncherFocus(cardFavs); }
+      } else if (currentLauncherFocus === cardSports) {
+        if (e.key === "ArrowLeft") { e.preventDefault(); setLauncherFocus(cardTvLive); }
+        else if (e.key === "ArrowRight") { e.preventDefault(); setLauncherFocus(cardFavs); }
+        else if (e.key === "ArrowUp") { e.preventDefault(); setLauncherFocus(cardMovies); }
+      } else if (currentLauncherFocus === cardFavs) {
+        if (e.key === "ArrowLeft") { e.preventDefault(); setLauncherFocus(cardSports); }
+        else if (e.key === "ArrowRight") { e.preventDefault(); setLauncherFocus(btnActionAccount); }
+        else if (e.key === "ArrowUp") { e.preventDefault(); setLauncherFocus(cardSeries); }
+      } else if (currentLauncherFocus === btnActionReload) {
+        if (e.key === "ArrowLeft") { e.preventDefault(); setLauncherFocus(cardSeries); }
+        else if (e.key === "ArrowDown") { e.preventDefault(); setLauncherFocus(btnActionAccount); }
+      } else if (currentLauncherFocus === btnActionAccount) {
+        if (e.key === "ArrowLeft") { e.preventDefault(); setLauncherFocus(cardFavs); }
+        else if (e.key === "ArrowUp") { e.preventDefault(); setLauncherFocus(btnActionReload); }
+        else if (e.key === "ArrowDown") { e.preventDefault(); setLauncherFocus(btnActionFullscreen); }
+      } else if (currentLauncherFocus === btnActionFullscreen) {
+        if (e.key === "ArrowLeft") { e.preventDefault(); setLauncherFocus(cardFavs); }
+        else if (e.key === "ArrowUp") { e.preventDefault(); setLauncherFocus(btnActionAccount); }
+      }
+    }
+  });
+
+
   // ---------------- Fluxo de sessão ----------------
   async function startSession(user, pass, opts) {
     opts = opts || {};
     els.gate.classList.add("hidden");
+    showDashboard();
     session = { user, pass };
     localStorage.setItem("nexus_play_session", JSON.stringify(session));
 
@@ -843,6 +1053,8 @@
     session = null;
     activeStreamId = null;
     els.video.removeAttribute("src");
+    if (dashboardView) dashboardView.classList.add("hidden");
+    if (appPlayerView) appPlayerView.classList.add("hidden");
     els.npChannel.textContent = "Nenhum canal selecionado";
     els.npUser.textContent = "";
     els.channelList.innerHTML = `<div class="empty-hint">Faça login para carregar a lista de canais.</div>`;

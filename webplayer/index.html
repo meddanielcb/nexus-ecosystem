@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#050607">
 <title>Nexus PlayTV • WebPlayer</title>
 <link rel="icon" href="/favicon.png" type="image/png">
-<link rel="stylesheet" href="./design/player.css?v=beta-2.0">
+<link rel="stylesheet" href="./design/player.css?v=beta-3.0">
 </head>
 <body>
 
@@ -59,8 +59,178 @@
   </div>
 </div>
 
+
+<!-- ===================== BTV / REDPLAY DASHBOARD LAUNCHER ===================== -->
+<div class="tv-launcher" id="dashboardView">
+  <!-- Launcher Topbar -->
+  <header class="launcher-header">
+    <div class="launcher-brand">
+      <img src="./design/nexus.svg" alt="Nexus" width="46" height="50" class="launcher-logo">
+      <div class="launcher-brand-text">
+        <span class="launcher-title">NEXUS <b>PLAYTV</b></span>
+        <span class="launcher-tagline">O SEU UNIVERSO DE ENTRETENIMENTO</span>
+      </div>
+    </div>
+    <div class="launcher-top-center">
+      <div class="launcher-clock">
+        <span class="l-clock-time" id="lClockTime">14:30</span>
+        <span class="l-clock-date" id="lClockDate">Sexta, 18 de Setembro</span>
+      </div>
+    </div>
+    <div class="launcher-user-box">
+      <div class="l-user-avatar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+      <div class="l-user-meta">
+        <span class="l-user-id" id="lUserId">Usuário: Conectado</span>
+        <span class="l-user-status">● Assinatura Ativa</span>
+      </div>
+      <button class="icon-btn l-btn-logout" id="btnLauncherLogout" title="Sair da Conta">Sair</button>
+    </div>
+  </header>
+
+  <!-- Launcher Bento Grid (Estilo Exato RedPlay / BTV) -->
+  <main class="launcher-grid-container">
+    <div class="launcher-bento">
+      <!-- Card 1: TV AO VIVO (Destaque Principal 2x altura na esquerda) -->
+      <div class="bento-card card-tv-live focused" id="cardTvLive" tabindex="0" role="button" aria-label="Abrir TV ao Vivo">
+        <div class="bento-card-bg"></div>
+        <div class="bento-badge-live">
+          <span class="live-dot-pulse"></span>
+          <span>AO VIVO</span>
+        </div>
+        <div class="bento-card-body">
+          <div class="bento-icon-wrap icon-tv">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+              <polyline points="17 2 12 7 7 2"></polyline>
+              <circle cx="12" cy="14" r="2.5" fill="var(--green)"></circle>
+            </svg>
+          </div>
+          <h2 class="bento-card-title">TV ao Vivo</h2>
+          <p class="bento-card-sub">Mais de 24.000 canais em 4K e Full HD</p>
+          <div class="bento-live-preview-tag" id="livePreviewTag">
+            <span>● Em Exibição:</span> <strong id="previewChannelName">Sintonizar Canal</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid 2x2 à Direita -->
+      <div class="bento-quad-grid">
+        <!-- Card 2: FILMES -->
+        <div class="bento-card card-movies" id="cardMovies" tabindex="0" role="button" aria-label="Abrir Filmes">
+          <div class="bento-card-bg"></div>
+          <div class="bento-card-body">
+            <div class="bento-icon-wrap icon-movies">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                <line x1="7" y1="2" x2="7" y2="22"></line>
+                <line x1="17" y1="2" x2="17" y2="22"></line>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+              </svg>
+            </div>
+            <h3 class="bento-card-title">Filmes</h3>
+            <p class="bento-card-sub">Lançamentos de cinema e clássicos</p>
+          </div>
+        </div>
+
+        <!-- Card 3: SÉRIES -->
+        <div class="bento-card card-series" id="cardSeries" tabindex="0" role="button" aria-label="Abrir Séries">
+          <div class="bento-card-bg"></div>
+          <div class="bento-card-body">
+            <div class="bento-icon-wrap icon-series">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                <polyline points="2 17 12 22 22 17"></polyline>
+                <polyline points="2 12 12 17 22 12"></polyline>
+              </svg>
+            </div>
+            <h3 class="bento-card-title">Séries</h3>
+            <p class="bento-card-sub">Netflix, HBO Max, Prime e Disney+</p>
+          </div>
+        </div>
+
+        <!-- Card 4: JOGOS & FUTEBOL -->
+        <div class="bento-card card-sports" id="cardSports" tabindex="0" role="button" aria-label="Abrir Jogos de Hoje">
+          <div class="bento-card-bg"></div>
+          <div class="bento-card-body">
+            <div class="bento-icon-wrap icon-sports">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polygon points="12 6 15.5 8.5 14 12.5 10 12.5 8.5 8.5 12 6"></polygon>
+                <line x1="12" y1="2" x2="12" y2="6"></line>
+                <line x1="15.5" y1="8.5" x2="19.5" y2="6.5"></line>
+                <line x1="14" y1="12.5" x2="17.5" y2="16.5"></line>
+                <line x1="10" y1="12.5" x2="6.5" y2="16.5"></line>
+                <line x1="8.5" y1="8.5" x2="4.5" y2="6.5"></line>
+              </svg>
+            </div>
+            <h3 class="bento-card-title">Futebol & Jogos</h3>
+            <p class="bento-card-sub">Premiere, SporTV, ESPN e CazéTV</p>
+          </div>
+        </div>
+
+        <!-- Card 5: MEUS FAVORITOS -->
+        <div class="bento-card card-favs" id="cardFavs" tabindex="0" role="button" aria-label="Abrir Favoritos">
+          <div class="bento-card-bg"></div>
+          <div class="bento-card-body">
+            <div class="bento-icon-wrap icon-favs">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </div>
+            <h3 class="bento-card-title">Meus Favoritos</h3>
+            <p class="bento-card-sub">Canais e conteúdos salvos</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Coluna Lateral de Ajustes / Ações Rápidas (Estilo RedPlay / BTV) -->
+      <div class="bento-actions-col">
+        <button class="bento-action-btn" id="btnActionReload" title="Recarregar Transmissões">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+          <span>Sincronizar</span>
+        </button>
+        <button class="bento-action-btn" id="btnActionAccount" title="Dados da Conta">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          <span>Ajustes</span>
+        </button>
+        <button class="bento-action-btn" id="btnActionFullscreen" title="Tela Cheia">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+          <span>Expandir</span>
+        </button>
+      </div>
+    </div>
+  </main>
+</div><!-- /appPlayerView -->
+
+  <!-- Rodapé com Atalhos de Controle Remoto / Teclado -->
+  <footer class="launcher-footer">
+    <div class="l-footer-shortcuts">
+      <span class="l-key-badge">Setas [ ↑ ↓ ← → ]</span> <span class="l-key-desc">Navegar</span>
+      <span class="l-key-sep">•</span>
+      <span class="l-key-badge">OK / Enter</span> <span class="l-key-desc">Abrir Módulo</span>
+      <span class="l-key-sep">•</span>
+      <span class="l-key-badge">Voltar / ESC</span> <span class="l-key-desc">Retornar ao Menu</span>
+    </div>
+    <div class="l-footer-brand">
+      <span>NEXUS PLATFORM • OFFSHORE SECURE STREAMING</span>
+    </div>
+  </footer>
+</div>
+
+<!-- ===================== VIEW DO PLAYER DE TV (ESTILO SKY / DECODIFICADOR) ===================== -->
+<div id="appPlayerView" class="hidden">
+
 <!-- ===================== APP ===================== -->
 <header class="topbar">
+  <button class="btn-home-return" id="btnHomeReturn" title="Voltar ao Menu Principal (BTV / RedPlay)">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+      <polyline points="9 22 9 12 15 12 15 22"></polyline>
+    </svg>
+    <span>MENU</span>
+  </button>
   <div class="brand"><img src="./design/nexus.svg" alt="" width="29" height="32"><span>NEXUS <b>PLAYTV</b></span></div>
   <nav class="tv-nav-tabs" id="tvNavTabs">
     <button type="button" class="tv-tab-btn active" data-tab="live" title="Canais ao Vivo">
@@ -244,11 +414,12 @@
     </div>
   </aside>
 </main>
+</div><!-- /appPlayerView -->
 
 <script src="https://cdn.jsdelivr.net/npm/mpegts.js@1.7.3/dist/mpegts.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
 <script src="./design/qrcode.min.js"></script>
-<script src="./app.js?v=beta-2.0"></script>
-<script src="./design/motion.js?v=beta-2.0"></script>
+<script src="./app.js?v=beta-3.0"></script>
+<script src="./design/motion.js?v=beta-3.0"></script>
 </body>
 </html>
