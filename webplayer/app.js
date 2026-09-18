@@ -511,6 +511,7 @@
   function logout() {
     destroyPlayer();
     localStorage.removeItem("nexus_play_session");
+    localStorage.removeItem("nexus_tv_pin");
     session = null;
     activeStreamId = null;
     els.video.removeAttribute("src");
@@ -810,6 +811,13 @@
       const data = await res.json();
       if (data.status === "paired" && data.user && data.pass) {
         stopPairPolling();
+        // Consome e invalida o PIN imediatamente para evitar login fantasma
+        fetch("/pair/consume", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ pin })
+        }).catch(() => {});
+        localStorage.removeItem("nexus_tv_pin");
         showOverlay("Pareamento Concluído!", "Celular conectado com sucesso. Iniciando TV…");
         startSession(data.user, data.pass);
       }
