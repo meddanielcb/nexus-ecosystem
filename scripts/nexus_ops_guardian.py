@@ -585,12 +585,15 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 
             const stab = q.stability_pct || 99.9;
             document.getElementById('qosStability').innerHTML = `${stab}<span>%</span>`;
-            if (stab >= 98.0) {
-              document.getElementById('qosStabilitySub').textContent = 'Perfeita • Zero perda de pacotes';
+            if (stab >= 95.0) {
+              document.getElementById('qosStabilitySub').textContent = 'Perfeita • Transmissão contínua';
               document.getElementById('qosStabilityBar').style.background = 'var(--neon)';
-            } else {
-              document.getElementById('qosStabilitySub').textContent = '⚠️ Oscilações de pacotes detectadas';
+            } else if (stab >= 90.0) {
+              document.getElementById('qosStabilitySub').textContent = 'Boa • Flutuações pontuais de rede';
               document.getElementById('qosStabilityBar').style.background = 'var(--warning)';
+            } else {
+              document.getElementById('qosStabilitySub').textContent = '⚠️ Alta taxa de retransmissão';
+              document.getElementById('qosStabilityBar').style.background = 'var(--danger)';
             }
 
             document.getElementById('qosRoute').textContent = q.route || 'DIRETO SP';
