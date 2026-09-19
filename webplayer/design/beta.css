@@ -38,15 +38,13 @@ main#screen {
   overflow: hidden;
 }
 
-/* Ad-Rail Lateral (Reservado à direita nas telas de catálogo e grade) */
+/* Ad-Rail Lateral Oculto Temporariamente para Layout Full-Bleed Edge-to-Edge */
 .ad-rail {
-  width: 190px;
-  flex-shrink: 0;
-  padding: 24px 3% 24px 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
+  display: none !important;
+}
+
+#btnMotionToggle, button[data-action="motion"] {
+  display: none !important;
 }
 
 .ad-billboard-img-link {

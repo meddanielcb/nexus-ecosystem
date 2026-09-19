@@ -162,17 +162,26 @@
 
   // ---------------- Renderizadores de Views ----------------
 
-  // 1. HOME (Bento Cinematográfico do Designer)
+  // 1. HOME (Bento Cinematográfico com Frases Rotativas)
+  const homePhrases = [
+    { title: "A noite.<br>O jogo.<br>O seu play.", sub: "A emoção do esporte ao vivo em alta definição." },
+    { title: "O estádio.<br>O clássico.<br>Na sua tela.", sub: "Transmissões ao vivo dos maiores campeonatos do mundo." },
+    { title: "Grandes histórias.<br>Cinema em casa.<br>Sem limites.", sub: "Mais de 20.000 filmes de cinema e temporadas completas." },
+    { title: "A decisão.<br>Cada lance.<br>Em tempo real.", sub: "Futebol nacional e internacional com estabilidade total." },
+    { title: "O melhor da TV.<br>Ao seu alcance.<br>Zero travamentos.", sub: "Canais ao vivo em Full HD 60 FPS com grade completa." }
+  ];
+
   function homeView() {
-    const liveCount = allStreams.length || "24.000+";
+    const liveCount = allStreams.length || "1.790+";
+    const phrase = homePhrases[Math.floor(Math.random() * homePhrases.length)];
     return `<section class="tv-home">
       <img class="scenery" src="assets/stadium-cinema.webp" alt="">
       <video class="ambient-video" muted loop playsinline preload="none" data-src="assets/stadium-motion.mp4" aria-hidden="true" tabindex="-1" hidden></video>
       <div class="stadium-lights" aria-hidden="true"><i></i><i></i><i></i></div>
       <div class="home-copy">
         <span class="eyebrow">Nexus / O seu lugar na primeira fila</span>
-        <h1>A noite.<br>O jogo.<br>O seu play.</h1>
-        <p>Mais de ${liveCount} canais em 4K, filmes de cinema e séries completas.</p>
+        <h1>${phrase.title}</h1>
+        <p>Mais de ${liveCount} canais em Full HD 60 FPS, filmes de cinema e séries completas.</p>
         <button class="primary" data-act="live" data-key="home-live">${icon('play')} Abrir TV ao vivo</button>
       </div>
       <div class="destinations">
