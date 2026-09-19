@@ -7,7 +7,28 @@
 
 ---
 
-## 📊 1. A Matemática do Negócio & Metas Financeiras
+## 🛡️ 1.1. Pilares Inegociáveis de Privacidade e Blindagem Jurídica
+
+Toda a operação (software, infraestrutura, pagamentos e hardware) é regida por 5 pilares inegociáveis:
+
+1. **Zero Cloudflare & Zero KYC:** Rejeição absoluta a serviços como Cloudflare, Twilio ou provedores que exijam KYC/documentos que possam ser intimados judicialmente.
+2. **Infraestrutura Offshore Anônima:** 
+   * Origem na VPS Njalla (Suécia) sob jurisdição neutra.
+   * Pagamentos de servidores e domínios 100% em criptomoeda (Monero/USDT/BTC).
+   * Domínios com Whois Privacy anônimo via offshore registrars.
+3. **Nó de Borda (VPS em SP) Blindado:**
+   * Contratado exclusivamente via provedor sem KYC com pagamento cripto ou proxy anônimo.
+   * Conectado à Suécia por túnel privado criptografado **WireGuard**.
+   * Opera como **dumb proxy** (apenas encaminhamento de pacotes em memória RAM, sem banco de dados, sem credenciais, sem logs de acesso gravados em disco).
+4. **Soberania Financeira:**
+   * Gateway **PixGet** (propriedade do Daniel), liquidação instantânea em dólar digital (USDC/USDT) direto na carteira fria/privada, fora do radar bancário tradicional.
+5. **Logística Sem Exposição Física:**
+   * **Varejo:** Dropshipping internacional direto de Shenzhen (China → cliente final) com remetente de exportação chinês sem vínculo de CNPJ/CPF no Brasil.
+   * **Atacado:** Venda em lotes fechados para revendedores locais (modelo BTV/HTV) pagos em USDT, onde o revendedor assume a entrega física e a ponta comercial.
+
+---
+
+## 📊 2. A Matemática do Negócio & Metas Financeiras
 
 | Métrica | Valor Unitário / Projeção | Total Mensal (5.000 clientes) | Total Anual |
 | :--- | :--- | :--- | :--- |
