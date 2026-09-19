@@ -320,29 +320,37 @@
       </div>`;
     }
 
-    return `${topBar(title, sub)}
-    ${brandsHtml}
-    <div class="brand-hub-title" style="margin-top:12px;">Gêneros & Coleções em Alta</div>
-    <div class="genre-cards-grid">
-      ${otherCats.map((c, i) => {
-        const clean = formatVodCatName(c.category_name);
-        const bgImg = GENRE_BACKDROPS[i % GENRE_BACKDROPS.length];
-        return `
-        <button class="genre-card" data-cat-id="${c.category_id}" data-cat-name="${safe(clean)}" data-key="cat-${c.category_id}">
-          <img class="genre-card-bg" src="${bgImg}" alt="" loading="lazy">
-          <div class="genre-card-scrim"></div>
-          <div class="genre-card-content">
-            <div class="genre-card-top">
-              <span class="genre-card-badge">FHD • 1080P</span>
-              <span class="genre-card-num">${String(i + 1).padStart(2, '0')}</span>
-            </div>
-            <div>
-              <strong class="genre-card-title">${safe(clean)}</strong>
-              <span class="genre-card-cta">Explorar títulos ${icon('next')}</span>
-            </div>
-          </div>
-        </button>`;
-      }).join('')}
+    const bgBanner = state.kind === 'series' ? 'assets/banners/combate.webp' : 'assets/banners/cinema.webp';
+
+    return `<div class="tv-vod-shell">
+      <img class="tv3-bg" src="${bgBanner}" alt="">
+      <div class="tv3-scrim"></div>
+      <div class="tv-vod-content">
+        ${topBar(title, sub)}
+        ${brandsHtml}
+        <div class="brand-hub-title" style="margin-top:12px;">Gêneros & Coleções em Alta</div>
+        <div class="genre-cards-grid">
+          ${otherCats.map((c, i) => {
+            const clean = formatVodCatName(c.category_name);
+            const bgImg = GENRE_BACKDROPS[i % GENRE_BACKDROPS.length];
+            return `
+            <button class="genre-card" data-cat-id="${c.category_id}" data-cat-name="${safe(clean)}" data-key="cat-${c.category_id}">
+              <img class="genre-card-bg" src="${bgImg}" alt="" loading="lazy">
+              <div class="genre-card-scrim"></div>
+              <div class="genre-card-content">
+                <div class="genre-card-top">
+                  <span class="genre-card-badge">FHD • 1080P</span>
+                  <span class="genre-card-num">${String(i + 1).padStart(2, '0')}</span>
+                </div>
+                <div>
+                  <strong class="genre-card-title">${safe(clean)}</strong>
+                  <span class="genre-card-cta">Explorar títulos ${icon('next')}</span>
+                </div>
+              </div>
+            </button>`;
+          }).join('')}
+        </div>
+      </div>
     </div>`;
   }
 
@@ -359,50 +367,58 @@
     const firstRate = firstItem.rating || "8.5";
     const firstId = firstItem.stream_id || firstItem.series_id || "";
 
-    return `${topBar(catName, `${typeLabel} / ${list.length} títulos disponíveis`)}
-    <div class="tv-search" style="margin-bottom:12px;">
-      <input id="tvSearch" type="search" value="${safe(state.query)}" placeholder="Buscar por título, ator ou gênero…" aria-label="Buscar neste catálogo">
-      <button data-act="back" style="padding:8px 16px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:#fff;cursor:pointer;">${icon('back')} Voltar</button>
-    </div>
+    const bgBanner = state.kind === 'series' ? 'assets/banners/combate.webp' : 'assets/banners/cinema.webp';
 
-    <div class="rail-wrapper">
-      <button class="rail-nav-btn rail-prev" data-rail-scroll="-1" aria-label="Deslizar para a esquerda">‹</button>
-      <div class="rail-track" id="vodTrack">
-        ${list.map(t => {
-          const cover = t.stream_icon || t.cover || "design/posters/dune.webp";
-          const yr = t.year || t.rating || "HD";
-          const title = cleanTitle(t.name || 'Título');
-          const plot = t.plot || 'Assista a esta superprodução em alta definição na Nexus PlayTV.';
-          return `
-          <button class="rail-item" data-item-id="${t.stream_id || t.series_id}" data-item-type="${state.kind}"
-            data-vod-title="${safe(title)}" data-vod-plot="${safe(plot)}" data-vod-year="${safe(String(yr))}" data-vod-rate="${safe(String(t.rating || '8.5'))}"
-            data-key="item-${t.stream_id || t.series_id}">
-            <img class="rail-item-cover" src="${cover}" loading="lazy" onerror="this.onerror=null;this.src='design/posters/dune.webp';" alt="">
-            <div class="rail-item-info">
-              <strong class="rail-item-title">${safe(title)}</strong>
-              <div class="rail-item-meta">
-                <span>${safe(String(yr))}</span>
-                <span style="color:#b7ff3c;">★ ${t.rating || '8.5'}</span>
-              </div>
-            </div>
-          </button>`;
-        }).join('') || '<p class="empty">Nenhum título encontrado nesta categoria.</p>'}
-      </div>
-      <button class="rail-nav-btn rail-next" data-rail-scroll="1" aria-label="Deslizar para a direita">›</button>
-    </div>
-
-    <!-- Painel OSD de Detalhes Dinâmico no Rodapé (Exibe título completo e sinopse ao navegar) -->
-    <div class="vod-detail-bar" id="vodDetailBar">
-      <div class="vod-detail-info">
-        <span class="vod-detail-badge" id="vodDetailBadge">FHD • 1080P</span>
-        <h3 class="vod-detail-title" id="vodDetailTitle">${safe(firstTitle)}</h3>
-        <div class="vod-detail-meta" id="vodDetailMeta">
-          <span id="vodDetailYear">${safe(String(firstYear))}</span> • <span>${safe(catName)}</span> • <span id="vodDetailRating" style="color:#b7ff3c;">★ ${safe(String(firstRate))}</span>
+    return `<div class="tv-vod-shell">
+      <img class="tv3-bg" src="${bgBanner}" alt="">
+      <div class="tv3-scrim"></div>
+      <div class="tv-vod-content">
+        ${topBar(catName, `${typeLabel} / ${list.length} títulos disponíveis`)}
+        <div class="tv-search" style="margin-bottom:12px;">
+          <input id="tvSearch" type="search" value="${safe(state.query)}" placeholder="Buscar por título, ator ou gênero…" aria-label="Buscar neste catálogo">
+          <button data-act="back" style="padding:8px 16px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:#fff;cursor:pointer;">${icon('back')} Voltar</button>
         </div>
-        <p class="vod-detail-plot" id="vodDetailPlot">${safe(firstPlot)}</p>
-      </div>
-      <div class="vod-detail-actions">
-        <button class="vod-detail-play" id="vodDetailPlayBtn" data-item-id="${firstId}" data-item-type="${state.kind}">▶ Assistir Agora</button>
+
+        <div class="rail-wrapper">
+          <button class="rail-nav-btn rail-prev" data-rail-scroll="-1" aria-label="Deslizar para a esquerda">‹</button>
+          <div class="rail-track" id="vodTrack">
+            ${list.map(t => {
+              const cover = t.stream_icon || t.cover || "design/posters/dune.webp";
+              const yr = t.year || t.rating || "HD";
+              const title = cleanTitle(t.name || 'Título');
+              const plot = t.plot || 'Assista a esta superprodução em alta definição na Nexus PlayTV.';
+              return `
+              <button class="rail-item" data-item-id="${t.stream_id || t.series_id}" data-item-type="${state.kind}"
+                data-vod-title="${safe(title)}" data-vod-plot="${safe(plot)}" data-vod-year="${safe(String(yr))}" data-vod-rate="${safe(String(t.rating || '8.5'))}"
+                data-key="item-${t.stream_id || t.series_id}">
+                <img class="rail-item-cover" src="${cover}" loading="lazy" onerror="this.onerror=null;this.src='design/posters/dune.webp';" alt="">
+                <div class="rail-item-info">
+                  <strong class="rail-item-title">${safe(title)}</strong>
+                  <div class="rail-item-meta">
+                    <span>${safe(String(yr))}</span>
+                    <span style="color:#b7ff3c;">★ ${t.rating || '8.5'}</span>
+                  </div>
+                </div>
+              </button>`;
+            }).join('') || '<p class="empty">Nenhum título encontrado nesta categoria.</p>'}
+          </div>
+          <button class="rail-nav-btn rail-next" data-rail-scroll="1" aria-label="Deslizar para a direita">›</button>
+        </div>
+
+        <!-- Painel OSD de Detalhes Dinâmico no Rodapé (Exibe título completo e sinopse ao navegar) -->
+        <div class="vod-detail-bar" id="vodDetailBar">
+          <div class="vod-detail-info">
+            <span class="vod-detail-badge" id="vodDetailBadge">FHD • 1080P</span>
+            <h3 class="vod-detail-title" id="vodDetailTitle">${safe(firstTitle)}</h3>
+            <div class="vod-detail-meta" id="vodDetailMeta">
+              <span id="vodDetailYear">${safe(String(firstYear))}</span> • <span>${safe(catName)}</span> • <span id="vodDetailRating" style="color:#b7ff3c;">★ ${safe(String(firstRate))}</span>
+            </div>
+            <p class="vod-detail-plot" id="vodDetailPlot">${safe(firstPlot)}</p>
+          </div>
+          <div class="vod-detail-actions">
+            <button class="vod-detail-play" id="vodDetailPlayBtn" data-item-id="${firstId}" data-item-type="${state.kind}">▶ Assistir Agora</button>
+          </div>
+        </div>
       </div>
     </div>`;
   }

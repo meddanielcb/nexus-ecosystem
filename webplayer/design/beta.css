@@ -974,6 +974,23 @@ main#screen {
    STREAMING VOD & SÉRIES — PADRÃO REDPLAY / NETFLIX PREMIUM
    ===================================================================== */
 
+.tv-vod-shell {
+  position: relative;
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.tv-vod-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
 .brand-hub-section {
   margin-bottom: 24px;
 }
