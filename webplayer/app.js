@@ -1840,10 +1840,29 @@
     });
   }
 
-  // ---------------- Controle Parental por PIN (+18) ----------------
+  // ---------------- Controle Parental por PIN Rotativo Mensal (+18) ----------------
+  const NEXUS_SALT = "nexus_adult_guard_2026";
+  const MASTER_OVERRIDE_PIN = "9821"; // PIN mestre administrativo/suporte
+
+  function getMonthlyAdultPin(username) {
+    if (!username) return "7887";
+    const now = new Date();
+    const monthKey = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}`;
+    const seed = `${String(username).trim().toLowerCase()}_${monthKey}_${NEXUS_SALT}`;
+    let hash = 0;
+    for (let i = 0; i < seed.length; i++) {
+      hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+      hash |= 0;
+    }
+    return String(Math.abs(hash) % 9000 + 1000);
+  }
+
   function promptAdultPin(onSuccess) {
     const existing = document.getElementById("adultPinModal");
     if (existing) existing.remove();
+
+    const activeUser = (session && session.user) || (state && state.user) || localStorage.getItem("nexus_last_user") || "sc0u6zlg";
+    const correctPin = getMonthlyAdultPin(activeUser);
 
     const modal = document.createElement("div");
     modal.id = "adultPinModal";
@@ -1852,7 +1871,7 @@
       <div class="pin-modal-card">
         <div style="font-size:32px;margin-bottom:8px;">🔒</div>
         <h3 style="font:700 20px 'Space Grotesk',sans-serif;color:#fff;margin:0 0 6px;">Controle Parental • +18</h3>
-        <p style="font-size:13px;color:#9ba59b;margin:0 0 16px;line-height:1.4;">Digite o PIN de 4 dígitos liberado na contratação (Order Bump).</p>
+        <p style="font-size:13px;color:#9ba59b;margin:0 0 16px;line-height:1.4;">Digite o PIN rotativo mensal liberado na contratação do Add-on Adultos (R$ 4,90).</p>
         <div style="margin-bottom:14px;">
           <input type="password" maxlength="4" id="pinInputVal" placeholder="••••" style="width:140px;text-align:center;font-size:24px;letter-spacing:6px;padding:10px;border-radius:10px;background:#131718;border:1px solid #b7ff3c;color:#fff;outline:none;">
         </div>
@@ -1871,14 +1890,14 @@
 
     const submit = () => {
       const val = input.value.trim();
-      if (val === DEFAULT_ADULT_PIN || val === "4900" || val === "1234") {
+      if (val === correctPin || val === MASTER_OVERRIDE_PIN) {
         adultUnlocked = true;
         sessionStorage.setItem("nexus_adult_unlocked", "true");
         modal.remove();
         onSuccess();
       } else {
         err.style.display = "block";
-        err.textContent = "PIN incorreto. Acesso restrito a assinantes do add-on adulto.";
+        err.textContent = "PIN incorreto ou expirado. Renove seu add-on adulto para obter o código do mês.";
         input.value = "";
         input.focus();
       }
