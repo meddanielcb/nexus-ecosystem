@@ -1,0 +1,74 @@
+[
+  {
+    "file": "basquete-1080p.mp4",
+    "bytes": 445436,
+    "width": 1920,
+    "height": 1080,
+    "fps": "24/1",
+    "duration": 7.0,
+    "audio": false
+  },
+  {
+    "file": "basquete-720p.mp4",
+    "bytes": 179551,
+    "width": 1280,
+    "height": 720,
+    "fps": "24/1",
+    "duration": 7.0,
+    "audio": false
+  },
+  {
+    "file": "cinema-1080p.mp4",
+    "bytes": 342193,
+    "width": 1920,
+    "height": 1080,
+    "fps": "24/1",
+    "duration": 7.0,
+    "audio": false
+  },
+  {
+    "file": "cinema-720p.mp4",
+    "bytes": 120061,
+    "width": 1280,
+    "height": 720,
+    "fps": "24/1",
+    "duration": 7.0,
+    "audio": false
+  },
+  {
+    "file": "combate-1080p.mp4",
+    "bytes": 445831,
+    "width": 1920,
+    "height": 1080,
+    "fps": "24/1",
+    "duration": 7.0,
+    "audio": false
+  },
+  {
+    "file": "combate-720p.mp4",
+    "bytes": 165881,
+    "width": 1280,
+    "height": 720,
+    "fps": "24/1",
+    "duration": 7.0,
+    "audio": false
+  },
+  {
+    "file": "futebol-1080p.mp4",
+    "bytes": 440925,
+    "width": 1920,
+    "height": 1080,
+    "fps": "24/1",
+    "duration": 7.0,
+    "audio": false
+  },
+  {
+    "file": "futebol-720p.mp4",
+    "bytes": 159613,
+    "width": 1280,
+    "height": 720,
+    "fps": "24/1",
+    "duration": 7.0,
+    "audio": false
+  }
+]

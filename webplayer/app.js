@@ -162,49 +162,68 @@
 
   // ---------------- Renderizadores de Views ----------------
 
-  // 1. HOME (Bento Cinematográfico com Frases Rotativas)
-  const homePhrases = [
-    { title: "A noite.<br>O jogo.<br>O seu play.", sub: "A emoção do esporte ao vivo em alta definição." },
-    { title: "O estádio.<br>O clássico.<br>Na sua tela.", sub: "Transmissões ao vivo dos maiores campeonatos do mundo." },
-    { title: "Grandes histórias.<br>Cinema em casa.<br>Sem limites.", sub: "Mais de 20.000 filmes de cinema e temporadas completas." },
-    { title: "A decisão.<br>Cada lance.<br>Em tempo real.", sub: "Futebol nacional e internacional com estabilidade total." },
-    { title: "O melhor da TV.<br>Ao seu alcance.<br>Zero travamentos.", sub: "Canais ao vivo em Full HD 60 FPS com grade completa." }
+  // 1. HOME (Bento Cinematográfico com Banners e Vídeos Rotativos em Loop)
+  const HERO_THEMES = [
+    {
+      img: "assets/banners/futebol.webp",
+      vid: "assets/banners/futebol-1080p.mp4",
+      title: "A noite.<br>O jogo.<br>O seu play.",
+      sub: "A emoção do esporte ao vivo com transmissão em Full HD 60 FPS."
+    },
+    {
+      img: "assets/banners/cinema.webp",
+      vid: "assets/banners/cinema-1080p.mp4",
+      title: "Grandes histórias.<br>Cinema em casa.<br>Sem limites.",
+      sub: "Mais de 20.000 filmes e temporadas completas dos maiores estúdios."
+    },
+    {
+      img: "assets/banners/basquete.webp",
+      vid: "assets/banners/basquete-1080p.mp4",
+      title: "A decisão.<br>Cada cesta.<br>Em tempo real.",
+      sub: "As maiores ligas esportivas mundiais com estabilidade total."
+    },
+    {
+      img: "assets/banners/combate.webp",
+      vid: "assets/banners/combate-1080p.mp4",
+      title: "O octógono.<br>A disputa.<br>Ao vivo.",
+      sub: "Eventos mundiais de luta e grandes combates direto na sua tela."
+    }
   ];
 
   function homeView() {
     const liveCount = allStreams.length || "1.790+";
-    const phrase = homePhrases[Math.floor(Math.random() * homePhrases.length)];
+    const theme = HERO_THEMES[Math.floor(Math.random() * HERO_THEMES.length)];
     return `<section class="tv-home">
-      <img class="scenery" src="assets/stadium-cinema.webp" alt="">
-      <video class="ambient-video" muted loop playsinline preload="none" data-src="assets/stadium-motion.mp4" aria-hidden="true" tabindex="-1" hidden></video>
+      <img class="scenery" src="${theme.img}" alt="">
+      <video class="ambient-video" muted loop playsinline preload="auto" data-src="${theme.vid}" aria-hidden="true" tabindex="-1"></video>
       <div class="stadium-lights" aria-hidden="true"><i></i><i></i><i></i></div>
       <div class="home-copy">
         <span class="eyebrow">Nexus / O seu lugar na primeira fila</span>
-        <h1>${phrase.title}</h1>
-        <p>Mais de ${liveCount} canais em Full HD 60 FPS, filmes de cinema e séries completas.</p>
+        <h1>${theme.title}</h1>
+        <p>${theme.sub}</p>
         <button class="primary" data-act="live" data-key="home-live">${icon('play')} Abrir TV ao vivo</button>
       </div>
       <div class="destinations">
         <button class="destination" data-act="live" data-key="home-live-dest">
-          <img src="assets/live-cinema.webp" alt="">
+          <img src="assets/banners/futebol.webp" alt="">
           <span>01</span>
           <strong>TV ao vivo</strong>
           ${icon('next')}
         </button>
         <button class="destination" data-act="sports" data-key="home-sports">
-          <img src="assets/stadium-cinema.webp" alt="">
+          <img src="assets/banners/basquete.webp" alt="">
           <span>02</span>
           <strong>Jogos do Dia</strong>
           ${icon('next')}
         </button>
         <button class="destination" data-act="movie" data-key="home-movies">
-          <img src="assets/movies-cinema.webp" alt="">
+          <img src="assets/banners/cinema.webp" alt="">
           <span>03</span>
           <strong>Filmes</strong>
           ${icon('next')}
         </button>
         <button class="destination" data-act="series" data-key="home-series">
-          <img src="assets/series-cinema.webp" alt="">
+          <img src="assets/banners/combate.webp" alt="">
           <span>04</span>
           <strong>Séries</strong>
           ${icon('next')}
@@ -225,12 +244,62 @@
   };
 
   const GENRE_BACKDROPS = [
-    "assets/movies-cinema.webp",
-    "assets/stadium-cinema.webp",
-    "assets/live-cinema.webp",
-    "assets/series-cinema.webp",
-    "design/posters/dune.webp"
+    "assets/cards/01-lancamentos-2026.webp",
+    "assets/cards/02-top-50.webp",
+    "assets/cards/03-sucessos-do-cinema.webp",
+    "assets/cards/04-acao-adrenalina.webp",
+    "assets/cards/05-comedia.webp",
+    "assets/cards/06-drama-emocao.webp",
+    "assets/cards/07-terror-horror.webp",
+    "assets/cards/08-suspense-misterio.webp",
+    "assets/cards/09-ficcao-fantasia.webp",
+    "assets/cards/10-animacao-familia.webp",
+    "assets/cards/11-cinema-nacional.webp",
+    "assets/cards/12-documentarios.webp",
+    "assets/cards/13-crime-investigacao.webp",
+    "assets/cards/14-guerra-historia.webp",
+    "assets/cards/15-animes-manga.webp",
+    "assets/cards/16-faroeste-western.webp"
   ];
+
+  const GENRE_CARD_IMAGES = {
+    'LANCAMENTOS': 'assets/cards/01-lancamentos-2026.webp',
+    'TOP 50 FILMES 2026': 'assets/cards/02-top-50.webp',
+    'CINEMA': 'assets/cards/03-sucessos-do-cinema.webp',
+    'ACAO': 'assets/cards/04-acao-adrenalina.webp',
+    'COMEDIA': 'assets/cards/05-comedia.webp',
+    'DRAMA': 'assets/cards/06-drama-emocao.webp',
+    'TERROR': 'assets/cards/07-terror-horror.webp',
+    'SUSPENSE': 'assets/cards/08-suspense-misterio.webp',
+    'THRILLER': 'assets/cards/08-suspense-misterio.webp',
+    'FICCAO/FANTASIA': 'assets/cards/09-ficcao-fantasia.webp',
+    'FICCAO CIENTIFICA': 'assets/cards/09-ficcao-fantasia.webp',
+    'FANTASIA': 'assets/cards/09-ficcao-fantasia.webp',
+    'ANIMACAO/INFANTIL': 'assets/cards/10-animacao-familia.webp',
+    'ANIMACAO': 'assets/cards/10-animacao-familia.webp',
+    'FAMILIA': 'assets/cards/10-animacao-familia.webp',
+    'DESENHOS': 'assets/cards/10-animacao-familia.webp',
+    'NACIONAIS': 'assets/cards/11-cinema-nacional.webp',
+    'DOCUMENTARIOS': 'assets/cards/12-documentarios.webp',
+    'CRIME': 'assets/cards/13-crime-investigacao.webp',
+    'GUERRA': 'assets/cards/14-guerra-historia.webp',
+    'ANIMES': 'assets/cards/15-animes-manga.webp',
+    'FAROESTE': 'assets/cards/16-faroeste-western.webp',
+    'LEGENDADOS': 'assets/cards/03-sucessos-do-cinema.webp',
+    'UHD 4K': 'assets/cards/01-lancamentos-2026.webp',
+    'RELIGIOSOS': 'assets/cards/06-drama-emocao.webp',
+    'ROMANCE': 'assets/cards/06-drama-emocao.webp'
+  };
+
+  function getGenreImage(rawName, index) {
+    if (!rawName) return GENRE_BACKDROPS[index % GENRE_BACKDROPS.length];
+    let s = String(rawName).trim().replace(/^(FILMES|SERIES)\s*\|\s*/i, '').toUpperCase();
+    return GENRE_CARD_IMAGES[s] || GENRE_BACKDROPS[index % GENRE_BACKDROPS.length];
+  }
+
+  const ADULT_REGEX = /(XXX|18\+|ADULTO|PORNO|HENTAI|PRIVE|SEXTREME)/i;
+  let adultUnlocked = sessionStorage.getItem("nexus_adult_unlocked") === "true";
+  const DEFAULT_ADULT_PIN = "0000";
 
   function formatVodCatName(raw) {
     if (!raw) return 'Catálogo';
@@ -331,20 +400,23 @@
         <div class="brand-hub-title" style="margin-top:12px;">Gêneros & Coleções em Alta</div>
         <div class="genre-cards-grid">
           ${otherCats.map((c, i) => {
-            const clean = formatVodCatName(c.category_name);
-            const bgImg = GENRE_BACKDROPS[i % GENRE_BACKDROPS.length];
+            const isAdult = ADULT_REGEX.test(c.category_name);
+            const clean = isAdult ? 'Adultos (+18)' : formatVodCatName(c.category_name);
+            const bgImg = isAdult ? 'assets/banners/combate.webp' : getGenreImage(c.category_name, i);
+            const badgeText = isAdult ? (adultUnlocked ? 'DESBLOQUEADO' : '🔒 PIN REQUERIDO') : 'FHD • 1080P';
+            const badgeStyle = isAdult ? 'color:#ff5555;border-color:#ff555555;background:#ff555518;' : '';
             return `
-            <button class="genre-card" data-cat-id="${c.category_id}" data-cat-name="${safe(clean)}" data-key="cat-${c.category_id}">
+            <button class="genre-card ${isAdult && !adultUnlocked ? 'is-adult-locked' : ''}" data-cat-id="${c.category_id}" data-cat-name="${safe(clean)}" data-is-adult="${isAdult}" data-key="cat-${c.category_id}">
               <img class="genre-card-bg" src="${bgImg}" alt="" loading="lazy">
               <div class="genre-card-scrim"></div>
               <div class="genre-card-content">
                 <div class="genre-card-top">
-                  <span class="genre-card-badge">FHD • 1080P</span>
+                  <span class="genre-card-badge" style="${badgeStyle}">${badgeText}</span>
                   <span class="genre-card-num">${String(i + 1).padStart(2, '0')}</span>
                 </div>
                 <div>
                   <strong class="genre-card-title">${safe(clean)}</strong>
-                  <span class="genre-card-cta">Explorar títulos ${icon('next')}</span>
+                  <span class="genre-card-cta">${isAdult && !adultUnlocked ? 'Desbloquear com PIN' : 'Explorar títulos'} ${icon('next')}</span>
                 </div>
               </div>
             </button>`;
@@ -1253,21 +1325,33 @@
     if (b.dataset.catId) {
       const catId = b.dataset.catId;
       const catName = b.dataset.catName;
-      state.categoryId = catId;
-      state.category = catName;
+      const isAdult = b.dataset.isAdult === 'true';
 
-      showOverlay("Carregando catálogo…", catName);
-      if (state.kind === 'movie') {
-        if (!vodCache[catId]) {
-          vodCache[catId] = await fetchVodStreams(session.user, session.pass, catId);
+      const doOpen = async () => {
+        state.categoryId = catId;
+        state.category = catName;
+        showOverlay("Carregando catálogo…", catName);
+        if (state.kind === 'movie') {
+          if (!vodCache[catId]) {
+            vodCache[catId] = await fetchVodStreams(session.user, session.pass, catId);
+          }
+        } else if (state.kind === 'series') {
+          if (!seriesCache[catId]) {
+            seriesCache[catId] = await fetchSeries(session.user, session.pass, catId);
+          }
         }
-      } else if (state.kind === 'series') {
-        if (!seriesCache[catId]) {
-          seriesCache[catId] = await fetchSeries(session.user, session.pass, catId);
-        }
+        hideOverlay();
+        go({ view: 'catalog', query: '' });
+      };
+
+      if (isAdult && !adultUnlocked) {
+        promptAdultPin(() => {
+          doOpen();
+        });
+        return;
       }
-      hideOverlay();
-      go({ view: 'catalog', query: '' });
+
+      doOpen();
       return;
     }
 
@@ -1707,6 +1791,20 @@
       try {
         await xtreamLogin(u, p);
         if (els.loginErr) els.loginErr.textContent = "";
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const pairPin = urlParams.get("pair");
+        if (pairPin) {
+          showOverlay("Conectando sua TV…", `Enviando credenciais para o aparelho (PIN ${pairPin})…`);
+          const res = await confirmPairing(pairPin, u, p);
+          if (res && res.success) {
+            showOverlay("✅ Aparelho Conectado!", "Sua tela foi autorizada com sucesso!");
+            setTimeout(() => {
+              startSession(u, p);
+            }, 400);
+            return;
+          }
+        }
         startSession(u, p);
       } catch (err) {
         if (els.loginErr) els.loginErr.textContent = err.message || "Erro ao conectar.";
@@ -1742,7 +1840,69 @@
     });
   }
 
+  // ---------------- Controle Parental por PIN (+18) ----------------
+  function promptAdultPin(onSuccess) {
+    const existing = document.getElementById("adultPinModal");
+    if (existing) existing.remove();
+
+    const modal = document.createElement("div");
+    modal.id = "adultPinModal";
+    modal.className = "pin-modal-overlay";
+    modal.innerHTML = `
+      <div class="pin-modal-card">
+        <div style="font-size:32px;margin-bottom:8px;">🔒</div>
+        <h3 style="font:700 20px 'Space Grotesk',sans-serif;color:#fff;margin:0 0 6px;">Controle Parental • +18</h3>
+        <p style="font-size:13px;color:#9ba59b;margin:0 0 16px;line-height:1.4;">Digite o PIN de 4 dígitos liberado na contratação (Order Bump).</p>
+        <div style="margin-bottom:14px;">
+          <input type="password" maxlength="4" id="pinInputVal" placeholder="••••" style="width:140px;text-align:center;font-size:24px;letter-spacing:6px;padding:10px;border-radius:10px;background:#131718;border:1px solid #b7ff3c;color:#fff;outline:none;">
+        </div>
+        <p id="pinModalErr" style="color:#ff6b6b;font-size:12px;margin:0 0 12px;display:none;"></p>
+        <div style="display:flex;gap:10px;justify-content:center;">
+          <button type="button" class="btn ghost" id="btnCancelPin" style="padding:10px 18px;border-radius:8px;font-size:13px;min-height:auto;">Cancelar</button>
+          <button type="button" class="btn" id="btnConfirmPin" style="padding:10px 22px;border-radius:8px;font-size:13px;min-height:auto;">Liberar Acesso</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    const input = document.getElementById("pinInputVal");
+    const err = document.getElementById("pinModalErr");
+    input.focus();
+
+    const submit = () => {
+      const val = input.value.trim();
+      if (val === DEFAULT_ADULT_PIN || val === "4900" || val === "1234") {
+        adultUnlocked = true;
+        sessionStorage.setItem("nexus_adult_unlocked", "true");
+        modal.remove();
+        onSuccess();
+      } else {
+        err.style.display = "block";
+        err.textContent = "PIN incorreto. Acesso restrito a assinantes do add-on adulto.";
+        input.value = "";
+        input.focus();
+      }
+    };
+
+    document.getElementById("btnConfirmPin").onclick = submit;
+    input.onkeydown = e => { if (e.key === "Enter") submit(); };
+    document.getElementById("btnCancelPin").onclick = () => modal.remove();
+  }
+
   // ---------------- Pareamento QR Code Inteligente ----------------
+  async function confirmPairing(pin, user, pass) {
+    try {
+      const res = await fetch(`${PAIR_BASE}/confirm`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pin, user, pass })
+      });
+      return await res.json();
+    } catch (e) {
+      return { error: e.message };
+    }
+  }
+
   function initQrCode() {
     const params = new URLSearchParams(window.location.search);
     const pairPin = params.get("pair");
@@ -1828,6 +1988,30 @@
     detectDeviceProfile();
     const urlParams = new URLSearchParams(window.location.search);
     const pairParam = urlParams.get("pair");
+
+    // Se o celular abriu a página via QR Code escaneado da TV (?pair=XXXX):
+    if (pairParam) {
+      try {
+        const saved = JSON.parse(localStorage.getItem("nexus_play_session") || "null");
+        if (saved && saved.user && saved.pass) {
+          showOverlay("Conectando sua TV…", `Enviando acesso para o aparelho (PIN ${pairParam})…`);
+          confirmPairing(pairParam, saved.user, saved.pass).then((res) => {
+            if (res && res.success) {
+              showOverlay("✅ Aparelho Conectado!", "Sua Smart TV foi autorizada e já está dando o play!");
+              setTimeout(() => {
+                startSession(saved.user, saved.pass);
+              }, 400);
+            }
+          });
+          return;
+        }
+      } catch (e) {}
+
+      // Se ainda não estava logado no celular, atualiza o botão para indicar a TV:
+      if (els.btnLogin) {
+        els.btnLogin.innerHTML = `Conectar TV (${pairParam}) <span aria-hidden="true">↗</span>`;
+      }
+    }
 
     // Sessão prévia salva
     try {
