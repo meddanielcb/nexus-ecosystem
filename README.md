@@ -158,4 +158,9 @@ Qualquer agente ou desenvolvedor que assumir o projeto deve seguir esta prioriza
   3. Planejar espelhamento da VPS para datacenter offshore DMCA-Ignored (Alexhost/Moldávia ou Holanda).
   4. Preservação financeira via PixGet + Criptomoeda direta (BlockBee USDT).
 
+### 8. Planejamento Operacional Mestre (Meta: 5.000 Assinantes no Ano 1)
+- **Documento Mestre:** Ver `docs/NEXUS_OPERATION_MASTER_PLAN_5000.md`.
+- **Hardware Nexus Stick:** Ver `docs/NEXUS_STICK_HARDWARE_STUDY.md`.
+- **Roteiro dos 7 Dias:** PWA -> WhatsApp Evolution API -> Resend/E-mail -> Checkout PixGet + MGM -> Edge SP -> Reseller B2B -> APK Android TV.
+
 
