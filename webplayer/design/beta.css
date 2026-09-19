@@ -140,7 +140,7 @@ main#screen {
   transform: scale(1.08) !important;
 }
 
-/* Barra Inferior de Comandos do Player */
+/* Barra Inferior de Comandos do Player — Auto-hide com fade suave */
 .player-shell .player-bottom {
   position: absolute;
   bottom: 20px;
@@ -153,6 +153,20 @@ main#screen {
   background: linear-gradient(180deg, transparent 0%, rgba(6, 8, 9, 0.88) 100%);
   padding: 16px 14px 4px;
   border-radius: 12px;
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.player-shell.active-controls .player-bottom {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.player-shell:not(.active-controls) {
+  cursor: none;
 }
 
 .player-shell .player-bottom button {
@@ -458,4 +472,477 @@ main#screen {
   font-size: 12px;
   color: #9aa599;
   margin: 0;
+}
+
+/* =====================================================================
+   INTERFACE TV PREMIUM DE 3 COLUNAS — Categorias | Canais | EPG Detalhado
+   Inspirada em BTV 13 / RedPlay TV Box e Claro Box Mosaico.
+   Paleta oficial Nexus: preto profundo #0b0e0f/#131718, verde #b7ff3c
+   com glow rgba(183,255,60,0.2). PROIBIDO ciano. PROIBIDO caixa opaca
+   (branca/preta) atrás de logomarcas — logos ficam sempre transparentes,
+   direto sobre o fundo escuro; sem imagem usa monograma vetorial autoral.
+   ===================================================================== */
+
+.tv3-shell {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  isolation: isolate;
+  border-radius: 15px;
+  overflow: hidden;
+  background: #0b0e0f;
+  display: flex;
+  flex-direction: column;
+}
+
+.tv3-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -3;
+  filter: blur(6px) saturate(0.9);
+  transform: scale(1.03);
+}
+
+.tv3-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    linear-gradient(180deg, rgba(11, 14, 15, 0.94) 0%, rgba(11, 14, 15, 0.86) 22%, rgba(11, 14, 15, 0.93) 100%),
+    radial-gradient(ellipse at 20% 0%, rgba(183, 255, 60, 0.06), transparent 55%);
+}
+
+.tv3-head {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  padding: 20px 24px 12px;
+}
+
+.tv3-head h1 {
+  font: 500 clamp(22px, 2.4vw, 32px)/1 Display, 'Space Grotesk', sans-serif;
+  margin: 6px 0 0;
+  color: #e5ede4;
+}
+
+.tv3-body {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 218px 400px minmax(0, 1fr);
+  gap: 0;
+}
+
+.tv3-col {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Coluna 1 — Categorias */
+.tv3-col-cats {
+  padding: 6px 12px 24px;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(11, 14, 15, 0.55);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tv3-cat-btn {
+  width: 100%;
+  text-align: left;
+  padding: 11px 14px;
+  border-radius: 9px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: #8f9a90;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.tv3-cat-btn:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #e5ede4;
+}
+
+.tv3-cat-btn.active {
+  background: rgba(183, 255, 60, 0.12);
+  border-color: rgba(183, 255, 60, 0.45);
+  color: #b7ff3c;
+  box-shadow: 0 0 24px rgba(183, 255, 60, 0.12);
+}
+
+/* Coluna 2 — Canais com logos oficiais (sem caixa opaca) */
+.tv3-col-channels {
+  padding: 14px 12px 18px;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(19, 23, 24, 0.55);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tv3-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 4px;
+  flex-shrink: 0;
+}
+
+.tv3-search input {
+  flex: 1;
+  min-height: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 9px;
+  background: #131718;
+  color: #e5ede4;
+  padding: 9px 13px;
+  font-size: 12.5px;
+}
+
+.tv3-search input:focus {
+  border-color: rgba(183, 255, 60, 0.55);
+  outline: none;
+}
+
+.tv3-search > span {
+  flex-shrink: 0;
+  font-size: 10.5px;
+  color: #8f9a90;
+  white-space: nowrap;
+}
+
+.tv3-chan-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 2px;
+}
+
+.tv3-chan-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: transparent;
+  border: 1px solid transparent;
+  min-height: 56px;
+}
+
+.tv3-chan-row:hover,
+.tv3-chan-row.focused {
+  background: rgba(183, 255, 60, 0.08);
+  border-color: rgba(183, 255, 60, 0.32);
+}
+
+.tv3-chan-row.playing {
+  background: rgba(183, 255, 60, 0.16);
+  border-color: #b7ff3c;
+}
+
+.tv3-chan-num {
+  font: 700 12.5px/1 'Space Grotesk', monospace;
+  color: #8f9a90;
+  min-width: 30px;
+  flex-shrink: 0;
+}
+
+/* Logo sempre transparente sobre o fundo escuro — nunca uma placa opaca */
+.tv3-chan-logo {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  background: transparent;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.55));
+}
+
+/* Fallback vetorial autoral (monograma), usado quando não há logo ou a
+   imagem falha — nunca emoji, nunca caixa branca/preta enorme */
+.tv3-chan-fallback {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 30%, rgba(183, 255, 60, 0.16), rgba(30, 38, 33, 0.6));
+  border: 1px solid rgba(183, 255, 60, 0.28);
+  color: #b7ff3c;
+  font: 700 13px/1 'Space Grotesk', sans-serif;
+}
+
+.tv3-chan-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tv3-chan-meta strong {
+  font-size: 13px;
+  color: #e5ede4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tv3-chan-meta > span {
+  font-size: 10.5px;
+  color: #8f9a90;
+}
+
+.tv3-live-dot {
+  font-size: 10px;
+  color: #b7ff3c;
+  flex-shrink: 0;
+  text-shadow: 0 0 8px rgba(183, 255, 60, 0.6);
+}
+
+.tv3-paging {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding-top: 6px;
+}
+
+.tv3-paging button {
+  min-height: 34px;
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+
+.tv3-paging span {
+  font-size: 11px;
+  color: #8f9a90;
+  font-family: 'Space Grotesk', monospace;
+}
+
+/* Coluna 3 — EPG Detalhado */
+.tv3-col-epg {
+  padding: 22px 24px;
+  background: linear-gradient(180deg, rgba(11, 14, 15, 0.35), rgba(11, 14, 15, 0.85));
+}
+
+.tv3-epg-empty {
+  color: #8f9a90;
+  font-size: 13px;
+  padding-top: 30px;
+  text-align: center;
+}
+
+.tv3-epg-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.tv3-epg-head img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  background: transparent;
+  flex-shrink: 0;
+  filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.6));
+}
+
+.tv3-epg-mono {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 30%, rgba(183, 255, 60, 0.18), rgba(30, 38, 33, 0.65));
+  border: 1px solid rgba(183, 255, 60, 0.3);
+  color: #b7ff3c;
+  font: 700 20px/1 'Space Grotesk', sans-serif;
+}
+
+.tv3-epg-live {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #ff5252;
+  margin-bottom: 4px;
+}
+
+.tv3-epg-head h2 {
+  font: 700 19px/1.2 'Space Grotesk', sans-serif;
+  color: #fff;
+  margin: 0;
+}
+
+.tv3-epg-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding-top: 30px;
+  color: #8f9a90;
+  font-size: 12.5px;
+}
+
+.tv3-epg-loading .spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgba(183, 255, 60, 0.2);
+  border-top-color: #b7ff3c;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.tv3-epg-now {
+  background: rgba(20, 26, 22, 0.7);
+  border: 1px solid rgba(183, 255, 60, 0.3);
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin-bottom: 22px;
+}
+
+.tv3-epg-time {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 12.5px;
+  color: #b7ff3c;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.tv3-epg-now h3 {
+  font-size: 18px;
+  color: #fff;
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+
+.tv3-epg-now p {
+  font-size: 12.5px;
+  color: #a2aca0;
+  line-height: 1.55;
+  margin: 0 0 14px;
+}
+
+.tv3-epg-bar {
+  width: 100%;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.tv3-epg-bar span {
+  display: block;
+  height: 100%;
+  background: #b7ff3c;
+  border-radius: 3px;
+  box-shadow: 0 0 10px rgba(183, 255, 60, 0.5);
+}
+
+.tv3-epg-label {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #8f9a90;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.tv3-epg-item {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 10px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.tv3-epg-item:last-child {
+  border-bottom: 0;
+}
+
+.tv3-epg-item-time {
+  flex-shrink: 0;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 11.5px;
+  color: #b7ff3c;
+  min-width: 40px;
+}
+
+.tv3-epg-item strong {
+  font-size: 12.5px;
+  color: #e5ede4;
+  font-weight: 600;
+}
+
+.tv3-epg-none {
+  font-size: 12px;
+  color: #6f7a70;
+}
+
+@media (max-width: 1180px) {
+  .tv3-body {
+    grid-template-columns: 180px 340px minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .tv3-body {
+    grid-template-columns: 150px minmax(0, 1fr);
+  }
+  .tv3-col-epg {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .tv3-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .tv3-col-cats {
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: visible;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+  .tv3-cat-btn {
+    width: auto;
+    white-space: nowrap;
+  }
+  .tv3-col-channels {
+    border-right: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tv3-bg {
+    filter: none;
+  }
 }

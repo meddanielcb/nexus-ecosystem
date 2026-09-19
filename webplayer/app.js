@@ -75,6 +75,7 @@
     kind: 'movie', // 'movie' | 'series' | 'sports'
     category: 'Todos',
     categoryId: '',
+    liveCat: 'all', // categoria ativa na Interface TV Premium de 3 Colunas ('all' | 'fav' | 'sports' | <category_id>)
     page: 0,
     title: null,
     season: 1,
@@ -83,6 +84,13 @@
   let stack = [];
   let focusMemory = '';
   let transitionBack = false;
+
+  // Foco atual da coluna de canais (usado para popular a coluna de EPG Detalhado
+  // da Interface TV Premium de 3 Colunas — atualizado por mouse, foco e D-pad)
+  let tv3FocusId = null;
+  let tv3FocusName = '';
+  let tv3FocusIcon = '';
+  const TV3_PAGE_SIZE = 40;
 
   // Favoritos persistidos
   let savedFavs = [];
@@ -326,49 +334,200 @@
   }
 
   // 6. TV AO VIVO (Grade de Canais com Pastas)
-  function liveView() {
+  // ---------------- Interface TV Premium de 3 Colunas ----------------
+  // Categorias (esquerda) | Canais com logos oficiais (centro) | EPG Detalhado (direita)
+  // Inspirada em BTV 13 / RedPlay TV Box e Claro Box Mosaico.
+
+  function tv3SportsFilter(c) {
+    const n = String(c.name || '').toLowerCase();
+    const catN = String(c.category_name || '').toLowerCase();
+    return n.includes(' x ') || n.includes(' vs ') || /\b\d{1,2}:\d{2}\b/.test(n) || catN.includes('esporte') || catN.includes('premiere') || catN.includes('sportv') || catN.includes('espn');
+  }
+
+  function tv3Categories() {
+    const pseudo = [
+      { id: 'all', name: 'TODOS' },
+      { id: 'fav', name: 'FAVORITOS' },
+      { id: 'sports', name: 'ESPORTE' }
+    ];
+    const seen = new Set();
+    const real = allCategories.filter(c => {
+      if (!c || c.category_id == null || seen.has(String(c.category_id))) return false;
+      const has = allStreams.some(s => String(s.category_id) === String(c.category_id));
+      if (has) seen.add(String(c.category_id));
+      return has;
+    }).map(c => ({ id: String(c.category_id), name: c.category_name || 'Categoria' }));
+    return pseudo.concat(real);
+  }
+
+  function tv3FilterList() {
     let list = allStreams;
-    if (state.view === 'favorites') {
-      list = allStreams.filter(c => savedFavs.includes(String(c.stream_id)));
-    } else if (state.view === 'sports') {
-      list = allStreams.filter(c => {
-        const n = String(c.name || '').toLowerCase();
-        const catN = String(c.category_name || '').toLowerCase();
-        return n.includes(' x ') || n.includes(' vs ') || /\b\d{1,2}:\d{2}\b/.test(n) || catN.includes('esporte') || catN.includes('premiere') || catN.includes('sportv') || catN.includes('espn');
-      });
-    }
+    const cat = state.liveCat || 'all';
+    if (cat === 'fav') list = list.filter(c => savedFavs.includes(String(c.stream_id)));
+    else if (cat === 'sports') list = list.filter(tv3SportsFilter);
+    else if (cat !== 'all') list = list.filter(c => String(c.category_id) === String(cat));
 
     if (state.query) {
       const q = state.query.toLowerCase();
       list = list.filter(c => (c.name || '').toLowerCase().includes(q));
     }
+    return list;
+  }
 
-    const title = state.view === 'favorites' ? 'Minha Lista de Favoritos' : (state.view === 'sports' ? 'Jogos de Hoje & Esportes' : 'TV ao Vivo');
-    const paged = list.slice(state.page * capacity(), (state.page + 1) * capacity());
+  function tv3Paging(total) {
+    const pages = Math.max(1, Math.ceil(total / TV3_PAGE_SIZE));
+    if (pages <= 1) return '';
+    return `<div class="paging tv3-paging">
+      <button data-act="prev" ${state.page === 0 ? 'disabled' : ''} aria-label="Página anterior">${icon('back')}</button>
+      <span>${state.page + 1} / ${pages}</span>
+      <button data-act="next" ${state.page >= pages - 1 ? 'disabled' : ''} aria-label="Próxima página">${icon('next')}</button>
+    </div>`;
+  }
 
-    return `${topBar(title, 'Canais / Selecione para Sintonizar')}
-    <div class="tv-search">
-      <input id="tvSearch" type="search" value="${safe(state.query)}" placeholder="Buscar canal ou partida…" aria-label="Buscar canal">
-      <span>${list.length} canais encontrados</span>
+  // EPG Detalhado (coluna 3) — atualizado ao focar/apontar para um canal na coluna 2,
+  // sem redesenhar a tela inteira (preserva rolagem e foco do D-pad).
+  function renderTv3EpgPanel(chan) {
+    if (!chan) {
+      return `<div class="tv3-epg-empty"><p>Aponte para um canal para ver a programação.</p></div>`;
+    }
+    const name = chan.name || 'Canal';
+    const logo = chan.stream_icon ? toProxied(chan.stream_icon) : '';
+    const cacheKey = `${name}|${chan.stream_icon || ''}`;
+    const epg = epgCache[cacheKey];
+
+    const head = `<div class="tv3-epg-head">
+      ${logo ? `<img src="${logo}" alt="" onerror="this.remove()">` : `<span class="tv3-epg-mono">${safe((name || '?').trim().charAt(0).toUpperCase())}</span>`}
+      <div><span class="tv3-epg-live">● AO VIVO</span><h2>${safe(name)}</h2></div>
+    </div>`;
+
+    if (!epg) {
+      fetchEpgData(name, chan.stream_icon || '').then(() => {
+        if (String(tv3FocusId) === String(chan.stream_id)) {
+          const panel = document.getElementById('tv3EpgPanel');
+          if (panel) panel.innerHTML = renderTv3EpgPanel(chan);
+        }
+      });
+      return `${head}
+      <div class="tv3-epg-loading">
+        <div class="spinner"></div>
+        <p>Consultando programação em tempo real…</p>
+      </div>`;
+    }
+
+    const cur = epg.current || {};
+    const upcoming = epg.upcoming || [];
+    return `${head}
+    <div class="tv3-epg-now">
+      <div class="tv3-epg-time">${safe(cur.start || '--:--')} – ${safe(cur.stop || '--:--')}</div>
+      <h3>${safe(cur.title || 'Transmissão Oficial Nexus')}</h3>
+      <p>${safe(cur.desc || 'Assista em alta definição na Nexus PlayTV.')}</p>
+      <div class="tv3-epg-bar"><span style="width:${Number(cur.progress) || 0}%"></span></div>
     </div>
-    <div class="folder-grid">
-      ${paged.map((c, i) => {
-        const num = c.num ? String(c.num).padStart(3, '0') : String(state.page * capacity() + i + 1).padStart(3, '0');
-        const logo = c.stream_icon ? toProxied(c.stream_icon) : "design/nexus.svg";
-        const isFav = savedFavs.includes(String(c.stream_id));
-        return `
-          <button class="folder channel-folder" data-channel-id="${c.stream_id}" data-channel-name="${c.name || 'Canal'}" data-key="chan-${c.stream_id}">
-            <span class="eyebrow">${num} ${isFav ? '★' : ''}</span>
-            <span class="channel-logo-plate">
-              <img src="${logo}" loading="lazy" onerror="this.onerror=null;this.src='design/nexus.svg';" alt="">
-            </span>
-            <strong>${(c.name || 'Canal').replace(/</g, '&lt;')}</strong>
-            <span>Abrir canal ${icon('play')}</span>
-          </button>
-        `;
-      }).join('') || '<p class="empty">Nenhum canal encontrado.</p>'}
-    </div>
-    ${paging(list.length)}`;
+    <div class="tv3-epg-next">
+      <span class="tv3-epg-label">A seguir na programação</span>
+      ${upcoming.slice(0, 5).map(item => `
+        <div class="tv3-epg-item">
+          <span class="tv3-epg-item-time">${safe(item.start || '')}</span>
+          <strong>${safe(item.title || 'Programa')}</strong>
+        </div>`).join('') || '<p class="tv3-epg-none">Grade não disponível para este canal.</p>'}
+    </div>`;
+  }
+
+  // Atualiza o foco de EPG a partir de mouse, toque ou navegação por D-pad/teclado
+  function focusTv3Row(row) {
+    if (!row) return;
+    const id = row.dataset.channelId;
+    if (id == null || String(tv3FocusId) === String(id)) return;
+    tv3FocusId = id;
+    tv3FocusName = row.dataset.channelName || '';
+    tv3FocusIcon = row.dataset.chanIcon || '';
+
+    document.querySelectorAll('.tv3-chan-row.focused').forEach(el => el.classList.remove('focused'));
+    row.classList.add('focused');
+
+    const panel = document.getElementById('tv3EpgPanel');
+    if (!panel) return;
+    const chan = allStreams.find(c => String(c.stream_id) === String(id)) || { stream_id: id, name: tv3FocusName, stream_icon: tv3FocusIcon };
+    panel.innerHTML = renderTv3EpgPanel(chan);
+  }
+
+  function liveView() {
+    const cats = tv3Categories();
+    const activeCat = state.liveCat || 'all';
+    const list = tv3FilterList();
+    const paged = list.slice(state.page * TV3_PAGE_SIZE, (state.page + 1) * TV3_PAGE_SIZE);
+
+    // Canal em foco no painel de EPG: mantém o foco anterior se ainda visível na página,
+    // senão usa o canal em reprodução, senão o primeiro da lista.
+    let focusChan = paged.find(c => String(c.stream_id) === String(tv3FocusId))
+      || (activeStreamId != null && paged.find(c => String(c.stream_id) === String(activeStreamId)))
+      || paged[0] || null;
+    if (focusChan) {
+      tv3FocusId = focusChan.stream_id;
+      tv3FocusName = focusChan.name;
+      tv3FocusIcon = focusChan.stream_icon || '';
+    }
+
+    const catLabel = cats.find(c => c.id === activeCat)?.name || 'TV ao Vivo';
+
+    return `
+    <div class="tv3-shell" id="tv3Shell">
+      <img class="scenery tv3-bg" src="assets/live-cinema.webp" alt="">
+      <video class="ambient-video tv3-bg" muted loop playsinline preload="none" data-src="assets/stadium-motion.mp4" aria-hidden="true" tabindex="-1" hidden></video>
+      <div class="tv3-scrim" aria-hidden="true"></div>
+
+      <div class="tv3-head">
+        <div><span class="eyebrow">Nexus / Grade ao Vivo</span><h1>${safe(catLabel)}</h1></div>
+        <button data-act="back">${icon('back')} Voltar</button>
+      </div>
+
+      <div class="tv3-body">
+        <nav class="tv3-col tv3-col-cats" aria-label="Categorias">
+          ${cats.map(c => `
+            <button class="tv3-cat-btn ${c.id === activeCat ? 'active' : ''}" data-live-cat="${safe(c.id)}" data-key="tv3cat-${safe(c.id)}">
+              ${safe(c.name)}
+            </button>
+          `).join('')}
+        </nav>
+
+        <div class="tv3-col tv3-col-channels">
+          <div class="tv3-search">
+            <input id="tvSearch" type="search" value="${safe(state.query)}" placeholder="Buscar canal ou partida…" aria-label="Buscar canal">
+            <span>${list.length} canais</span>
+          </div>
+          <div class="tv3-chan-list" role="list">
+            ${paged.map((c, i) => {
+              const num = c.num ? String(c.num).padStart(3, '0') : String(state.page * TV3_PAGE_SIZE + i + 1).padStart(3, '0');
+              const logo = c.stream_icon ? toProxied(c.stream_icon) : '';
+              const isFav = savedFavs.includes(String(c.stream_id));
+              const isPlaying = activeStreamId != null && String(activeStreamId) === String(c.stream_id);
+              const isFocused = String(tv3FocusId) === String(c.stream_id);
+              return `
+              <button class="tv3-chan-row ${isPlaying ? 'playing' : ''} ${isFocused ? 'focused' : ''}" role="listitem"
+                data-channel-id="${c.stream_id}" data-channel-name="${safe(c.name || 'Canal')}"
+                data-chan-icon="${safe(c.stream_icon || '')}" data-key="chan-${c.stream_id}">
+                <span class="tv3-chan-num">${num}</span>
+                ${logo
+                  ? `<img class="tv3-chan-logo" src="${logo}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" alt="">
+                     <span class="tv3-chan-fallback" style="display:none;">${safe((c.name || '?').trim().charAt(0).toUpperCase())}</span>`
+                  : `<span class="tv3-chan-fallback">${safe((c.name || '?').trim().charAt(0).toUpperCase())}</span>`
+                }
+                <span class="tv3-chan-meta">
+                  <strong>${safe(c.name || 'Canal')}</strong>
+                  <span>${isFav ? '★ Favorito' : 'Canal ao vivo'}</span>
+                </span>
+                ${isPlaying ? '<span class="tv3-live-dot">●</span>' : ''}
+              </button>`;
+            }).join('') || '<p class="empty">Nenhum canal encontrado nesta categoria.</p>'}
+          </div>
+          ${tv3Paging(list.length)}
+        </div>
+
+        <div class="tv3-col tv3-col-epg" id="tv3EpgPanel">
+          ${renderTv3EpgPanel(focusChan)}
+        </div>
+      </div>
+    </div>`;
   }
 
   // 7. CONTA & STATUS
@@ -527,6 +686,7 @@
 
     if (els.playerLayer) els.playerLayer.classList.remove("hidden");
     showOverlay("Carregando canal…", label || "");
+    showPlayerControls();
 
     const video = els.video;
     const user = session ? session.user : "";
@@ -643,6 +803,7 @@
     destroyPlayer();
     if (els.playerLayer) els.playerLayer.classList.remove("hidden");
     showOverlay("Reproduzindo…", name);
+    showPlayerControls();
 
     const video = els.video;
     video.src = toProxied(url);
@@ -679,7 +840,50 @@
   function closePlayer() {
     destroyPlayer();
     if (els.playerLayer) els.playerLayer.classList.add("hidden");
+    clearTimeout(playerHideTimer);
+    if (els.playerWrap) els.playerWrap.classList.add("active-controls");
   }
+
+  // ---------------- Auto-hide suave da barra inferior do player ----------------
+  // A .player-bottom soma 4s após o início da reprodução e reaparece suavemente
+  // ao tocar/clicar na tela, mover o mouse ou usar o controle remoto (D-pad/teclado).
+  let playerHideTimer = null;
+  const PLAYER_HIDE_DELAY = 4000;
+
+  function showPlayerControls() {
+    if (!els.playerWrap) return;
+    els.playerWrap.classList.add("active-controls");
+    clearTimeout(playerHideTimer);
+    // Não inicia a contagem para esconder enquanto o vídeo não estiver realmente
+    // em reprodução (carregando, pausado ou com overlay de erro visível).
+    if (!els.video || els.video.paused) return;
+    playerHideTimer = setTimeout(hidePlayerControls, PLAYER_HIDE_DELAY);
+  }
+
+  function hidePlayerControls() {
+    if (!els.playerWrap) return;
+    // Não some se o foco do D-pad/teclado estiver em um botão da própria barra.
+    if (document.activeElement && els.playerWrap.contains(document.activeElement) && document.activeElement.closest(".player-bottom")) {
+      playerHideTimer = setTimeout(hidePlayerControls, PLAYER_HIDE_DELAY);
+      return;
+    }
+    els.playerWrap.classList.remove("active-controls");
+  }
+
+  if (els.playerWrap) {
+    ["mousemove", "pointerdown", "touchstart", "click", "keydown"].forEach(evt => {
+      els.playerWrap.addEventListener(evt, showPlayerControls, { passive: true });
+    });
+  }
+
+  if (els.video) {
+    els.video.addEventListener("playing", showPlayerControls);
+    els.video.addEventListener("pause", () => {
+      clearTimeout(playerHideTimer);
+      if (els.playerWrap) els.playerWrap.classList.add("active-controls");
+    });
+  }
+
 
   // ---------------- OSD Banner Estilo Sky / BTV ----------------
   function showSkyOsd(streamId, label) {
@@ -931,6 +1135,14 @@
       return;
     }
 
+    // Categoria da Interface TV Premium de 3 Colunas (coluna esquerda)
+    if (b.dataset.liveCat != null && b.dataset.liveCat !== '') {
+      state.liveCat = b.dataset.liveCat;
+      state.page = 0;
+      draw();
+      return;
+    }
+
     // Ações por data-act
     const act = b.dataset.act || b.dataset.action;
     switch (act) {
@@ -941,10 +1153,10 @@
         go({ view: 'home' });
         break;
       case 'live':
-        go({ view: 'live', query: '' });
+        go({ view: 'live', query: '', liveCat: 'all' });
         break;
       case 'sports':
-        go({ view: 'sports', query: '' });
+        go({ view: 'sports', query: '', liveCat: 'sports' });
         break;
       case 'movie':
       case 'series':
@@ -958,7 +1170,7 @@
         go({ view: 'categories', kind: act, query: '' });
         break;
       case 'favorites':
-        go({ view: 'favorites', query: '' });
+        go({ view: 'favorites', query: '', liveCat: 'fav' });
         break;
       case 'next':
         state.page++;
@@ -1063,6 +1275,11 @@
       draw(true);
     }
   });
+
+  // Interface TV Premium de 3 Colunas: aponta/foca um canal (mouse, toque ou D-pad)
+  // e atualiza a coluna de EPG Detalhado ao vivo, sem redesenhar a tela inteira.
+  document.addEventListener('mouseover', e => focusTv3Row(e.target.closest?.('.tv3-chan-row')));
+  document.addEventListener('focusin', e => focusTv3Row(e.target.closest?.('.tv3-chan-row')));
 
   // Controle Remoto Smart TV (D-Pad) & Teclado
   document.addEventListener('keydown', e => {
