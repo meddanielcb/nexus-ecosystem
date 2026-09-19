@@ -549,7 +549,7 @@
           liveBufferLatencyMaxLatency: 15.0,
           liveBufferLatencyMinRemain: 4.0,
           autoCleanupSourceBuffer: true,
-          stashInitialSize: 512 * 1024
+          stashInitialSize: 1536 * 1024
         });
 
         tsPlayer.attachMediaElement(video);
