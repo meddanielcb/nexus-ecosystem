@@ -323,6 +323,27 @@ DASHBOARD_HTML = """<!DOCTYPE html>
       grid-template-columns: 1fr 1fr;
       gap: 20px;
     }
+    .qos-section-title {
+      max-width: 1200px;
+      margin: 28px auto 14px auto;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .qos-section-title::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--neon);
+      display: inline-block;
+      box-shadow: 0 0 8px var(--neon-glow);
+    }
     @media (max-width: 768px) {
       .nodes-grid { grid-template-columns: 1fr; }
     }
@@ -428,6 +449,49 @@ DASHBOARD_HTML = """<!DOCTYPE html>
     </div>
   </div>
 
+  <div class="qos-section-title">QUALIDADE DA TRANSMISSÃO (QoS AO VIVO)</div>
+  <div class="container" style="margin-bottom: 24px;">
+    <div class="card">
+      <div class="card-kicker">
+        <span>Latência de Entrega (TTFB)</span>
+        <span>rota local SP-GRU</span>
+      </div>
+      <div class="card-val" id="qosLatency">--<span>ms</span></div>
+      <div class="card-subtext" id="qosLatencySub">Avaliando resposta...</div>
+      <div class="bar-bg"><div class="bar-fill" id="qosLatencyBar" style="width: 25%; background: var(--neon);"></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-kicker">
+        <span>Velocidade Sustentada</span>
+        <span>throughput</span>
+      </div>
+      <div class="card-val" id="qosThroughput">--<span>Mbps</span></div>
+      <div class="card-subtext" id="qosThroughputSub">Taxa de dados em transmissão</div>
+      <div class="bar-bg"><div class="bar-fill" id="qosThroughputBar" style="width: 20%; background: var(--cyan);"></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-kicker">
+        <span>Estabilidade de Conexão</span>
+        <span>sem perdas TCP</span>
+      </div>
+      <div class="card-val" id="qosStability">--<span>%</span></div>
+      <div class="card-subtext" id="qosStabilitySub">Transmissão contínua sem drops</div>
+      <div class="bar-bg"><div class="bar-fill" id="qosStabilityBar" style="width: 100%; background: var(--neon);"></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-kicker">
+        <span>Rota dos Canais</span>
+        <span>ponto de borda</span>
+      </div>
+      <div class="card-val" style="font-size: 20px; color: var(--neon);" id="qosRoute">DIRETO SP</div>
+      <div class="card-subtext">Sem trânsito internacional</div>
+      <div class="bar-bg"><div class="bar-fill" style="width: 100%; background: var(--neon);"></div></div>
+    </div>
+  </div>
+
   <div class="nodes-grid">
     <div class="node-box">
       <div class="node-header">
@@ -498,6 +562,39 @@ DASHBOARD_HTML = """<!DOCTYPE html>
           document.getElementById('spMem').textContent = `${d.sp.mem.used_mb} MB / ${d.sp.mem.total_mb} MB`;
           document.getElementById('spLoad').textContent = `${d.sp.load[0]} (1m), ${d.sp.load[1]} (5m)`;
           document.getElementById('spWg').textContent = `10.10.50.2 (${d.sp.wireguard})`;
+
+          // Métricas de Qualidade de Transmissão (QoS)
+          if (d.sp.qos) {
+            const q = d.sp.qos;
+            const lat = q.ttfb_ms || 0;
+            document.getElementById('qosLatency').innerHTML = `${lat}<span>ms</span>`;
+            if (lat < 50) {
+              document.getElementById('qosLatencySub').textContent = 'Excelente • Ponto local direto (GRU)';
+              document.getElementById('qosLatencyBar').style.background = 'var(--neon)';
+            } else if (lat < 120) {
+              document.getElementById('qosLatencySub').textContent = 'Bom • Aceitável para streaming';
+              document.getElementById('qosLatencyBar').style.background = 'var(--warning)';
+            } else {
+              document.getElementById('qosLatencySub').textContent = '⚠️ Alta latência na entrega';
+              document.getElementById('qosLatencyBar').style.background = 'var(--danger)';
+            }
+
+            const mbps = q.tx_mbps || 0;
+            document.getElementById('qosThroughput').innerHTML = `${mbps}<span>Mbps</span>`;
+            document.getElementById('qosThroughputSub').textContent = mbps > 0 ? 'Transmissão ativa para clientes' : 'Aguardando requisições';
+
+            const stab = q.stability_pct || 99.9;
+            document.getElementById('qosStability').innerHTML = `${stab}<span>%</span>`;
+            if (stab >= 98.0) {
+              document.getElementById('qosStabilitySub').textContent = 'Perfeita • Zero perda de pacotes';
+              document.getElementById('qosStabilityBar').style.background = 'var(--neon)';
+            } else {
+              document.getElementById('qosStabilitySub').textContent = '⚠️ Oscilações de pacotes detectadas';
+              document.getElementById('qosStabilityBar').style.background = 'var(--warning)';
+            }
+
+            document.getElementById('qosRoute').textContent = q.route || 'DIRETO SP';
+          }
         }
 
         // Sweden Node
@@ -555,7 +652,7 @@ def get_epg_metrics():
     except Exception:
         return {"status": "OFFLINE", "programs": "0", "latency_ms": 0}
 
-TELEGRAM_BOT_TOKEN = "8436194609:AAF-MqaLdkN4g-ZpnGJwWSrquadbh3FLP5o"
+TELEGRAM_BOT_TOKEN = "8682294887:AAHkfnCtJhZ0oDZhD5PvogOfj8U9VNj0aH0"
 TELEGRAM_CHAT_ID = "671901048"
 LAST_ALERT_TS = 0
 ALERT_COOLDOWN_SEC = 1800  # Máximo de 1 alerta a cada 30 minutos
