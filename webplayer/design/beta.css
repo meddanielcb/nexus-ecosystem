@@ -1367,3 +1367,40 @@ body.device-stick .genre-card:focus {
   border-color: #ff5555 !important;
   box-shadow: 0 12px 30px rgba(255, 85, 85, 0.25) !important;
 }
+
+/* =====================================================================
+   HOME CINEMATOGRÁFICA — DEGRADÊ / PEDESTAL DE PROTEÇÃO DOS CARDS
+   ===================================================================== */
+.home-view .tv-home::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 1 !important;
+  pointer-events: none !important;
+  background:
+    linear-gradient(to top, #0b0e0f 0%, #0b0e0f 18%, rgba(11, 14, 15, 0.94) 36%, rgba(11, 14, 15, 0.6) 55%, transparent 75%),
+    linear-gradient(to right, rgba(11, 14, 15, 0.88) 0%, rgba(11, 14, 15, 0.5) 45%, transparent 80%) !important;
+}
+
+.home-view .home-copy {
+  z-index: 2 !important;
+}
+
+.home-view .destinations {
+  z-index: 2 !important;
+}
+
+.home-view .destination {
+  background: rgba(19, 23, 24, 0.75) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
+}
+
+.home-view .destination:hover,
+.home-view .destination:focus {
+  border-color: #b7ff3c !important;
+  box-shadow: 0 12px 35px rgba(183, 255, 60, 0.35) !important;
+  transform: translateY(-4px) !important;
+}
