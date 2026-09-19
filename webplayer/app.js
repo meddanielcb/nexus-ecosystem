@@ -175,6 +175,7 @@
     destroyPlayer();
     showOverlay("Carregando canal…", label || "");
     setStatus("carregando", "");
+    resetAutoRetractTimer();
 
     const video = els.video;
     const user = session ? session.user : "";
@@ -358,6 +359,7 @@
         renderChannelList(streams);
         if (window.innerWidth <= 860) els.sidebar.classList.remove("open");
         playStream(stream.stream_id, stream.name);
+        resetAutoRetractTimer();
       });
     });
   }
@@ -759,12 +761,17 @@
     }
   }
 
-  // Interações na barra lateral reiniciam o timer de 2s
-  if (sidebar) {
-    ["mousemove", "scroll", "keydown", "touchstart", "click"].forEach(evt => {
+  // Interações na tela ou na barra lateral reiniciam o timer de 3s
+  ["mousemove", "scroll", "keydown", "touchstart", "click"].forEach(evt => {
+    window.addEventListener(evt, () => {
+      if (sidebar && !sidebar.classList.contains("channels-retracted")) {
+        resetAutoRetractTimer();
+      }
+    }, { passive: true });
+    if (sidebar) {
       sidebar.addEventListener(evt, resetAutoRetractTimer, { passive: true });
-    });
-  }
+    }
+  });
 
   if (btnToggleChannels && sidebar) {
     btnToggleChannels.addEventListener("click", () => {
