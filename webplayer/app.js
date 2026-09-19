@@ -688,10 +688,19 @@
   // 7. CONTA & STATUS
   function accountView() {
     const u = session ? session.user : "Visitante";
+    let expFormatted = "Ativo / Renovação Automática";
+    if (session && session.expDate) {
+      const ts = Number(session.expDate);
+      if (!isNaN(ts) && ts > 0) {
+        const d = new Date(ts * 1000);
+        expFormatted = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      }
+    }
     return `${topBar('Sua Conta', 'Nexus PlayTV / Status')}
-    <div class="empty" style="text-align:left;max-width:600px;margin:20px auto;line-height:2;">
+    <div class="empty" style="text-align:left;max-width:600px;margin:20px auto;line-height:2.2;">
       <p><strong>Usuário:</strong> ${u}</p>
       <p><strong>Plano:</strong> <span style="color:#b7ff3c;">● Acesso Premium Ativo</span></p>
+      <p><strong>Validade do Plano:</strong> <span style="color:#fff;font-weight:600;">${expFormatted}</span></p>
       <p><strong>Qualidade:</strong> Ultra HD / Full HD 60 FPS</p>
       <p><strong>Dispositivos:</strong> 1 tela conectada</p>
       <br>
@@ -1621,19 +1630,31 @@
     if (els.appShell) els.appShell.classList.remove("hidden");
 
     session = { user, pass };
+    try {
+      const saved = localStorage.getItem("nexus_play_session");
+      if (saved) {
+        const p = JSON.parse(saved);
+        if (p.expDate) session.expDate = p.expDate;
+      }
+    } catch(e) {}
     localStorage.setItem("nexus_play_session", JSON.stringify(session));
 
     if (els.footUser) els.footUser.textContent = `NEXUS PLATFORM • CONTA: ${user.toUpperCase()} (ATIVA)`;
 
-    // Carrega em segundo plano canais e categorias reais
+    // Carrega em segundo plano canais, categorias e validação da conta
     try {
       showOverlay("Conectando…", "Carregando grade oficial de canais.");
-      const [streams, cats] = await Promise.all([
+      const [streams, cats, loginData] = await Promise.all([
         fetchLiveStreams(user, pass),
-        fetchCategories(user, pass)
+        fetchCategories(user, pass),
+        xtreamLogin(user, pass).catch(() => null)
       ]);
       allStreams = streams;
       allCategories = cats;
+      if (loginData && loginData.user_info && loginData.user_info.exp_date) {
+        session.expDate = loginData.user_info.exp_date;
+        localStorage.setItem("nexus_play_session", JSON.stringify(session));
+      }
       hideOverlay();
       draw();
     } catch (err) {
@@ -1706,41 +1727,38 @@
   }
 
   // ---------------- Pareamento QR Code Inteligente ----------------
-  async function initQrCode() {
+  function initQrCode() {
+    const params = new URLSearchParams(window.location.search);
+    const pairPin = params.get("pair");
+
+    const qrInlineWrap = document.querySelector(".login-qr-inline");
+    if (pairPin && qrInlineWrap) {
+      qrInlineWrap.style.display = "none";
+      return;
+    }
+
     const pinEl = document.getElementById("qrPinCode");
     const imgEl = document.getElementById("qrCodeImg");
-    if (!pinEl || !imgEl) return;
+    if (!imgEl || typeof qrcode === "undefined") return;
+
+    let pin = localStorage.getItem("nexus_tv_pin");
+    if (!pin) {
+      pin = String(Math.floor(1000 + Math.random() * 9000));
+      localStorage.setItem("nexus_tv_pin", pin);
+    }
+    if (pinEl) pinEl.textContent = pin;
 
     try {
-      const res = await fetch(`${PAIR_BASE}/generate`, { cache: "no-store" });
-      if (!res.ok) return;
-      const data = await res.json();
-      pinEl.textContent = data.pin;
-
-      const pairUrl = `${window.location.origin}${window.location.pathname}?pair=${data.pin}`;
-      if (window.QRCode) {
-        imgEl.style.display = "none";
-        let inlineContainer = document.getElementById("qrInlineTarget");
-        if (!inlineContainer) {
-          inlineContainer = document.createElement("div");
-          inlineContainer.id = "qrInlineTarget";
-          imgEl.parentNode.appendChild(inlineContainer);
-        }
-        inlineContainer.innerHTML = "";
-        new window.QRCode(inlineContainer, {
-          text: pairUrl,
-          width: 80,
-          height: 80,
-          colorDark: "#000000",
-          colorLight: "#ffffff",
-          correctLevel: window.QRCode.CorrectLevel.M
-        });
-      }
-
-      startPairPolling(data.pin);
+      const pairUrl = `${window.location.origin}${window.location.pathname}?pair=${pin}`;
+      const qr = qrcode(0, "M");
+      qr.addData(pairUrl);
+      qr.make();
+      imgEl.src = qr.createDataURL(4, 2);
     } catch (e) {
-      console.warn("QR code offline:", e);
+      console.warn("Falha ao gerar QR Code:", e);
     }
+
+    startPairPolling(pin);
   }
 
   function startPairPolling(pin) {
