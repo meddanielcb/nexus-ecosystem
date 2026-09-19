@@ -961,7 +961,7 @@
           liveBufferLatencyMaxLatency: 15.0,
           liveBufferLatencyMinRemain: 4.0,
           autoCleanupSourceBuffer: true,
-          stashInitialSize: 1536 * 1024
+          stashInitialSize: 384 * 1024
         });
 
         tsPlayer.attachMediaElement(video);
@@ -972,7 +972,7 @@
           if (playStarted) return;
           playStarted = true;
           hideOverlay();
-          video.controls = true;
+          video.controls = false;
           showSkyOsd(streamId, label);
 
           // Anúncios transitórios oficiais PixGet
@@ -1030,7 +1030,7 @@
 
       hls.on(window.Hls.Events.MANIFEST_PARSED, () => {
         hideOverlay();
-        video.controls = true;
+        video.controls = false;
         showSkyOsd(activeStreamId, label);
         video.play().catch(() => {
           video.muted = true;
@@ -1046,7 +1046,7 @@
       });
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
       video.src = finalUrl;
-      video.controls = true;
+      video.controls = false;
       video.play().then(hideOverlay).catch(hideOverlay);
     }
   }
@@ -1059,7 +1059,7 @@
 
     const video = els.video;
     video.src = toProxied(url);
-    video.controls = true;
+    video.controls = false;
     showSkyOsd(999, name);
 
     video.play().then(hideOverlay).catch(() => {
@@ -1101,9 +1101,22 @@
   // ao tocar/clicar na tela, mover o mouse ou usar o controle remoto (D-pad/teclado).
   let playerHideTimer = null;
   const PLAYER_HIDE_DELAY = 4000;
+  // Só mantém a barra travada quando a navegação veio de controle remoto/teclado
+  // (D-pad). Mouse/toque NUNCA travam a barra, senão o foco do botão impede o auto-hide.
+  let remoteNavigationActive = false;
 
-  function showPlayerControls() {
+  function showPlayerControls(evt) {
     if (!els.playerWrap) return;
+    if (evt && evt.type === "keydown") {
+      remoteNavigationActive = true;
+    } else {
+      remoteNavigationActive = false;
+      // Devolve o foco ao vídeo para que o guard de D-pad não segure a barra aberta.
+      if (document.activeElement && els.playerWrap.contains(document.activeElement) &&
+          document.activeElement.closest(".player-bottom")) {
+        try { document.activeElement.blur(); } catch (e) {}
+      }
+    }
     els.playerWrap.classList.add("active-controls");
     clearTimeout(playerHideTimer);
     // Não inicia a contagem para esconder enquanto o vídeo não estiver realmente
@@ -1115,7 +1128,9 @@
   function hidePlayerControls() {
     if (!els.playerWrap) return;
     // Não some se o foco do D-pad/teclado estiver em um botão da própria barra.
-    if (document.activeElement && els.playerWrap.contains(document.activeElement) && document.activeElement.closest(".player-bottom")) {
+    if (remoteNavigationActive && document.activeElement &&
+        els.playerWrap.contains(document.activeElement) &&
+        document.activeElement.closest(".player-bottom")) {
       playerHideTimer = setTimeout(hidePlayerControls, PLAYER_HIDE_DELAY);
       return;
     }
