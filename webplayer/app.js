@@ -215,7 +215,7 @@
 
   // ---------------- Marcas e Estúdios de Streaming ----------------
   const BRAND_LOGOS = {
-    'NETFLIX': '<svg viewBox="0 0 111 30" style="height:22px;fill:#E50914;"><path d="M105.06 14.16L111 30h-4.32l-3.8-10.44-3.76 10.44h-4.32l5.96-15.84L95.04 0h4.42l3.64 9.94L106.82 0h4.18l-5.94 14.16zM90.47 0h4.2v30h-4.2V0zM83.4 30h-4.18V4.32h-6.22V0h16.62v4.32h-6.22V30zM57.64 0h14.86v4.32H61.84v8.32h9.46v4.32h-9.46v8.72h11.02V30H57.64V0zM47.78 30h-4.2V0h4.2v25.68h9.12V30h-9.12zM33.63 0h4.2v30h-4.2V0zM22.25 0h4.2v30h-4.2l-10.3-20.1V30h-4.2V0h4.2l10.3 20.08V0z"/></svg>',
+    'NETFLIX': '<span style="color:#E50914;font-family:\'Space Grotesk\',sans-serif;font-weight:900;font-size:22px;letter-spacing:1.5px;">NETFLIX</span>',
     'AMAZON PRIME VIDEO': '<svg viewBox="0 0 110 30" style="height:20px;"><text x="2" y="22" fill="#00A8E1" font-family="\'Space Grotesk\',sans-serif" font-weight="900" font-size="20">prime</text><text x="64" y="22" fill="#fff" font-family="\'Space Grotesk\',sans-serif" font-weight="500" font-size="16">video</text></svg>',
     'DISNEY+': '<svg viewBox="0 0 100 30" style="height:22px;"><text x="10" y="22" fill="#fff" font-family="\'Space Grotesk\',sans-serif" font-weight="900" font-size="22">Disney<tspan fill="#0063e5">+</tspan></text></svg>',
     'HBO MAX': '<svg viewBox="0 0 100 30" style="height:22px;"><text x="12" y="22" fill="#fff" font-family="\'Space Grotesk\',sans-serif" font-weight="900" font-size="22" letter-spacing="2">MAX</text></svg>',
@@ -286,12 +286,22 @@
       sub = "Temporadas completas dos maiores estúdios do mundo";
     }
 
-    const brandCats = cats.filter(c => {
+    // Deduplicação estrita de estúdios (apenas 1 botão por marca)
+    const seenBrands = new Set();
+    const brandCats = [];
+    cats.forEach(c => {
       const u = (c.category_name || '').toUpperCase();
-      return Object.keys(BRAND_LOGOS).some(b => u.includes(b));
+      const brandKey = Object.keys(BRAND_LOGOS).find(b => u.includes(b));
+      if (brandKey && !seenBrands.has(brandKey)) {
+        seenBrands.add(brandKey);
+        brandCats.push({ ...c, brandKey });
+      }
     });
 
-    const otherCats = cats.filter(c => !brandCats.includes(c));
+    const otherCats = cats.filter(c => {
+      const u = (c.category_name || '').toUpperCase();
+      return !Object.keys(BRAND_LOGOS).some(b => u.includes(b));
+    });
 
     let brandsHtml = '';
     if (brandCats.length > 0) {
@@ -300,9 +310,7 @@
         <div class="brand-hub-title">Estúdios & Plataformas Integradas</div>
         <div class="brand-hub-grid">
           ${brandCats.map(c => {
-            const u = (c.category_name || '').toUpperCase();
-            const brandKey = Object.keys(BRAND_LOGOS).find(b => u.includes(b)) || '';
-            const logoSvg = BRAND_LOGOS[brandKey] || `<strong>${safe(formatVodCatName(c.category_name))}</strong>`;
+            const logoSvg = BRAND_LOGOS[c.brandKey] || `<strong>${safe(formatVodCatName(c.category_name))}</strong>`;
             return `
             <button class="brand-hub-card" data-cat-id="${c.category_id}" data-cat-name="${safe(formatVodCatName(c.category_name))}" data-key="cat-${c.category_id}">
               ${logoSvg}
@@ -344,6 +352,13 @@
     const typeLabel = state.kind === 'series' ? 'Séries' : 'Filmes';
     const catName = formatVodCatName(state.category || 'Catálogo');
 
+    const firstItem = list[0] || {};
+    const firstTitle = cleanTitle(firstItem.name || 'Selecione um título');
+    const firstPlot = firstItem.plot || "Navegue pelo carrossel ou passe o cursor sobre qualquer pôster para ver detalhes completos e sinopse.";
+    const firstYear = firstItem.year || firstItem.rating || "2026";
+    const firstRate = firstItem.rating || "8.5";
+    const firstId = firstItem.stream_id || firstItem.series_id || "";
+
     return `${topBar(catName, `${typeLabel} / ${list.length} títulos disponíveis`)}
     <div class="tv-search" style="margin-bottom:12px;">
       <input id="tvSearch" type="search" value="${safe(state.query)}" placeholder="Buscar por título, ator ou gênero…" aria-label="Buscar neste catálogo">
@@ -356,11 +371,15 @@
         ${list.map(t => {
           const cover = t.stream_icon || t.cover || "design/posters/dune.webp";
           const yr = t.year || t.rating || "HD";
+          const title = cleanTitle(t.name || 'Título');
+          const plot = t.plot || 'Assista a esta superprodução em alta definição na Nexus PlayTV.';
           return `
-          <button class="rail-item" data-item-id="${t.stream_id || t.series_id}" data-item-type="${state.kind}" data-key="item-${t.stream_id || t.series_id}">
+          <button class="rail-item" data-item-id="${t.stream_id || t.series_id}" data-item-type="${state.kind}"
+            data-vod-title="${safe(title)}" data-vod-plot="${safe(plot)}" data-vod-year="${safe(String(yr))}" data-vod-rate="${safe(String(t.rating || '8.5'))}"
+            data-key="item-${t.stream_id || t.series_id}">
             <img class="rail-item-cover" src="${cover}" loading="lazy" onerror="this.onerror=null;this.src='design/posters/dune.webp';" alt="">
             <div class="rail-item-info">
-              <strong class="rail-item-title">${safe(cleanTitle(t.name || 'Título'))}</strong>
+              <strong class="rail-item-title">${safe(title)}</strong>
               <div class="rail-item-meta">
                 <span>${safe(String(yr))}</span>
                 <span style="color:#b7ff3c;">★ ${t.rating || '8.5'}</span>
@@ -370,6 +389,21 @@
         }).join('') || '<p class="empty">Nenhum título encontrado nesta categoria.</p>'}
       </div>
       <button class="rail-nav-btn rail-next" data-rail-scroll="1" aria-label="Deslizar para a direita">›</button>
+    </div>
+
+    <!-- Painel OSD de Detalhes Dinâmico no Rodapé (Exibe título completo e sinopse ao navegar) -->
+    <div class="vod-detail-bar" id="vodDetailBar">
+      <div class="vod-detail-info">
+        <span class="vod-detail-badge" id="vodDetailBadge">FHD • 1080P</span>
+        <h3 class="vod-detail-title" id="vodDetailTitle">${safe(firstTitle)}</h3>
+        <div class="vod-detail-meta" id="vodDetailMeta">
+          <span id="vodDetailYear">${safe(String(firstYear))}</span> • <span>${safe(catName)}</span> • <span id="vodDetailRating" style="color:#b7ff3c;">★ ${safe(String(firstRate))}</span>
+        </div>
+        <p class="vod-detail-plot" id="vodDetailPlot">${safe(firstPlot)}</p>
+      </div>
+      <div class="vod-detail-actions">
+        <button class="vod-detail-play" id="vodDetailPlayBtn" data-item-id="${firstId}" data-item-type="${state.kind}">▶ Assistir Agora</button>
+      </div>
     </div>`;
   }
 
@@ -1366,14 +1400,38 @@
       case 'favorite':
         toggleActiveFavorite();
         break;
-      case 'motion':
-        reduced = !reduced;
-        document.body.classList.toggle('motion-off', reduced);
-        b.textContent = reduced ? 'Ativar movimento' : 'Pausar movimento';
-        syncAmbient();
-        break;
     }
   });
+
+  // Atualização dinâmica do painel OSD inferior de detalhes ao navegar nos pôsteres (Padrão RedPlay)
+  els.appShell.addEventListener('mouseover', updateVodDetailFromEvent);
+  els.appShell.addEventListener('focusin', updateVodDetailFromEvent);
+
+  function updateVodDetailFromEvent(e) {
+    const item = e.target.closest('.rail-item');
+    if (!item) return;
+    const title = item.dataset.vodTitle;
+    const plot = item.dataset.vodPlot;
+    const year = item.dataset.vodYear;
+    const rate = item.dataset.vodRate;
+    const id = item.dataset.itemId;
+    const type = item.dataset.itemType;
+
+    const elTitle = document.getElementById('vodDetailTitle');
+    const elPlot = document.getElementById('vodDetailPlot');
+    const elYear = document.getElementById('vodDetailYear');
+    const elRate = document.getElementById('vodDetailRating');
+    const elPlay = document.getElementById('vodDetailPlayBtn');
+
+    if (elTitle && title) elTitle.textContent = title;
+    if (elPlot && plot) elPlot.textContent = plot;
+    if (elYear && year) elYear.textContent = year;
+    if (elRate && rate) elRate.textContent = '★ ' + rate;
+    if (elPlay && id) {
+      elPlay.dataset.itemId = id;
+      elPlay.dataset.itemType = type;
+    }
+  }
 
   // Eventos do Player Persistente
   if (els.btnPlayerBack) {
@@ -1705,8 +1763,35 @@
     }, 400);
   }
 
+  // ---------------- Adaptive Device Engine (Stick / TV Box / Mobile / Web) ----------------
+  function detectDeviceProfile() {
+    const ua = navigator.userAgent || '';
+    const params = new URLSearchParams(window.location.search);
+    const forced = params.get('mode');
+
+    let profile = 'desktop';
+    if (forced === 'stick' || forced === 'tv') {
+      profile = 'stick';
+    } else if (/NexusStick|Android TV|AFTT|AFTM|AFTB|FireTV|MiBOX|Chromecast|BRAVIA|SmartTV|Tizen|webOS/i.test(ua)) {
+      profile = 'stick';
+    } else if (/Android|iPhone|iPad|iPod|Mobile/i.test(ua) && window.innerWidth < 768) {
+      profile = 'mobile';
+    }
+
+    document.body.dataset.deviceProfile = profile;
+    if (profile === 'stick') {
+      document.body.classList.add('device-stick', 'ten-foot-ui');
+    } else if (profile === 'mobile') {
+      document.body.classList.add('device-mobile', 'touch-ui');
+    } else {
+      document.body.classList.add('device-desktop');
+    }
+    return profile;
+  }
+
   // ---------------- Boot da Aplicação ----------------
   async function boot() {
+    detectDeviceProfile();
     const urlParams = new URLSearchParams(window.location.search);
     const pairParam = urlParams.get("pair");
 

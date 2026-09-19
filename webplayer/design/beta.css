@@ -1161,9 +1161,9 @@ main#screen {
 }
 
 .rail-item {
-  flex: 0 0 170px;
-  min-width: 170px;
-  border-radius: 12px;
+  flex: 0 0 210px;
+  min-width: 210px;
+  border-radius: 14px;
   overflow: hidden;
   background: #131718;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -1176,19 +1176,19 @@ main#screen {
 
 .rail-item:hover, .rail-item:focus {
   border-color: #b7ff3c;
-  transform: translateY(-4px) scale(1.04);
-  box-shadow: 0 12px 28px rgba(183, 255, 60, 0.22);
+  transform: translateY(-6px) scale(1.05);
+  box-shadow: 0 14px 32px rgba(183, 255, 60, 0.25);
 }
 
 .rail-item-cover {
   width: 100%;
-  height: 240px;
+  height: 300px;
   object-fit: cover;
   background: #0b0e0f;
 }
 
 .rail-item-info {
-  padding: 10px 12px;
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -1196,7 +1196,7 @@ main#screen {
 }
 
 .rail-item-title {
-  font: 700 13px/1.2 'Space Grotesk', sans-serif;
+  font: 700 14px/1.2 'Space Grotesk', sans-serif;
   color: #fff;
   white-space: nowrap;
   overflow: hidden;
@@ -1204,9 +1204,114 @@ main#screen {
 }
 
 .rail-item-meta {
-  font-size: 11px;
+  font-size: 12px;
   color: #8f9a90;
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+/* Painel OSD de Detalhes Inferior (Padrão RedPlay / Claro tv+) */
+.vod-detail-bar {
+  margin-top: 20px;
+  padding: 20px 24px;
+  border-radius: 16px;
+  background: rgba(19, 23, 24, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.vod-detail-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.vod-detail-badge {
+  align-self: flex-start;
+  font: 700 10px/1 'Space Grotesk', sans-serif;
+  letter-spacing: 0.8px;
+  color: #b7ff3c;
+  background: rgba(183, 255, 60, 0.12);
+  border: 1px solid rgba(183, 255, 60, 0.3);
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.vod-detail-title {
+  font: 700 22px/1.2 'Space Grotesk', sans-serif;
+  color: #fff;
+  margin: 2px 0 0;
+}
+
+.vod-detail-meta {
+  font-size: 13px;
+  color: #8f9a90;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vod-detail-plot {
+  font-size: 13px;
+  color: #c4cdc3;
+  line-height: 1.5;
+  margin: 4px 0 0;
+  max-width: 800px;
+}
+
+.vod-detail-actions {
+  flex-shrink: 0;
+}
+
+.vod-detail-play {
+  padding: 12px 28px;
+  border-radius: 12px;
+  background: #b7ff3c;
+  color: #0b0e0f;
+  font: 700 15px/1 'Space Grotesk', sans-serif;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(183, 255, 60, 0.3);
+}
+
+.vod-detail-play:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(183, 255, 60, 0.5);
+}
+
+/* =====================================================================
+   PERFIL NEXUS STICK / TV BOX (10-FOOT UI - ULTRA PERFORMANCE)
+   ===================================================================== */
+body.device-stick {
+  cursor: none;
+  user-select: none;
+}
+
+body.device-stick * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+body.device-stick .tv3-scrim {
+  background: rgba(11, 14, 15, 0.94) !important;
+}
+
+body.device-stick .rail-item:focus,
+body.device-stick .tv3-chan-row.focused,
+body.device-stick .brand-hub-card:focus,
+body.device-stick .genre-card:focus {
+  outline: 3px solid #b7ff3c !important;
+  outline-offset: 4px;
+  transform: scale(1.06) translateZ(0) !important;
+  box-shadow: 0 0 24px rgba(183, 255, 60, 0.6) !important;
+  z-index: 100;
 }
