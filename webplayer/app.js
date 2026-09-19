@@ -295,7 +295,7 @@
 
     const cover = t.backdrop_path && t.backdrop_path[0] ? t.backdrop_path[0] : (t.stream_icon || t.cover || "assets/stadium-cinema.webp");
     const title = (t.name || "Título").replace(/</g, '&lt;');
-    const plot = t.plot || "Assista a esta superprodução em alta definição na Nexus PlayTV com streaming offshore sem travamentos.";
+    const plot = t.plot || "Assista a esta superprodução em alta definição na Nexus PlayTV com streaming contínuo sem travamentos.";
     const meta = `${t.year || '2025'} · ${t.genre || 'Cinema'} · Nota ${t.rating || '8.5'}`;
 
     return `<section class="tv-detail">
