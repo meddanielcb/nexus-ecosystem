@@ -213,67 +213,164 @@
     </section>`;
   }
 
-  // 2. CATEGORIAS (Pastas / Folders)
+  // ---------------- Marcas e Estúdios de Streaming ----------------
+  const BRAND_LOGOS = {
+    'NETFLIX': '<svg viewBox="0 0 111 30" style="height:22px;fill:#E50914;"><path d="M105.06 14.16L111 30h-4.32l-3.8-10.44-3.76 10.44h-4.32l5.96-15.84L95.04 0h4.42l3.64 9.94L106.82 0h4.18l-5.94 14.16zM90.47 0h4.2v30h-4.2V0zM83.4 30h-4.18V4.32h-6.22V0h16.62v4.32h-6.22V30zM57.64 0h14.86v4.32H61.84v8.32h9.46v4.32h-9.46v8.72h11.02V30H57.64V0zM47.78 30h-4.2V0h4.2v25.68h9.12V30h-9.12zM33.63 0h4.2v30h-4.2V0zM22.25 0h4.2v30h-4.2l-10.3-20.1V30h-4.2V0h4.2l10.3 20.08V0z"/></svg>',
+    'AMAZON PRIME VIDEO': '<svg viewBox="0 0 110 30" style="height:20px;"><text x="2" y="22" fill="#00A8E1" font-family="\'Space Grotesk\',sans-serif" font-weight="900" font-size="20">prime</text><text x="64" y="22" fill="#fff" font-family="\'Space Grotesk\',sans-serif" font-weight="500" font-size="16">video</text></svg>',
+    'DISNEY+': '<svg viewBox="0 0 100 30" style="height:22px;"><text x="10" y="22" fill="#fff" font-family="\'Space Grotesk\',sans-serif" font-weight="900" font-size="22">Disney<tspan fill="#0063e5">+</tspan></text></svg>',
+    'HBO MAX': '<svg viewBox="0 0 100 30" style="height:22px;"><text x="12" y="22" fill="#fff" font-family="\'Space Grotesk\',sans-serif" font-weight="900" font-size="22" letter-spacing="2">MAX</text></svg>',
+    'APPLETV+': '<svg viewBox="0 0 100 30" style="height:20px;"><text x="15" y="22" fill="#fff" font-family="\'Space Grotesk\',sans-serif" font-weight="700" font-size="20">tv+</text></svg>',
+    'GLOBOPLAY': '<svg viewBox="0 0 110 30" style="height:20px;"><circle cx="14" cy="14" r="8" fill="#FB0" stroke="#FF0043" stroke-width="3"/><text x="30" y="20" fill="#fff" font-family="\'Space Grotesk\',sans-serif" font-weight="700" font-size="16">globoplay</text></svg>',
+    'PARAMOUNT+': '<svg viewBox="0 0 120 30" style="height:20px;"><text x="5" y="21" fill="#0064FF" font-family="\'Space Grotesk\',sans-serif" font-weight="900" font-size="18">Paramount+</text></svg>'
+  };
+
+  const GENRE_BACKDROPS = [
+    "assets/movies-cinema.webp",
+    "assets/stadium-cinema.webp",
+    "assets/live-cinema.webp",
+    "assets/series-cinema.webp",
+    "design/posters/dune.webp"
+  ];
+
+  function formatVodCatName(raw) {
+    if (!raw) return 'Catálogo';
+    let s = String(raw).trim();
+    s = s.replace(/^(FILMES|SERIES)\s*\|\s*/i, '');
+    const MAP = {
+      'LANCAMENTOS': 'Lançamentos 2026',
+      'TOP 50 FILMES 2026': 'Top 50 • Mais Assistidos',
+      'CINEMA': 'Sucessos do Cinema',
+      'ACAO': 'Ação & Adrenalina',
+      'COMEDIA': 'Comédia',
+      'DRAMA': 'Drama & Emoção',
+      'LEGENDADOS': 'Filmes Legendados',
+      'TERROR': 'Terror & Horror',
+      'SUSPENSE': 'Suspense & Mistério',
+      'ANIMACAO/INFANTIL': 'Animação & Família',
+      'NACIONAIS': 'Cinema Nacional',
+      'DOCUMENTARIOS': 'Documentários',
+      'FICCAO/FANTASIA': 'Ficção & Fantasia',
+      'ROMANCE': 'Romance',
+      'ANIMES': 'Animes & Mangá',
+      'FAROESTE': 'Faroeste & Western',
+      'CRIME': 'Crime & Investigação',
+      'GUERRA': 'Guerra & História',
+      'RELIGIOSOS': 'Fé & Religiosos',
+      'NETFLIX': 'Netflix Originais',
+      'AMAZON PRIME VIDEO': 'Prime Video',
+      'GLOBOPLAY': 'Globoplay',
+      'HBO MAX': 'Max / HBO',
+      'DISNEY+': 'Disney+',
+      'APPLETV+': 'Apple TV+',
+      'PARAMOUNT+': 'Paramount+',
+      'STAR+': 'Star+',
+      'DISCOVERY+': 'Discovery+'
+    };
+    const upper = s.toUpperCase().trim();
+    return MAP[upper] || s;
+  }
+
+  // 2. CATEGORIAS DE FILMES E SÉRIES — PADRÃO REDPLAY / NETFLIX PREMIUM
   function categoriesView() {
     let cats = [];
-    let title = "Categorias";
-    let sub = "Escolha para navegar";
+    let title = "Catálogo";
+    let sub = "Streaming Premium sob demanda";
 
     if (state.kind === 'movie') {
       cats = vodCategories.length ? vodCategories : [{ category_id: "557", category_name: "Lançamentos Cinema" }];
       title = "Cine Nexus";
-      sub = "Catálogo de Filmes / Escolha o Gênero";
+      sub = "Mais de 20.000 filmes em Full HD e Ultra HD";
     } else if (state.kind === 'series') {
       cats = seriesCategories.length ? seriesCategories : [{ category_id: "7837", category_name: "Séries em Destaque" }];
-      title = "Mais um episódio.";
-      sub = "Séries / Escolha uma Categoria";
-    } else if (state.kind === 'sports') {
-      cats = allCategories.filter(c => {
-        const n = (c.category_name || '').toLowerCase();
-        return n.includes('esporte') || n.includes('jogo') || n.includes('futebol') || n.includes('premiere') || n.includes('conmebol');
-      });
-      title = "Arena Esportiva";
-      sub = "Transmissões e Confrontos";
+      title = "Séries Nexus";
+      sub = "Temporadas completas dos maiores estúdios do mundo";
     }
 
-    const paged = cats.slice(state.page * capacity(), (state.page + 1) * capacity());
+    const brandCats = cats.filter(c => {
+      const u = (c.category_name || '').toUpperCase();
+      return Object.keys(BRAND_LOGOS).some(b => u.includes(b));
+    });
+
+    const otherCats = cats.filter(c => !brandCats.includes(c));
+
+    let brandsHtml = '';
+    if (brandCats.length > 0) {
+      brandsHtml = `
+      <div class="brand-hub-section">
+        <div class="brand-hub-title">Estúdios & Plataformas Integradas</div>
+        <div class="brand-hub-grid">
+          ${brandCats.map(c => {
+            const u = (c.category_name || '').toUpperCase();
+            const brandKey = Object.keys(BRAND_LOGOS).find(b => u.includes(b)) || '';
+            const logoSvg = BRAND_LOGOS[brandKey] || `<strong>${safe(formatVodCatName(c.category_name))}</strong>`;
+            return `
+            <button class="brand-hub-card" data-cat-id="${c.category_id}" data-cat-name="${safe(formatVodCatName(c.category_name))}" data-key="cat-${c.category_id}">
+              ${logoSvg}
+            </button>`;
+          }).join('')}
+        </div>
+      </div>`;
+    }
+
     return `${topBar(title, sub)}
-    <div class="folder-grid">
-      ${paged.map((c, i) => `
-        <button class="folder" data-cat-id="${c.category_id}" data-cat-name="${c.category_name}" data-key="cat-${c.category_id}">
-          <span class="eyebrow">${String(state.page * capacity() + i + 1).padStart(2, '0')}</span>
-          <strong>${c.category_name}</strong>
-          <span>Explorar ${icon('next')}</span>
-        </button>
-      `).join('')}
-    </div>
-    ${paging(cats.length)}`;
+    ${brandsHtml}
+    <div class="brand-hub-title" style="margin-top:12px;">Gêneros & Coleções em Alta</div>
+    <div class="genre-cards-grid">
+      ${otherCats.map((c, i) => {
+        const clean = formatVodCatName(c.category_name);
+        const bgImg = GENRE_BACKDROPS[i % GENRE_BACKDROPS.length];
+        return `
+        <button class="genre-card" data-cat-id="${c.category_id}" data-cat-name="${safe(clean)}" data-key="cat-${c.category_id}">
+          <img class="genre-card-bg" src="${bgImg}" alt="" loading="lazy">
+          <div class="genre-card-scrim"></div>
+          <div class="genre-card-content">
+            <div class="genre-card-top">
+              <span class="genre-card-badge">FHD • 1080P</span>
+              <span class="genre-card-num">${String(i + 1).padStart(2, '0')}</span>
+            </div>
+            <div>
+              <strong class="genre-card-title">${safe(clean)}</strong>
+              <span class="genre-card-cta">Explorar títulos ${icon('next')}</span>
+            </div>
+          </div>
+        </button>`;
+      }).join('')}
+    </div>`;
   }
 
-  // 3. CATÁLOGO DE PÔSTERES (VOD / Filmes e Séries)
+  // 3. CATÁLOGO DE PÔSTERES COM ROLAGEM HORIZONTAL E SETAS LATERAIS (Padrão RedPlay / Netflix)
   function catalogView() {
     const list = getCatalogItems();
     const typeLabel = state.kind === 'series' ? 'Séries' : 'Filmes';
+    const catName = formatVodCatName(state.category || 'Catálogo');
 
-    return `${topBar(state.category || 'Catálogo', `${typeLabel} / Grade de Títulos`)}
-    <div class="tv-search">
-      <input id="tvSearch" type="search" value="${safe(state.query)}" placeholder="Buscar neste catálogo…" aria-label="Buscar neste catálogo">
-      <span>${list.length} títulos disponíveis</span>
+    return `${topBar(catName, `${typeLabel} / ${list.length} títulos disponíveis`)}
+    <div class="tv-search" style="margin-bottom:12px;">
+      <input id="tvSearch" type="search" value="${safe(state.query)}" placeholder="Buscar por título, ator ou gênero…" aria-label="Buscar neste catálogo">
+      <button data-act="back" style="padding:8px 16px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:#fff;cursor:pointer;">${icon('back')} Voltar</button>
     </div>
-    <div class="poster-grid">
-      ${list.slice(state.page * capacity(), (state.page + 1) * capacity()).map(t => {
-        const cover = t.stream_icon || t.cover || "design/posters/dune.webp";
-        const yr = t.year || t.rating || "HD";
-        return `
-          <button class="tv-poster" data-item-id="${t.stream_id || t.series_id}" data-item-type="${state.kind}" data-key="item-${t.stream_id || t.series_id}">
-            <img src="${cover}" loading="lazy" onerror="this.onerror=null;this.src='design/posters/dune.webp';" alt="">
-            <strong>${(t.name || 'Título').replace(/</g, '&lt;')}</strong>
-            <small>${yr} · ${state.category}</small>
-          </button>
-        `;
-      }).join('') || '<p class="empty">Nenhum título encontrado.</p>'}
-    </div>
-    ${paging(list.length)}`;
+
+    <div class="rail-wrapper">
+      <button class="rail-nav-btn rail-prev" data-rail-scroll="-1" aria-label="Deslizar para a esquerda">‹</button>
+      <div class="rail-track" id="vodTrack">
+        ${list.map(t => {
+          const cover = t.stream_icon || t.cover || "design/posters/dune.webp";
+          const yr = t.year || t.rating || "HD";
+          return `
+          <button class="rail-item" data-item-id="${t.stream_id || t.series_id}" data-item-type="${state.kind}" data-key="item-${t.stream_id || t.series_id}">
+            <img class="rail-item-cover" src="${cover}" loading="lazy" onerror="this.onerror=null;this.src='design/posters/dune.webp';" alt="">
+            <div class="rail-item-info">
+              <strong class="rail-item-title">${safe(cleanTitle(t.name || 'Título'))}</strong>
+              <div class="rail-item-meta">
+                <span>${safe(String(yr))}</span>
+                <span style="color:#b7ff3c;">★ ${t.rating || '8.5'}</span>
+              </div>
+            </div>
+          </button>`;
+        }).join('') || '<p class="empty">Nenhum título encontrado nesta categoria.</p>'}
+      </div>
+      <button class="rail-nav-btn rail-next" data-rail-scroll="1" aria-label="Deslizar para a direita">›</button>
+    </div>`;
   }
 
   function getCatalogItems() {
@@ -451,7 +548,8 @@
     </div>`;
   }
 
-  // Atualiza o foco de EPG a partir de mouse, toque ou navegação por D-pad/teclado
+  // Atualiza o foco de EPG a partir de mouse, toque ou navegação por D-pad/teclado com debounce fluido
+  let tv3FocusTimer = null;
   function focusTv3Row(row) {
     if (!row) return;
     const id = row.dataset.channelId;
@@ -463,10 +561,13 @@
     document.querySelectorAll('.tv3-chan-row.focused').forEach(el => el.classList.remove('focused'));
     row.classList.add('focused');
 
-    const panel = document.getElementById('tv3EpgPanel');
-    if (!panel) return;
-    const chan = allStreams.find(c => String(c.stream_id) === String(id)) || { stream_id: id, name: tv3FocusName, stream_icon: tv3FocusIcon };
-    panel.innerHTML = renderTv3EpgPanel(chan);
+    if (tv3FocusTimer) clearTimeout(tv3FocusTimer);
+    tv3FocusTimer = setTimeout(() => {
+      const panel = document.getElementById('tv3EpgPanel');
+      if (!panel) return;
+      const chan = allStreams.find(c => String(c.stream_id) === String(id)) || { stream_id: id, name: tv3FocusName, stream_icon: tv3FocusIcon };
+      panel.innerHTML = renderTv3EpgPanel(chan);
+    }, 200);
   }
 
   function liveView() {
@@ -1144,6 +1245,19 @@
       const pass = session ? session.pass : '';
       const url = apiUrl(`/series/${encodeURIComponent(user)}/${encodeURIComponent(pass)}/${epId}.${epExt}`);
       playVodMedia(url, epTitle);
+      return;
+    }
+
+    // Rolagem horizontal suave das setas laterais do carrossel (RedPlay / Netflix)
+    const railBtn = e.target.closest('[data-rail-scroll]');
+    if (railBtn) {
+      e.stopPropagation();
+      e.preventDefault();
+      const dir = Number(railBtn.dataset.railScroll) || 1;
+      const track = document.getElementById('vodTrack');
+      if (track) {
+        track.scrollBy({ left: dir * 550, behavior: 'smooth' });
+      }
       return;
     }
 
