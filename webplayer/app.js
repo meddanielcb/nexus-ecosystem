@@ -344,6 +344,15 @@
     return n.includes(' x ') || n.includes(' vs ') || /\b\d{1,2}:\d{2}\b/.test(n) || catN.includes('esporte') || catN.includes('premiere') || catN.includes('sportv') || catN.includes('espn');
   }
 
+  function cleanTitle(s) {
+    if (!s) return '';
+    return String(s)
+      .replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{27BF}]|[\u{1F600}-\u{1F64F}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[⚽🤠📺🎬🍿⭐🔥🏆👑🎯]/gu, '')
+      .replace(/^[\|\-\s]+|[\|\-\s]+$/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
   function tv3Categories() {
     const pseudo = [
       { id: 'all', name: 'TODOS' },
@@ -356,7 +365,7 @@
       const has = allStreams.some(s => String(s.category_id) === String(c.category_id));
       if (has) seen.add(String(c.category_id));
       return has;
-    }).map(c => ({ id: String(c.category_id), name: c.category_name || 'Categoria' }));
+    }).map(c => ({ id: String(c.category_id), name: cleanTitle(c.category_name) || 'Categoria' }));
     return pseudo.concat(real);
   }
 
@@ -502,20 +511,22 @@
               const isFav = savedFavs.includes(String(c.stream_id));
               const isPlaying = activeStreamId != null && String(activeStreamId) === String(c.stream_id);
               const isFocused = String(tv3FocusId) === String(c.stream_id);
+              const cleanName = cleanTitle(c.name || 'Canal');
               return `
               <button class="tv3-chan-row ${isPlaying ? 'playing' : ''} ${isFocused ? 'focused' : ''}" role="listitem"
-                data-channel-id="${c.stream_id}" data-channel-name="${safe(c.name || 'Canal')}"
+                data-channel-id="${c.stream_id}" data-channel-name="${safe(cleanName)}"
                 data-chan-icon="${safe(c.stream_icon || '')}" data-key="chan-${c.stream_id}">
                 <span class="tv3-chan-num">${num}</span>
                 ${logo
                   ? `<img class="tv3-chan-logo" src="${logo}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" alt="">
-                     <span class="tv3-chan-fallback" style="display:none;">${safe((c.name || '?').trim().charAt(0).toUpperCase())}</span>`
-                  : `<span class="tv3-chan-fallback">${safe((c.name || '?').trim().charAt(0).toUpperCase())}</span>`
+                     <span class="tv3-chan-fallback" style="display:none;">${safe(cleanName.charAt(0).toUpperCase())}</span>`
+                  : `<span class="tv3-chan-fallback">${safe(cleanName.charAt(0).toUpperCase())}</span>`
                 }
                 <span class="tv3-chan-meta">
-                  <strong>${safe(c.name || 'Canal')}</strong>
+                  <strong>${safe(cleanName)}</strong>
                   <span>${isFav ? '★ Favorito' : 'Canal ao vivo'}</span>
                 </span>
+                <span class="tv3-chan-star ${isFav ? 'fav-active' : ''}" data-fav-toggle="${c.stream_id}" role="button" title="Favoritar canal">${isFav ? '★' : '☆'}</span>
                 ${isPlaying ? '<span class="tv3-live-dot">●</span>' : ''}
               </button>`;
             }).join('') || '<p class="empty">Nenhum canal encontrado nesta categoria.</p>'}
@@ -536,9 +547,9 @@
     return `${topBar('Sua Conta', 'Nexus PlayTV / Status')}
     <div class="empty" style="text-align:left;max-width:600px;margin:20px auto;line-height:2;">
       <p><strong>Usuário:</strong> ${u}</p>
-      <p><strong>Status:</strong> <span style="color:#b7ff3c;">● Assinatura Ativa</span></p>
-      <p><strong>Servidor:</strong> Offshore Suécia (Njalla BBR Turbo)</p>
-      <p><strong>Conexões Ativas:</strong> 1 tela em uso</p>
+      <p><strong>Plano:</strong> <span style="color:#b7ff3c;">● Acesso Premium Ativo</span></p>
+      <p><strong>Qualidade:</strong> Ultra HD / Full HD 60 FPS</p>
+      <p><strong>Dispositivos:</strong> 1 tela conectada</p>
       <br>
       <button data-act="back">${icon('back')} Voltar</button>
     </div>`;
@@ -1127,6 +1138,26 @@
       return;
     }
 
+    // Favoritar canal direto na grade
+    const starEl = e.target.closest('[data-fav-toggle]');
+    if (starEl) {
+      e.stopPropagation();
+      e.preventDefault();
+      const sId = starEl.dataset.favToggle;
+      if (sId) {
+        if (savedFavs.includes(String(sId))) {
+          savedFavs = savedFavs.filter(id => id !== String(sId));
+          notice("Removido dos favoritos");
+        } else {
+          savedFavs.push(String(sId));
+          notice("Canal salvo nos favoritos");
+        }
+        localStorage.setItem("nexus_lab_favorites", JSON.stringify(savedFavs));
+        draw();
+      }
+      return;
+    }
+
     // Ações de canais de TV
     if (b.dataset.channelId) {
       const id = b.dataset.channelId;
@@ -1330,6 +1361,8 @@
     try {
       const u = new URL(absoluteOrPath, window.location.origin);
       if (u.origin === window.location.origin) return u.href;
+      // Se for URL externa HTTPS completa (como painelmaster.app, github, imgur, logos), carrega direto!
+      if (u.protocol === "https:") return u.href;
       return window.location.origin + PROXY_BASE + u.pathname + u.search;
     } catch (e) {
       return absoluteOrPath;
